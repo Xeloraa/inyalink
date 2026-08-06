@@ -4,7 +4,9 @@ import { formatMmk } from '@inyalink/shared';
 import { generateRoadmap } from '../lib/api';
 import { useDemoFlow } from '../lib/demoFlow';
 import { useI18n } from '../lib/i18n';
-import { ProgressNotice, RateLimitNotice } from '../components/Notices';
+import { ThinkingBubble } from '../components/ChatBubble';
+import { RotatingProgress } from '../components/RotatingProgress';
+import { RateLimitNotice } from '../components/Notices';
 
 export default function Roadmap() {
   const { t, locale } = useI18n();
@@ -54,40 +56,52 @@ export default function Roadmap() {
   const moneyLocale = locale === 'en' ? 'en' : 'my';
 
   return (
-    <section className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold leading-[1.8]">{t('roadmap.title')}</h1>
-        <Link to="/" className="text-sm text-jade hover:underline">
+    <section className="mx-auto max-w-brief space-y-xl">
+      <div className="flex items-center justify-between gap-md">
+        <h1 className="font-display text-display-sm text-ink-900 leading-burmese">
+          {t('roadmap.title')}
+        </h1>
+        <Link
+          to="/"
+          className="text-body-sm text-ink-500 underline-offset-2 hover:text-jade-600 hover:underline"
+        >
           {t('common.back')}
         </Link>
       </div>
 
       {goal ? (
-        <p className="rounded-md border border-line bg-paper px-4 py-3 leading-[1.8]">
+        <p className="font-myanmar rounded-md border border-line bg-white px-lg py-md text-body-lg leading-burmese text-ink-900 [overflow-wrap:anywhere]">
           {goal}
         </p>
       ) : null}
 
-      {busy ? <ProgressNotice messageKey="progress.roadmap" /> : null}
+      {busy ? (
+        <div className="space-y-md">
+          <ThinkingBubble />
+          <RotatingProgress active />
+        </div>
+      ) : null}
       {notice ? <RateLimitNotice notice={notice} onRetry={() => void load()} /> : null}
 
-      <ol className="space-y-4">
+      <ol className="space-y-lg">
         {roadmapSteps
           .slice()
           .sort((a, b) => a.order - b.order)
           .map((step) => (
             <li
               key={step.order}
-              className="rounded-lg border border-line bg-paper p-4"
+              className="rounded-lg border border-line bg-white p-lg"
             >
-              <p className="text-xs font-semibold uppercase tracking-wide text-jade">
+              <p className="text-caption font-medium text-jade-600">
                 {step.order}. {step.category_slug}
               </p>
-              <h2 className="mt-1 text-lg font-semibold leading-[1.8]">
+              <h2 className="mt-xs text-title font-medium leading-burmese text-ink-900">
                 {step.title}
               </h2>
-              <p className="mt-2 leading-[1.8] text-ink/80">{step.why}</p>
-              <p className="mt-3 text-sm text-ink/60">
+              <p className="mt-sm text-body-sm leading-burmese text-ink-500">
+                {step.why}
+              </p>
+              <p className="mt-md text-caption text-ink-400">
                 {t('roadmap.budget')}:{' '}
                 {formatMmk(step.est_min_mmk, moneyLocale)} –{' '}
                 {formatMmk(step.est_max_mmk, moneyLocale)}
@@ -97,9 +111,9 @@ export default function Roadmap() {
       </ol>
 
       {roadmapDisclaimer ? (
-        <aside className="border-t border-line pt-4 text-sm leading-[1.8] text-ink/65">
-          <p className="font-semibold text-ink/80">{t('roadmap.disclaimer')}</p>
-          <p className="mt-1">{roadmapDisclaimer}</p>
+        <aside className="border-t border-line-soft pt-lg text-caption leading-burmese text-ink-400">
+          <p className="font-medium text-ink-500">{t('roadmap.disclaimer')}</p>
+          <p className="mt-xs">{roadmapDisclaimer}</p>
         </aside>
       ) : null}
     </section>

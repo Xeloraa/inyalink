@@ -6,14 +6,15 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type {
-  BriefDraft,
-  ChatMessage,
-  MatchCandidate,
-  RoadmapStep,
+import {
+  classifyInputShape,
+  type BriefDraft,
+  type ChatMessage,
+  type MatchCandidate,
+  type RoadmapStep,
 } from '@inyalink/shared';
 
-export type DemoPath = 'quick' | 'plan';
+export type DemoPath = 'quick' | 'plan' | 'clarify';
 
 type DemoFlowState = {
   path: DemoPath | null;
@@ -33,6 +34,9 @@ type DemoFlowState = {
 type DemoFlowValue = DemoFlowState & {
   startQuick: (goal: string) => void;
   startPlan: (goal: string) => void;
+  startClarify: (goal: string) => void;
+  /** Classify opening text and start the matching path. Returns the route. */
+  startFromInput: (goal: string) => '/converse' | '/roadmap';
   setMessages: (messages: ChatMessage[]) => void;
   setBriefDraft: (draft: BriefDraft) => void;
   setBriefId: (id: string) => void;
@@ -44,6 +48,10 @@ type DemoFlowValue = DemoFlowState & {
     steps: RoadmapStep[];
     disclaimer: string;
   }) => void;
+  /** After clarify: switch into brief conversation without resetting messages. */
+  resolveClarifyToQuick: () => void;
+  /** After clarify: switch into roadmap with the original goal. */
+  resolveClarifyToPlan: () => void;
   reset: () => void;
 };
 
@@ -84,6 +92,35 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const startClarify = useCallback((goal: string) => {
+    const trimmed = goal.trim();
+    setState({
+      ...initial,
+      path: 'clarify',
+      goal: trimmed,
+      messages: [{ role: 'user', content: trimmed }],
+      converseStarted: true,
+    });
+  }, []);
+
+  const startFromInput = useCallback(
+    (goal: string): '/converse' | '/roadmap' => {
+      const trimmed = goal.trim();
+      const shape = classifyInputShape(trimmed);
+      if (shape === 'goal') {
+        startPlan(trimmed);
+        return '/roadmap';
+      }
+      if (shape === 'service') {
+        startQuick(trimmed);
+        return '/converse';
+      }
+      startClarify(trimmed);
+      return '/converse';
+    },
+    [startClarify, startPlan, startQuick],
+  );
+
   const setMessages = useCallback((messages: ChatMessage[]) => {
     setState((s) => ({ ...s, messages }));
   }, []);
@@ -120,6 +157,24 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const resolveClarifyToQuick = useCallback(() => {
+    setState((s) => ({
+      ...s,
+      path: 'quick',
+      converseStarted: false,
+      briefDraft: {},
+      messages: [{ role: 'user', content: s.goal }],
+    }));
+  }, []);
+
+  const resolveClarifyToPlan = useCallback(() => {
+    setState((s) => ({
+      ...initial,
+      path: 'plan',
+      goal: s.goal,
+    }));
+  }, []);
+
   const reset = useCallback(() => setState(initial), []);
 
   const value = useMemo(
@@ -127,6 +182,8 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       ...state,
       startQuick,
       startPlan,
+      startClarify,
+      startFromInput,
       setMessages,
       setBriefDraft,
       setBriefId,
@@ -134,12 +191,16 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       markConverseComplete,
       setMatches,
       setRoadmap,
+      resolveClarifyToQuick,
+      resolveClarifyToPlan,
       reset,
     }),
     [
       state,
       startQuick,
       startPlan,
+      startClarify,
+      startFromInput,
       setMessages,
       setBriefDraft,
       setBriefId,
@@ -147,6 +208,8 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       markConverseComplete,
       setMatches,
       setRoadmap,
+      resolveClarifyToQuick,
+      resolveClarifyToPlan,
       reset,
     ],
   );

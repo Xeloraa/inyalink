@@ -8,8 +8,10 @@ import {
   type FormEvent,
   type ReactNode,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDemoFlow } from '../lib/demoFlow';
 import { useI18n } from '../lib/i18n';
+import { ChatBubble } from './ChatBubble';
 
 const OPEN_KEY = 'inyalink.chatOpen';
 
@@ -107,8 +109,9 @@ const SEED_THREAD = [
 
 export function FloatingChat() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const { open, setOpen, toggle } = useChatUi();
-  const { messages, setMessages, startQuick } = useDemoFlow();
+  const { messages, setMessages, startFromInput } = useDemoFlow();
   const [draft, setDraft] = useState('');
 
   const thread =
@@ -133,10 +136,13 @@ export function FloatingChat() {
     const text = draft.trim();
     if (!text) return;
     if (messages.length === 0) {
-      startQuick(text);
-    } else {
-      setMessages([...messages, { role: 'user', content: text }]);
+      const route = startFromInput(text);
+      setDraft('');
+      setOpen(false);
+      void navigate(route);
+      return;
     }
+    setMessages([...messages, { role: 'user', content: text }]);
     setDraft('');
   }
 
@@ -175,22 +181,14 @@ export function FloatingChat() {
             </button>
           </header>
 
-          <div className="flex-1 space-y-md overflow-y-auto px-lg py-lg">
+          <div className="flex flex-1 flex-col justify-end gap-md overflow-y-auto px-lg py-lg">
             {thread.map((m, i) => (
-              <div
+              <ChatBubble
                 key={`${m.role}-${i}`}
-                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                role={m.role === 'user' ? 'user' : 'assistant'}
               >
-                <div
-                  className={`max-w-[86%] px-lg py-md text-body-lg ${
-                    m.role === 'user'
-                      ? 'rounded-[16px] rounded-br-[4px] bg-jade-600 text-white'
-                      : 'rounded-[16px] rounded-bl-[4px] bg-jade-50 text-ink-900'
-                  }`}
-                >
-                  {m.content}
-                </div>
-              </div>
+                {m.content}
+              </ChatBubble>
             ))}
           </div>
 

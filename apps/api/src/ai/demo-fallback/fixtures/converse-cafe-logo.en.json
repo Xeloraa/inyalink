@@ -4,10 +4,10 @@
   "matchInput": "ကော်ဖီဆိုင်အတွက် logo လိုချင်ပါတယ်",
   "locale": "en",
   "questions": [
-    "What is the cafe name, and should that text appear in the logo?",
-    "What style do you want — minimalist, modern, or traditional? Any preferred colours?",
-    "What budget range (kyat) should we plan for — minimum and maximum?",
-    "When do you need it? A concrete date (YYYY-MM-DD) helps."
+    "Got it. What's the cafe name — and should that text appear in the logo?",
+    "What style feels right — minimalist, modern, or traditional? Any colours you already like? Most people lock style before photos so they don't shoot twice.",
+    "What budget range in kyat should we plan for — a rough min and max is fine.",
+    "When do you need it? A concrete date (YYYY-MM-DD) helps if you have one."
   ],
   "draftsAfterUserTurn": [
     {

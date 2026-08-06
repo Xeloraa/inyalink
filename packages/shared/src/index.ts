@@ -1,6 +1,11 @@
 export { HealthResponseSchema, type HealthResponse } from './schemas/health.js';
 export { formatMmk } from './money.js';
 export {
+  classifyClarifyReply,
+  classifyInputShape,
+  type InputShape,
+} from './classifyInputShape.js';
+export {
   BriefDraftSchema,
   BriefSourceSchema,
   BriefStatusSchema,

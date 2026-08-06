@@ -15,15 +15,15 @@ import { useDemoFlow } from '../lib/demoFlow';
  */
 export default function Landing() {
   const navigate = useNavigate();
-  const { startQuick } = useDemoFlow();
+  const { startFromInput } = useDemoFlow();
   const [goal, setGoal] = useState('');
   const heroRef = useRef<HTMLDivElement>(null);
 
   function submitGoal(text: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
-    startQuick(trimmed);
-    void navigate('/converse');
+    const route = startFromInput(trimmed);
+    void navigate(route);
   }
 
   function focusInput() {
