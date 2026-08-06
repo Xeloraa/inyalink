@@ -40,6 +40,29 @@ function resolveUrl(path: string): string {
   return `${base}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
+/**
+ * Directory reads stay anonymous — never attach Authorization. A stale or
+ * invalid Bearer must not trip any gateway / attachSession on these paths.
+ */
+function isPublicApiPath(path: string): boolean {
+  const pathname = (
+    path.replace(/^https?:\/\/[^/?#]+/i, '').split('?')[0] ?? path
+  ).replace(/\/$/, '') || '/';
+
+  if (pathname === '/api/v1/professionals/categories') return true;
+  if (pathname === '/api/v1/professionals/skills') return true;
+  if (pathname === '/api/v1/professionals') return true;
+  // Public profile by id — not /apply or other mutating paths
+  if (
+    /^\/api\/v1\/professionals\/[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      pathname,
+    )
+  ) {
+    return true;
+  }
+  return false;
+}
+
 export async function apiFetch<T>(
   path: string,
   init: RequestInit & { timeoutMs?: number } = {},
@@ -47,7 +70,7 @@ export async function apiFetch<T>(
   const { timeoutMs = DEFAULT_TIMEOUT_MS, ...rest } = init;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
-  const token = accessTokenGetter();
+  const token = isPublicApiPath(path) ? null : accessTokenGetter();
 
   try {
     const response = await fetch(resolveUrl(path), {

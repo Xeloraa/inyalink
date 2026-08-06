@@ -11,6 +11,10 @@ import * as professionalsService from './professionals.service.js';
 
 export const professionalsRouter = Router();
 
+/*
+ * Public directory — no auth middleware on these GETs.
+ * Do not add attachSession / requireAuth at router level.
+ */
 professionalsRouter.get('/categories', async (_req, res, next) => {
   try {
     const result = await professionalsService.listCategories();
@@ -51,6 +55,7 @@ professionalsRouter.get(
   },
 );
 
+/** Mutating — signed-in user only. */
 professionalsRouter.post(
   '/apply',
   requireAuth,
@@ -69,6 +74,7 @@ professionalsRouter.post(
   },
 );
 
+/** Public profile by id. */
 professionalsRouter.get('/:id', async (req, res, next) => {
   try {
     const params = ProfessionalIdParamsSchema.safeParse(req.params);

@@ -33,15 +33,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const syncProfile = useCallback(async (token: string | null) => {
-    applyToken(token);
     if (!token) {
+      applyToken(null);
       setSession(null);
       return;
     }
+    // Attach the token only after /me succeeds — a failed verify must not
+    // leave a bad Bearer on later public GETs.
     try {
+      applyToken(token);
       const me = await fetchAuthMe();
       setSession(me.session);
     } catch {
+      applyToken(null);
       setSession(null);
     }
   }, [applyToken]);

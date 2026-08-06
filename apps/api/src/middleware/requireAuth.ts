@@ -18,10 +18,7 @@ function bearerToken(req: Request): string | null {
   return token.trim();
 }
 
-async function attachSupabaseUser(
-  req: Request,
-  token: string,
-): Promise<AuthSession> {
+async function attachSupabaseUser(token: string): Promise<AuthSession> {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase.auth.getUser(token);
   if (error || !data.user) {
@@ -44,7 +41,7 @@ export async function requireAuth(
     if (!token) {
       throw new AppError(401, 'UNAUTHENTICATED', 'Sign in required');
     }
-    (req as AuthedRequest).auth = await attachSupabaseUser(req, token);
+    (req as AuthedRequest).auth = await attachSupabaseUser(token);
     next();
   } catch (err) {
     next(err);
@@ -53,8 +50,13 @@ export async function requireAuth(
 
 /**
  * Prefer a real Bearer session. If absent and DEMO_MODE is on, attach the
- * demo session (optional `X-Demo-User-Id`). Never use demo when a Bearer
- * token is present — invalid tokens 401 instead of falling through.
+ * demo session (optional `X-Demo-User-Id`).
+ *
+ * Invalid Bearer: hard-fail when DEMO_MODE is off; under DEMO_MODE ignore the
+ * bad token and fall back to demo so a stale client header cannot take down
+ * otherwise-anonymous flows on routers that use this middleware.
+ *
+ * Public directory GETs must NOT use this middleware — see professionals.routes.
  */
 export async function attachSession(
   req: Request,
@@ -64,9 +66,17 @@ export async function attachSession(
   try {
     const token = bearerToken(req);
     if (token) {
-      (req as AuthedRequest).auth = await attachSupabaseUser(req, token);
-      next();
-      return;
+      try {
+        (req as AuthedRequest).auth = await attachSupabaseUser(token);
+        next();
+        return;
+      } catch (err) {
+        if (!config.demoMode) {
+          next(err);
+          return;
+        }
+        // Stale Bearer while DEMO_MODE is on → demo identity, not 401.
+      }
     }
     if (config.demoMode) {
       (req as AuthedRequest).auth = resolveDemoSession(req);
