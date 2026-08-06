@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ProfessionalsSort } from '@inyalink/shared';
 import {
@@ -9,6 +8,7 @@ import {
   type ListProfessionalsParams,
 } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
+import { useChatUi } from '../components/FloatingChat';
 import { useI18n } from '../lib/i18n';
 import {
   BUDGET_MAX,
@@ -34,6 +34,7 @@ const SKELETON_ROWS = 4;
  */
 export default function Browse() {
   const { t } = useI18n();
+  const { setOpen } = useChatUi();
   const { saved, toggleSaved } = useSavedPros();
 
   const [filters, setFilters] = useState<BrowseFilters>(DEFAULT_FILTERS);
@@ -130,9 +131,10 @@ export default function Browse() {
             onOpenFilters={() => setSheetOpen(true)}
           />
 
-          <Link
-            to="/converse"
-            className="group mt-lg flex min-h-[48px] items-center justify-between gap-md rounded-md border border-jade-100 bg-jade-50 px-lg py-sm no-underline transition-colors duration-fast ease-out hover:border-jade-200 hover:bg-jade-100 focus-visible:shadow-focus active:bg-jade-100"
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="group mt-lg flex min-h-[48px] w-full items-center justify-between gap-md rounded-md border border-jade-100 bg-jade-50 px-lg py-sm text-left no-underline transition-colors duration-fast ease-out hover:border-jade-200 hover:bg-jade-100 focus-visible:shadow-focus active:bg-jade-100"
           >
             <span className="text-body-sm text-ink-700">
               {t('browse.aiBarText')}{' '}
@@ -146,7 +148,7 @@ export default function Browse() {
             >
               <ArrowRightIcon />
             </span>
-          </Link>
+          </button>
 
           <div className="mt-lg">
             {prosQuery.isPending ? (

@@ -14,7 +14,7 @@ export function ChatBubble({ role, children }: ChatBubbleProps) {
       className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
     >
       <p
-        className={`font-myanmar px-lg py-md text-body-lg leading-burmese [overflow-wrap:anywhere] ${
+        className={`font-myanmar w-fit px-lg py-md text-body-lg leading-burmese [overflow-wrap:anywhere] ${
           isUser
             ? 'max-w-[78%] rounded-[16px] rounded-br-[4px] bg-jade-600 text-white'
             : 'max-w-[86%] rounded-[16px] rounded-bl-[4px] bg-jade-50 text-ink-900'

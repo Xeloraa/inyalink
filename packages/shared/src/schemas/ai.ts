@@ -21,6 +21,11 @@ export const ConverseBriefResponseSchema = z.object({
   nextQuestion: z.string().min(1).max(1000).optional(),
   briefDraft: BriefDraftSchema,
   complete: z.boolean(),
+  /**
+   * Client should abandon the brief conversation and open Guided Plan.
+   * Used when the opening is goal-shaped or the user signals "I don't know".
+   */
+  redirectTo: z.literal('roadmap').optional(),
   /** Soft transient failure (e.g. rate limit). Client keeps state and retries. */
   retryable: z.boolean().optional(),
   /** Short user-facing notice when retryable is true. */

@@ -6,6 +6,7 @@ import { HeroDawn } from '../features/landing/HeroDawn';
 import { HowItWorks } from '../features/landing/HowItWorks';
 import { MatchesSection } from '../features/landing/MatchesSection';
 import { ReassuranceStrip } from '../features/landing/ReassuranceStrip';
+import { useChatUi } from '../components/FloatingChat';
 import { useDemoFlow } from '../lib/demoFlow';
 
 /**
@@ -16,14 +17,19 @@ import { useDemoFlow } from '../lib/demoFlow';
 export default function Landing() {
   const navigate = useNavigate();
   const { startFromInput } = useDemoFlow();
+  const { setOpen } = useChatUi();
   const [goal, setGoal] = useState('');
   const heroRef = useRef<HTMLDivElement>(null);
 
   function submitGoal(text: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
-    const route = startFromInput(trimmed);
-    void navigate(route);
+    const destination = startFromInput(trimmed);
+    if (destination === 'roadmap') {
+      void navigate('/roadmap');
+      return;
+    }
+    setOpen(true);
   }
 
   function focusInput() {

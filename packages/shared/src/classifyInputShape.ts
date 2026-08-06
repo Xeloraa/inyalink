@@ -86,17 +86,38 @@ const GOAL_PATTERNS: RegExp[] = [
   /\bstruggling\s+with\b/,
   /\bwhat\s+do\s+i\s+need\b/,
   /\bhow\s+do\s+i\s+(open|start|launch|set\s*up)\b/,
+  /\bwhere\s+(should|do)\s+i\s+start\b/,
   /\bwhat\s+steps\b/,
   /\broadmap\b/,
   /\bplan\s+for\b/,
   // Burmese
   /ဖွင့်ချင်/,
+  /ဆိုင်ဖွင့်/,
   /စတင်ချင်|စပြီးလုပ်ချင်|လုပ်ချင်တယ်/,
   /ဘာတွေ\s*လိုအပ်/,
   /အရောင်း\s*(မကောင်း|မတက်|ကျ)/,
   /ဖောက်သည်\s*(မရ|မရှိ|နည်း)/,
   /customers?\s*(မရ|မရှိ)/i,
   /လမ်းညွှန်|အစီအစဉ်/,
+];
+
+/** User declined to answer / has no idea — stop probing, hand off to roadmap. */
+const DONT_KNOW_PATTERNS: RegExp[] = [
+  /\bi don'?t know\b/,
+  /\bdon'?t know\b/,
+  /\bno idea\b/,
+  /\bhaven'?t thought\b/,
+  /\bhave not thought\b/,
+  /\bno clue\b/,
+  /\bidk\b/,
+  /\bno\s+idea\s+where\b/,
+  /\bwhere\s+(should|do)\s+i\s+start\b/,
+  /\blike i said\b/,
+  /\bi have no idea\b/,
+  /မသိပါ|ဘာမှ\s*မသိ|ဘာမှန်းမသိ/,
+  /မစဉ်းစားရသေး/,
+  /မတွေးရသေး/,
+  /ဘယ်က\s*စရမလဲ|ဘယ်က\s*စမလဲ/,
 ];
 
 function matchesAny(text: string, patterns: RegExp[]): boolean {
@@ -120,26 +141,32 @@ export function classifyInputShape(raw: string): InputShape {
   return 'ambiguous';
 }
 
+/** True when the user is declining / has no answer — switch to roadmap. */
+export function signalsDontKnow(raw: string): boolean {
+  const text = fold(raw);
+  if (!text) return false;
+  return matchesAny(text, DONT_KNOW_PATTERNS);
+}
+
 /**
  * Interpret the user's answer to the single routing clarify question.
- * Returns null when still unclear (caller may treat as service default or
- * ask again — we only ask once, so prefer service as the hire-first path).
+ * Don't-know / plan signals → goal (roadmap). Explicit hire → service.
  */
 export function classifyClarifyReply(raw: string): 'goal' | 'service' {
+  if (signalsDontKnow(raw)) return 'goal';
   const text = fold(raw);
+  // Soft "not sure" on the routing question → plan, not a invented hire.
+  if (/\bnot sure\b/.test(text) || /မသေချာ/.test(text)) return 'goal';
   const planSignals: RegExp[] = [
     /\bplan\b/,
     /\broadmap\b/,
     /\bsteps?\b/,
     /\bbigger\s+goal\b/,
     /\bwhole\s+(thing|business|project)\b/,
-    /\bnot\s+sure\s+what\s+i\s+need\b/,
-    /\bdon'?t\s+know\b/,
     /အစီအစဉ်/,
     /လမ်းညွှန်/,
     /အဆင့်/,
     /ဘာလိုအပ်မှန်း/,
-    /မသေချာ/,
     /ရည်မှန်းချက်/,
     /ဆိုင်ဖွင့်|ဖွင့်ချင်/,
   ];
@@ -160,6 +187,6 @@ export function classifyClarifyReply(raw: string): 'goal' | 'service' {
   }
   if (matchesAny(text, hireSignals)) return 'service';
   if (matchesAny(text, planSignals)) return 'goal';
-  // Still vague after one question — hire path is the lower-risk default.
-  return 'service';
+  // Still vague after one question — roadmap is safer than inventing a hire.
+  return 'goal';
 }

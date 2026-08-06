@@ -3,8 +3,10 @@ import {
   normalizeToUnicode,
 } from '@inyalink/burmese';
 import {
+  classifyInputShape,
   ConverseBriefResponseSchema,
   GenerateRoadmapResponseSchema,
+  signalsDontKnow,
   type ConverseBriefInput,
   type ConverseBriefResponse,
   type GenerateRoadmapInput,
@@ -24,12 +26,25 @@ import { aiApiKeyPresent, config } from '../../lib/config.js';
 import { AppError } from '../../middleware/errors.js';
 import * as repo from './ai.repo.js';
 
-/** Response language from the first user message (not the UI toggle). */
+/** Response language from the most recent user message (not the UI toggle). */
 function converseResponseLocale(
   messages: ConverseBriefInput['messages'],
 ): UiLocale {
-  const opening = openingUserMessage(messages);
-  return opening ? detectResponseLocale(opening) : 'my';
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const m = messages[i];
+    if (m?.role === 'user') return detectResponseLocale(m.content);
+  }
+  return 'my';
+}
+
+function latestUserContent(
+  messages: ConverseBriefInput['messages'],
+): string | null {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const m = messages[i];
+    if (m?.role === 'user') return m.content;
+  }
+  return null;
 }
 
 function resolveModel(): string {
@@ -169,13 +184,51 @@ export async function converseBrief(
 ): Promise<ConverseBriefResponse> {
   const normalized = normalizeConverseInput(input);
   const responseLocale = converseResponseLocale(normalized.messages);
+  const opening = openingUserMessage(normalized.messages);
+  const latestUser = latestUserContent(normalized.messages);
+  const userCount = normalized.messages.filter((m) => m.role === 'user').length;
+  const assistantCount = normalized.messages.filter(
+    (m) => m.role === 'assistant',
+  ).length;
+  const openingShape = opening ? classifyInputShape(opening) : 'ambiguous';
+
+  console.log('[classify]', {
+    opening,
+    openingShape,
+    latestUser,
+    dontKnow: latestUser ? signalsDontKnow(latestUser) : false,
+    userCount,
+    assistantCount,
+    responseLocale,
+  });
+
+  // Goal-shaped openings belong on the roadmap — never invent a service brief.
+  if (assistantCount === 0 && userCount === 1 && openingShape === 'goal') {
+    console.log('[classify] redirect → roadmap (goal-shaped opening)');
+    return ConverseBriefResponseSchema.parse({
+      redirectTo: 'roadmap',
+      briefDraft: normalized.briefDraft ?? {},
+      complete: false,
+    });
+  }
+
+  // User declined / has no idea — stop probing and hand off to Guided Plan.
+  if (latestUser && signalsDontKnow(latestUser) && userCount >= 2) {
+    console.log('[classify] redirect → roadmap (dont-know)');
+    return ConverseBriefResponseSchema.parse({
+      redirectTo: 'roadmap',
+      briefDraft: normalized.briefDraft ?? {},
+      complete: false,
+    });
+  }
+
   const seedOpening = isDemoConverseOpening(normalized.messages);
 
   logAiRequestStart('structure_brief', {
     seedOpening,
     responseLocale,
-    userMessageCount: normalized.messages.filter((m) => m.role === 'user')
-      .length,
+    userMessageCount: userCount,
+    openingShape,
   });
 
   // Provider fully unavailable — still complete seeded demos from cache.

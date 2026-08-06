@@ -110,7 +110,7 @@ describe('structureBrief', () => {
     );
   });
 
-  it('forces briefDraft.language to the first-message language, not the UI locale', async () => {
+  it('forces briefDraft.language to the most recent user message, not the UI locale', async () => {
     complete.mockResolvedValueOnce({
       ...successTurn,
       data: {
@@ -118,24 +118,28 @@ describe('structureBrief', () => {
         nextQuestion: 'What is your budget range?',
         briefDraft: {
           ...successTurn.data.briefDraft,
-          language: 'en' as const,
+          language: 'my' as const,
         },
       },
     });
 
     const result = await structureBrief({
-      messages: [{ role: 'user', content: 'ကော်ဖီဆိုင် logo လိုချင်ပါတယ်' }],
-      // UI toggle is English — questions must still follow Burmese opening.
-      locale: 'en',
+      messages: [
+        { role: 'user', content: 'ကော်ဖီဆိုင် logo လိုချင်ပါတယ်' },
+        { role: 'assistant', content: 'ဆိုင်နာမည် ဘာလဲ။' },
+        { role: 'user', content: 'I have not thought of a name yet' },
+      ],
+      // UI toggle is Burmese — reply language must follow the latest English turn.
+      locale: 'my',
       maxQuestions: 5,
       model: 'mock-model',
       log: vi.fn(async () => undefined),
     });
 
-    expect(result.briefDraft.language).toBe('my');
+    expect(result.briefDraft.language).toBe('en');
     expect(complete).toHaveBeenCalledWith(
       expect.objectContaining({
-        prompt: expect.stringMatching(/`my`|language.*my/i),
+        prompt: expect.stringMatching(/`en`|language.*en/i),
       }),
     );
   });

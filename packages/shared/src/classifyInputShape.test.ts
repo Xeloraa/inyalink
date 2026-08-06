@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   classifyClarifyReply,
   classifyInputShape,
+  signalsDontKnow,
 } from './classifyInputShape.js';
 
 describe('classifyInputShape', () => {
@@ -52,5 +53,26 @@ describe('classifyClarifyReply', () => {
       'service',
     );
     expect(classifyClarifyReply('အစီအစဉ် လိုချင်တယ်')).toBe('goal');
+  });
+
+  it('routes dont-know answers to goal (roadmap)', () => {
+    expect(classifyClarifyReply("I haven't thought of it yet")).toBe('goal');
+    expect(classifyClarifyReply('no idea where should I start')).toBe('goal');
+    expect(classifyClarifyReply('like I said I have no idea')).toBe('goal');
+  });
+});
+
+describe('signalsDontKnow', () => {
+  it('detects decline phrases that should hand off to roadmap', () => {
+    expect(signalsDontKnow('I have no idea')).toBe(true);
+    expect(signalsDontKnow("I haven't thought of it yet")).toBe(true);
+    expect(signalsDontKnow('Inya Cafe')).toBe(false);
+  });
+
+  it('does not treat field-skip phrasing as a roadmap handoff', () => {
+    expect(signalsDontKnow('Not sure — skip this one.')).toBe(false);
+    expect(signalsDontKnow('မသေချာပါ — ဒီမေးခွန်းကို ကျော်မယ်။')).toBe(
+      false,
+    );
   });
 });

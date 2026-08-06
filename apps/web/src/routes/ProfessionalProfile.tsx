@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import type { ProfessionalProfile } from '@inyalink/shared';
 import { formatMmk } from '@inyalink/shared';
 import { getProfessional } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
+import { useChatUi } from '../components/FloatingChat';
 import { useI18n } from '../lib/i18n';
 import { RateLimitNotice } from '../components/Notices';
 
@@ -71,7 +72,7 @@ function readSaved(): string[] {
 export default function ProfessionalProfilePage() {
   const { id = '' } = useParams();
   const { t, locale } = useI18n();
-  const navigate = useNavigate();
+  const { setOpen } = useChatUi();
 
   const [profile, setProfile] = useState<ProfessionalProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -114,8 +115,7 @@ export default function ProfessionalProfilePage() {
   }
 
   function onMessage() {
-    // Messages screen not built yet — land on converse with context later
-    void navigate('/converse');
+    setOpen(true);
   }
 
   if (loading) {

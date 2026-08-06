@@ -18,8 +18,8 @@ export type StructureBriefArgs = {
   messages: ChatMessage[];
   briefDraft?: BriefDraft;
   /**
-   * UI my/en toggle — kept for API compatibility. Questions and
-   * briefDraft.language follow the first user message instead.
+   * UI my/en toggle — kept for API compatibility. Questions follow the
+   * most recent user message language instead.
    */
   locale: UiLocale;
   maxQuestions: number;
@@ -29,9 +29,13 @@ export type StructureBriefArgs = {
   retryRateLimit?: boolean;
 };
 
+/** Reply language = most recent user message (not the opening). */
 function responseLocaleFromMessages(messages: ChatMessage[]): UiLocale {
-  const opening = messages.find((m) => m.role === 'user');
-  return opening ? detectResponseLocale(opening.content) : 'my';
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const m = messages[i];
+    if (m?.role === 'user') return detectResponseLocale(m.content);
+  }
+  return 'my';
 }
 
 /** Extends the HTTP response with an internal provider-failure signal for demo fallback. */
@@ -179,7 +183,7 @@ export async function structureBrief(
   });
 
   let briefDraft = mergeDraft(prior, omitNulls(result.data.briefDraft));
-  // Opening-message language wins over UI toggle and model inference.
+  // Most-recent user message language wins over UI toggle and model inference.
   briefDraft = { ...briefDraft, language: responseLocale };
   let nextQuestion = result.data.nextQuestion ?? undefined;
   let complete = result.data.complete;

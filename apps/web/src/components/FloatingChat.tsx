@@ -4,21 +4,30 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type FormEvent,
   type ReactNode,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  classifyClarifyReply,
+  signalsDontKnow,
+  type ChatMessage,
+} from '@inyalink/shared';
+import { detectResponseLocale } from '@inyalink/burmese';
+import { converseBrief } from '../lib/api';
 import { useDemoFlow } from '../lib/demoFlow';
-import { useI18n } from '../lib/i18n';
-import { ChatBubble } from './ChatBubble';
+import { translateIn, useI18n } from '../lib/i18n';
+import { ChatBubble, ThinkingBubble } from './ChatBubble';
+import { RotatingProgress } from './RotatingProgress';
+import { RateLimitNotice } from './Notices';
 
 const OPEN_KEY = 'inyalink.chatOpen';
 
 type ChatUiValue = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  toggle: () => void;
 };
 
 const ChatUiContext = createContext<ChatUiValue | null>(null);
@@ -43,42 +52,17 @@ export function ChatUiProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const toggle = useCallback(() => setOpen(!open), [open, setOpen]);
-
-  const value = useMemo(
-    () => ({ open, setOpen, toggle }),
-    [open, setOpen, toggle],
-  );
+  const value = useMemo(() => ({ open, setOpen }), [open, setOpen]);
 
   return (
     <ChatUiContext.Provider value={value}>{children}</ChatUiContext.Provider>
   );
 }
 
-function useChatUi(): ChatUiValue {
+export function useChatUi(): ChatUiValue {
   const ctx = useContext(ChatUiContext);
   if (!ctx) throw new Error('useChatUi must be used within ChatUiProvider');
   return ctx;
-}
-
-function ChatIcon() {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M8 9h8" />
-      <path d="M8 13h5" />
-      <path d="M4 19.5V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8l-4 3.5z" />
-    </svg>
-  );
 }
 
 function XIcon() {
@@ -100,27 +84,63 @@ function XIcon() {
   );
 }
 
-const SEED_THREAD = [
-  {
-    role: 'ai' as const,
-    content: 'မင်္ဂလာပါ။ သင့်ရည်မှန်းချက်ကို ပြောပြပါ — မြန်မာ သို့မဟုတ် အင်္ဂလိပ်။',
-  },
-];
+function countAssistantQuestions(messages: ChatMessage[]): number {
+  return messages.filter((m) => m.role === 'assistant').length;
+}
 
+/**
+ * Floating conversation panel — the only AI chat surface.
+ * Opens from the hero (and resume chip). No FAB.
+ */
 export function FloatingChat() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const navigate = useNavigate();
-  const { open, setOpen, toggle } = useChatUi();
-  const { messages, setMessages, startFromInput } = useDemoFlow();
-  const [draft, setDraft] = useState('');
+  const { open, setOpen } = useChatUi();
+  const {
+    goal,
+    path,
+    messages,
+    briefDraft,
+    converseStarted,
+    startFromInput,
+    setMessages,
+    setBriefDraft,
+    markConverseStarted,
+    resolveClarifyToQuick,
+    resolveClarifyToPlan,
+    handoffToRoadmap,
+  } = useDemoFlow();
 
-  const thread =
-    messages.length > 0
-      ? messages.map((m) => ({
-          role: m.role === 'user' ? ('user' as const) : ('ai' as const),
-          content: m.content,
-        }))
-      : SEED_THREAD;
+  const [reply, setReply] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [complete, setComplete] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const bootRef = useRef<string | null>(null);
+
+  const clarifying = path === 'clarify';
+  const active = path === 'quick' || path === 'clarify';
+  const asked = countAssistantQuestions(messages);
+  const maxQuestions = 4;
+  const progressLabel = clarifying
+    ? t('converse.progressClarify')
+    : t('converse.progress')
+        .replace('{asked}', String(Math.min(asked, maxQuestions)))
+        .replace('{max}', String(maxQuestions));
+
+  const latestUser = [...messages].reverse().find((m) => m.role === 'user');
+  const contentLocale = latestUser
+    ? detectResponseLocale(latestUser.content)
+    : goal
+      ? detectResponseLocale(goal)
+      : locale;
+
+  // Open panel whenever a chat path is active; close on roadmap handoff.
+  useEffect(() => {
+    if (path === 'quick' || path === 'clarify') setOpen(true);
+    if (path === 'plan') setOpen(false);
+  }, [path, setOpen]);
 
   useEffect(() => {
     if (!open) return;
@@ -131,93 +151,258 @@ export function FloatingChat() {
     return () => window.removeEventListener('keydown', onKey);
   }, [open, setOpen]);
 
-  function onSend(e: FormEvent) {
-    e.preventDefault();
-    const text = draft.trim();
-    if (!text) return;
-    if (messages.length === 0) {
-      const route = startFromInput(text);
-      setDraft('');
-      setOpen(false);
-      void navigate(route);
+  useEffect(() => {
+    listRef.current?.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, [messages, busy, open]);
+
+  function goRoadmap() {
+    handoffToRoadmap();
+    setOpen(false);
+    void navigate('/roadmap');
+  }
+
+  async function runTurn(nextMessages: ChatMessage[]) {
+    setBusy(true);
+    setNotice(null);
+    try {
+      const result = await converseBrief({
+        messages: nextMessages,
+        briefDraft,
+        locale,
+      });
+      if (result.redirectTo === 'roadmap') {
+        console.log('[classify] API redirect → roadmap');
+        goRoadmap();
+        return;
+      }
+      setBriefDraft(result.briefDraft);
+      if (result.retryable) {
+        setNotice(result.notice ?? t('rateLimit.body'));
+        return;
+      }
+      if (result.nextQuestion) {
+        setMessages([
+          ...nextMessages,
+          { role: 'assistant', content: result.nextQuestion },
+        ]);
+      }
+      setComplete(result.complete);
+      if (result.complete && !result.nextQuestion) {
+        setOpen(false);
+        void navigate('/brief');
+      }
+    } catch {
+      setNotice(t('rateLimit.body'));
+    } finally {
+      setBusy(false);
+      inputRef.current?.focus();
+    }
+  }
+
+  // Bootstrap clarify question or first structureBrief turn once per goal.
+  useEffect(() => {
+    if (!active || !goal) return;
+    const bootKey = `${path}:${goal}`;
+    if (bootRef.current === bootKey) return;
+
+    if (clarifying) {
+      if (messages.length === 1 && messages[0]?.role === 'user') {
+        bootRef.current = bootKey;
+        const question = translateIn(contentLocale, 'converse.clarifyQuestion');
+        setMessages([...messages, { role: 'assistant', content: question }]);
+      }
       return;
     }
-    setMessages([...messages, { role: 'user', content: text }]);
-    setDraft('');
+
+    if (path === 'quick' && !converseStarted) {
+      bootRef.current = bootKey;
+      markConverseStarted();
+      void runTurn(messages);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, path, goal, clarifying, converseStarted]);
+
+  async function onSend(e: FormEvent) {
+    e.preventDefault();
+    const text = reply.trim();
+    if (!text || busy) return;
+
+    // Panel opened empty (e.g. browse bar) — classify the first message.
+    if (!active) {
+      setReply('');
+      const destination = startFromInput(text);
+      if (destination === 'roadmap') {
+        setOpen(false);
+        void navigate('/roadmap');
+      }
+      return;
+    }
+
+    if (clarifying) {
+      setReply('');
+      const shape = classifyClarifyReply(text);
+      console.log('[classify] clarify reply', { text, shape });
+      if (shape === 'goal') {
+        resolveClarifyToPlan();
+        setOpen(false);
+        void navigate('/roadmap');
+        return;
+      }
+      resolveClarifyToQuick();
+      return;
+    }
+
+    if (signalsDontKnow(text)) {
+      console.log('[classify] dont-know → roadmap', { text });
+      const next = [...messages, { role: 'user' as const, content: text }];
+      setMessages(next);
+      setReply('');
+      goRoadmap();
+      return;
+    }
+
+    const next = [...messages, { role: 'user' as const, content: text }];
+    setMessages(next);
+    setReply('');
+    await runTurn(next);
+  }
+
+  async function onSkip() {
+    if (busy || complete) return;
+    if (clarifying) {
+      resolveClarifyToPlan();
+      setOpen(false);
+      void navigate('/roadmap');
+      return;
+    }
+    const skipText = translateIn(contentLocale, 'converse.skipReply');
+    const next = [...messages, { role: 'user' as const, content: skipText }];
+    setMessages(next);
+    await runTurn(next);
+  }
+
+  // Resume chip when panel closed mid-conversation (not a second entry point).
+  if (!open) {
+    if (active && messages.length > 0) {
+      return (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="tap-target fixed bottom-5 right-5 z-40 max-w-[240px] truncate rounded-full border border-line bg-white px-lg py-md text-body-sm text-ink-700 shadow-md hover:border-jade-400 hover:text-jade-600 focus-visible:shadow-focus md:bottom-8 md:right-8"
+        >
+          {t('chat.continue')}
+        </button>
+      );
+    }
+    return null;
   }
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={toggle}
-        aria-expanded={open}
-        aria-controls="floating-chat-panel"
-        className="tap-target fixed bottom-5 right-5 z-40 inline-flex items-center justify-center rounded-full bg-jade-600 text-white shadow-md transition-[background-color,transform] duration-fast ease-out hover:bg-jade-400 hover:shadow-lg focus-visible:shadow-focus active:scale-95 active:bg-jade-800 md:bottom-8 md:right-8"
-      >
-        <span className="sr-only">{t('chat.open')}</span>
-        <ChatIcon />
-      </button>
-
-      {open ? (
-        <div
-          id="floating-chat-panel"
-          role="dialog"
-          aria-label={t('chat.title')}
-          className="fixed inset-0 z-50 flex flex-col bg-white md:inset-auto md:bottom-24 md:right-8 md:h-[min(560px,70vh)] md:w-[380px] md:overflow-hidden md:rounded-xl md:border md:border-line md:shadow-lg"
+    <div
+      id="floating-chat-panel"
+      role="dialog"
+      aria-label={t('chat.title')}
+      className="fixed inset-x-0 bottom-0 z-50 flex max-h-[min(72vh,640px)] flex-col rounded-t-xl border border-line bg-white shadow-lg md:inset-auto md:bottom-6 md:right-6 md:h-[min(560px,70vh)] md:max-h-none md:w-[min(420px,calc(100vw-2rem))] md:rounded-xl"
+    >
+      <header className="flex shrink-0 items-center justify-between border-b border-line-soft px-lg py-md">
+        <div className="min-w-0">
+          <h2 className="text-title text-ink-900">{t('chat.title')}</h2>
+          <p className="text-caption text-ink-400" aria-live="polite">
+            {active ? progressLabel : t('chat.subhead')}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="tap-target inline-flex items-center justify-center rounded-md text-ink-500 transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus"
         >
-          <header className="flex items-center justify-between border-b border-line-soft px-lg py-md">
-            <div>
-              <h2 className="text-title text-ink-900">{t('chat.title')}</h2>
-              <p className="text-caption text-ink-400">{t('chat.subhead')}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="tap-target inline-flex items-center justify-center rounded-md text-ink-500 transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus"
-            >
-              <span className="sr-only">{t('chat.close')}</span>
-              <XIcon />
-            </button>
-          </header>
+          <span className="sr-only">{t('chat.close')}</span>
+          <XIcon />
+        </button>
+      </header>
 
-          <div className="flex flex-1 flex-col justify-end gap-md overflow-y-auto px-lg py-lg">
-            {thread.map((m, i) => (
-              <ChatBubble
-                key={`${m.role}-${i}`}
-                role={m.role === 'user' ? 'user' : 'assistant'}
-              >
-                {m.content}
-              </ChatBubble>
-            ))}
-          </div>
+      <div
+        ref={listRef}
+        className="flex flex-1 flex-col justify-end gap-md overflow-y-auto px-lg py-lg"
+        aria-live="polite"
+      >
+        {messages.length === 0 ? (
+          <ChatBubble role="assistant">{t('chat.seed')}</ChatBubble>
+        ) : null}
+        {messages.map((m, i) => (
+          <ChatBubble key={`${m.role}-${i}`} role={m.role}>
+            {m.content}
+          </ChatBubble>
+        ))}
+        {busy ? <ThinkingBubble /> : null}
+        {busy ? <RotatingProgress active /> : null}
+      </div>
 
-          <form
-            onSubmit={onSend}
-            className="border-t border-line-soft p-md"
-          >
-            <label className="sr-only" htmlFor="floating-chat-input">
-              {t('chat.placeholder')}
-            </label>
-            <div className="flex gap-sm">
-              <input
-                id="floating-chat-input"
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                placeholder={t('chat.placeholder')}
-                className="tap-target font-myanmar min-w-0 flex-1 rounded-md border border-line px-md text-body outline-none focus:border-jade-400 focus:shadow-focus"
-              />
-              <button
-                type="submit"
-                disabled={!draft.trim()}
-                className="tap-target shrink-0 rounded-md bg-jade-600 px-lg text-body-sm font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300"
-              >
-                {t('chat.send')}
-              </button>
-            </div>
-          </form>
+      {notice ? (
+        <div className="shrink-0 px-lg pb-md">
+          <RateLimitNotice
+            notice={notice}
+            onRetry={() => void runTurn(messages)}
+          />
         </div>
       ) : null}
-    </>
+
+      {complete ? (
+        <div className="shrink-0 border-t border-line-soft p-md">
+          <button
+            type="button"
+            className="tap-target w-full rounded-md bg-jade-600 px-lg py-md text-body font-medium text-white hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800"
+            onClick={() => {
+              setOpen(false);
+              void navigate('/brief');
+            }}
+          >
+            {t('converse.done')}
+          </button>
+        </div>
+      ) : (
+        <form
+          onSubmit={(e) => void onSend(e)}
+          className="shrink-0 border-t border-line-soft p-md"
+        >
+          <label className="sr-only" htmlFor="floating-chat-input">
+            {t('converse.placeholder')}
+          </label>
+          <div className="flex gap-sm">
+            <input
+              ref={inputRef}
+              id="floating-chat-input"
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              placeholder={t('converse.placeholder')}
+              disabled={busy}
+              className="tap-target font-myanmar min-w-0 flex-1 rounded-md border border-line px-md text-body-lg leading-burmese outline-none focus:border-jade-400 focus:shadow-focus disabled:opacity-50"
+            />
+            <button
+              type="submit"
+              disabled={busy || !reply.trim()}
+              className="tap-target shrink-0 rounded-md bg-jade-600 px-lg text-body-sm font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300"
+            >
+              {t('converse.send')}
+            </button>
+          </div>
+          {active ? (
+            <div className="mt-sm flex justify-end">
+              <button
+                type="button"
+                onClick={() => void onSkip()}
+                disabled={busy}
+                className="tap-target text-body-sm text-ink-500 underline-offset-2 hover:text-jade-600 hover:underline disabled:opacity-40"
+              >
+                {t('converse.skip')}
+              </button>
+            </div>
+          ) : null}
+        </form>
+      )}
+    </div>
   );
 }

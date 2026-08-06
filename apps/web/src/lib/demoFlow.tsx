@@ -15,6 +15,7 @@ import {
 } from '@inyalink/shared';
 
 export type DemoPath = 'quick' | 'plan' | 'clarify';
+export type StartDestination = 'roadmap' | 'panel';
 
 type DemoFlowState = {
   path: DemoPath | null;
@@ -35,8 +36,8 @@ type DemoFlowValue = DemoFlowState & {
   startQuick: (goal: string) => void;
   startPlan: (goal: string) => void;
   startClarify: (goal: string) => void;
-  /** Classify opening text and start the matching path. Returns the route. */
-  startFromInput: (goal: string) => '/converse' | '/roadmap';
+  /** Classify opening text. Logs decision. Returns where the UI should go. */
+  startFromInput: (goal: string) => StartDestination;
   setMessages: (messages: ChatMessage[]) => void;
   setBriefDraft: (draft: BriefDraft) => void;
   setBriefId: (id: string) => void;
@@ -48,10 +49,10 @@ type DemoFlowValue = DemoFlowState & {
     steps: RoadmapStep[];
     disclaimer: string;
   }) => void;
-  /** After clarify: switch into brief conversation without resetting messages. */
   resolveClarifyToQuick: () => void;
-  /** After clarify: switch into roadmap with the original goal. */
   resolveClarifyToPlan: () => void;
+  /** Mid-chat handoff to roadmap (dont-know / API redirect). */
+  handoffToRoadmap: () => void;
   reset: () => void;
 };
 
@@ -104,19 +105,24 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startFromInput = useCallback(
-    (goal: string): '/converse' | '/roadmap' => {
+    (goal: string): StartDestination => {
       const trimmed = goal.trim();
       const shape = classifyInputShape(trimmed);
+      console.log('[classify]', {
+        input: trimmed,
+        shape,
+        destination: shape === 'goal' ? 'roadmap' : 'panel',
+      });
       if (shape === 'goal') {
         startPlan(trimmed);
-        return '/roadmap';
+        return 'roadmap';
       }
       if (shape === 'service') {
         startQuick(trimmed);
-        return '/converse';
+        return 'panel';
       }
       startClarify(trimmed);
-      return '/converse';
+      return 'panel';
     },
     [startClarify, startPlan, startQuick],
   );
@@ -175,6 +181,14 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const handoffToRoadmap = useCallback(() => {
+    setState((s) => ({
+      ...initial,
+      path: 'plan',
+      goal: s.goal,
+    }));
+  }, []);
+
   const reset = useCallback(() => setState(initial), []);
 
   const value = useMemo(
@@ -193,6 +207,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       setRoadmap,
       resolveClarifyToQuick,
       resolveClarifyToPlan,
+      handoffToRoadmap,
       reset,
     }),
     [
@@ -210,6 +225,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       setRoadmap,
       resolveClarifyToQuick,
       resolveClarifyToPlan,
+      handoffToRoadmap,
       reset,
     ],
   );
