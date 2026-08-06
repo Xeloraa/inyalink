@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@inyalink/shared": ["../../packages/shared/src/index.ts"],
+      "@inyalink/shared/*": ["../../packages/shared/src/*"],
+      "@inyalink/burmese": ["../../packages/burmese/src/index.ts"],
+      "@inyalink/burmese/*": ["../../packages/burmese/src/*"]
+    }
+  },
+  "include": ["src"]
+}

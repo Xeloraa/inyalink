@@ -1,0 +1,50 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — English UI-locale variant of the cafe-open roadmap fixture. Served when the live provider rate-limits or errors.",
+  "matchInput": "ကော်ဖီဆိုင် ဖွင့်ချင်ပါတယ်",
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This roadmap is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Brand mark and logo",
+      "why": "Establish a recognizable identity for signage, cups, and social posts before launch.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 500000
+    },
+    {
+      "order": 2,
+      "title": "Shop and menu photography",
+      "why": "Show the space and drinks clearly for menus, Facebook/Instagram, and the website.",
+      "category_slug": "photography",
+      "est_min_mmk": 200000,
+      "est_max_mmk": 800000
+    },
+    {
+      "order": 3,
+      "title": "Simple business website",
+      "why": "Let customers find location, hours, and menu without relying only on social apps.",
+      "category_slug": "web-development",
+      "est_min_mmk": 500000,
+      "est_max_mmk": 2000000
+    },
+    {
+      "order": 4,
+      "title": "Facebook / Instagram management",
+      "why": "Keep opening news and promotions consistent with a monthly content plan.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 200000,
+      "est_max_mmk": 600000
+    },
+    {
+      "order": 5,
+      "title": "Hire registration / bookkeeping help",
+      "why": "Engage the right specialist for paperwork — this step names who to hire, not how to comply.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

@@ -1,0 +1,369 @@
+@import './styles/landing.css';
+
+@font-face {
+  font-family: 'Noto Sans Myanmar';
+  src: url('/fonts/NotoSansMyanmar-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans Myanmar';
+  src: url('/fonts/NotoSansMyanmar-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Jade */
+  --jade-50: #f2faf6;
+  --jade-100: #dff2e8;
+  --jade-200: #b4dfc9;
+  --jade-300: #83c9a6;
+  --jade-400: #4ea57c;
+  --jade-600: #0e8256;
+  --jade-800: #0a5238;
+  --jade-900: #073825;
+  --jade-950: #04241a;
+
+  /* Amber */
+  --amber-100: #fbf0da;
+  --amber-500: #c89434;
+  --amber-800: #6f5116;
+
+  /* Ink */
+  --ink-900: #101613;
+  --ink-700: #333d38;
+  --ink-500: #6b7770;
+  --ink-400: #93a099;
+  --ink-300: #b9c2bd;
+
+  /* Surfaces */
+  --paper: #fcfdfc;
+  --white: #ffffff;
+  --line: #e6ebe8;
+  --line-soft: #f0f3f1;
+
+  /* Status */
+  --success: #0e8256;
+  --warning: #c89434;
+  --danger: #c0453c;
+  --info: #3a6ea5;
+
+  /* Legacy aliases used by other screens (map to new system) */
+  --mist: #f2faf6;
+  --ink: #101613;
+  --jade: #0e8256;
+  --lacquer: #0e8256;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+    background-color: var(--paper);
+    color: var(--ink-900);
+    /* Full-bleed sections use 100vw negative margins; clip the scrollbar sliver. */
+    overflow-x: clip;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, 'Noto Sans Myanmar', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+    background-color: var(--paper);
+    color: var(--ink-900);
+  }
+
+  :lang(my) body,
+  :lang(my) {
+    line-height: 1.8;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(14, 130, 86, 0.16);
+  }
+
+  /* Hero input owns the focus ring on its container */
+  textarea:focus-visible,
+  [data-focus-container]:focus-within :focus-visible {
+    box-shadow: none;
+  }
+}
+
+@layer utilities {
+  .font-burmese {
+    font-family: 'Noto Sans Myanmar', Inter, system-ui, sans-serif;
+  }
+
+  .text-display-xl {
+    font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-lg {
+    font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-md {
+    font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-sm {
+    font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+
+  .text-title {
+    font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .text-body-lg {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .text-body {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .text-body-sm {
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+
+  .text-caption {
+    font-size: 12px;
+    line-height: 1.75;
+  }
+
+  .text-stat {
+    font-family: Sora, system-ui, sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  :lang(my) .text-display-xl {
+    line-height: 1.45;
+  }
+
+  :lang(my) .text-display-lg {
+    line-height: 1.5;
+  }
+
+  :lang(my) .text-display-md {
+    line-height: 1.55;
+  }
+
+  :lang(my) .text-display-sm {
+    line-height: 1.6;
+  }
+
+  :lang(my) .text-title {
+    line-height: 1.7;
+  }
+
+  .tap-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* One-line strips (e.g. row metrics on phones) pan instead of wrapping. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .border-hairline {
+    border-width: 0.5px;
+  }
+
+  .animate-fade-up {
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+  }
+
+  .animate-fade-in {
+    animation: fade-in var(--duration-base) var(--ease-out) both;
+  }
+
+  .delay-1 {
+    animation-delay: 60ms;
+  }
+
+  .delay-2 {
+    animation-delay: 120ms;
+  }
+
+  .delay-3 {
+    animation-delay: 180ms;
+  }
+
+  .delay-4 {
+    animation-delay: 240ms;
+  }
+
+  .animate-sheet-up {
+    animation: sheet-up var(--duration-base) var(--ease-out) both;
+  }
+
+  /*
+   * Dual-thumb budget slider (features/professionals/BudgetSlider). The two
+   * native inputs are stacked full-size and made transparent; only their
+   * thumbs take pointer events, so each stays draggable and keyboardable.
+   */
+  .budget-range {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .budget-range:focus {
+    outline: none;
+  }
+
+  .budget-range::-webkit-slider-runnable-track {
+    height: 100%;
+    background: transparent;
+    border: none;
+  }
+
+  .budget-range::-moz-range-track {
+    background: transparent;
+    border: none;
+  }
+
+  .budget-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: auto;
+    margin-top: 13px; /* (48px input − 22px thumb) / 2 */
+    height: 22px;
+    width: 22px;
+    border-radius: 999px;
+    background: var(--white);
+    border: 2px solid var(--jade-600);
+    box-shadow: 0 1px 2px rgba(16, 22, 19, 0.12);
+    cursor: pointer;
+  }
+
+  .budget-range::-moz-range-thumb {
+    pointer-events: auto;
+    height: 22px;
+    width: 22px;
+    border-radius: 999px;
+    background: var(--white);
+    border: 2px solid var(--jade-600);
+    box-shadow: 0 1px 2px rgba(16, 22, 19, 0.12);
+    cursor: pointer;
+  }
+
+  .budget-range:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(14, 130, 86, 0.16);
+  }
+
+  .budget-range:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(14, 130, 86, 0.16);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    opacity: 0.5;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-fade-in {
+    animation: fade-in var(--duration-fast) var(--ease-out) both;
+  }
+
+  .animate-fade-up {
+    transform: none;
+  }
+}

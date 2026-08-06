@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Abstract portfolio study">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%" gradientTransform="rotate(53 0.5 0.5)">
+      <stop offset="0%" stop-color="#6B7770"/>
+      <stop offset="100%" stop-color="#0E8256"/>
+    </linearGradient>
+    <radialGradient id="r" cx="42%" cy="71%" r="65%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#101613" stop-opacity="0.12"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+  <rect width="800" height="600" fill="url(#r)"/>
+  <circle cx="258" cy="236" r="54" fill="#FCFDFC" fill-opacity="0.12"/>
+  <rect x="382" y="324" width="282" height="118" rx="16" fill="#FCFDFC" fill-opacity="0.08"/>
+</svg>

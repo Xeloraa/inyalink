@@ -1,0 +1,50 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — pre-recorded from a successful Groq generateRoadmap run. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "matchInput": "ကော်ဖီဆိုင် ဖွင့်ချင်ပါတယ်",
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤလမ်းညွှန်သည် စီမံကိန်းနှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာဖြစ်ပြီး ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ် မဟုတ်ပါ။ လိုအပ်ပါက သက်ဆိုင်ရာ လိုင်စင်ရ ပညာရှင်ကို ငှားရမ်းပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "အမှတ်တံဆိပ်နှင့် လိုဂို",
+      "why": "ဆိုင်နာမည်ကို လူသိများအောင် ပထမဆုံး ပုံရိပ် တည်ဆောက်ရန် — ဆိုင်းဘုတ်၊ ခွက်၊ ဆိုရှယ်မီဒီယာတွင် သုံးနိုင်သည်။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 500000
+    },
+    {
+      "order": 2,
+      "title": "ဆိုင်နှင့် မီနူး ဓာတ်ပုံ",
+      "why": "မီနူး၊ Facebook/Instagram နှင့် ဝက်ဘ်အတွက် စားသောက်ဆိုင် လေထုကို ပြသရန် လိုအပ်သည်။",
+      "category_slug": "photography",
+      "est_min_mmk": 200000,
+      "est_max_mmk": 800000
+    },
+    {
+      "order": 3,
+      "title": "စီးပွားရေး ဝက်ဘ်စာမျက်နှာ",
+      "why": "တည်နေရာ၊ ဖွင့်ချိန်၊ မီနူးကို ဖောက်သည်များ ရှာဖွေနိုင်အောင် အခြေခံ စာမျက်နှာ လိုအပ်သည်။",
+      "category_slug": "web-development",
+      "est_min_mmk": 500000,
+      "est_max_mmk": 2000000
+    },
+    {
+      "order": 4,
+      "title": "Facebook / Instagram စီမံခန့်ခွဲမှု",
+      "why": "ဖွင့်လှစ်ချိန်နှင့် ပရိုမိုးရှင်းများကို ပုံမှန် မျှဝေရန် လစဉ် ကွန်တင့်အစီအစဉ် လိုအပ်သည်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 200000,
+      "est_max_mmk": 600000
+    },
+    {
+      "order": 5,
+      "title": "မှတ်ပုံတင် / စာရင်းကိုင် အကူအညီ ငှားရန်",
+      "why": "လုပ်ငန်း မှတ်ပုံတင်နှင့် အခွန်ဆိုင်ရာ စာရွက်စာတမ်းများကို သင့်လျော်သော ပညာရှင်နှင့် ဆောင်ရွက်ရန် — ဤအဆင့်သည် အကြံဉာဏ် မဟုတ်၊ ငှားရမ်းရန် အမျိုးအစားသာ ဖော်ပြသည်။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  DEMO_CONVERSE_ALIASES,
+  DEMO_CONVERSE_INPUT,
+  DEMO_ROADMAP_INPUT,
+} from '../../ai/demo-fallback/cache.js';
+import { isBriefDraftComplete } from '@inyalink/shared';
+
+const complete = vi.fn();
+const insertRoadmap = vi.fn();
+const insertAiCall = vi.fn();
+const listActiveCategorySlugs = vi.fn();
+
+vi.mock('../../ai/providers/index.js', () => ({
+  getProvider: () => ({
+    name: 'mock',
+    complete,
+  }),
+}));
+
+vi.mock('./ai.repo.js', () => ({
+  insertAiCall: (...args: unknown[]) => insertAiCall(...args),
+  insertRoadmap: (...args: unknown[]) => insertRoadmap(...args),
+  listActiveCategorySlugs: (...args: unknown[]) =>
+    listActiveCategorySlugs(...args),
+}));
+
+vi.mock('../../lib/config.js', () => ({
+  config: {
+    aiProvider: 'groq',
+    aiMaxTurns: 5,
+    groqApiKey: 'test',
+    demoMode: true,
+    demoAiFallback: true,
+  },
+  aiApiKeyPresent: () => true,
+}));
+
+import { converseBrief, createRoadmap } from './ai.service.js';
+import { config } from '../../lib/config.js';
+
+describe('ai.service demo fallback', () => {
+  beforeEach(() => {
+    complete.mockReset();
+    insertRoadmap.mockReset();
+    insertAiCall.mockReset();
+    listActiveCategorySlugs.mockReset();
+    listActiveCategorySlugs.mockResolvedValue([
+      'graphic-design',
+      'photography',
+      'web-development',
+      'social-media-marketing',
+    ]);
+    insertRoadmap.mockResolvedValue({
+      id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    });
+    insertAiCall.mockResolvedValue(undefined);
+    (config as { aiProvider: string }).aiProvider = 'groq';
+  });
+
+  it('serves converse fixture when the provider rate-limits the demo opening', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await converseBrief({
+      messages: [{ role: 'user', content: DEMO_CONVERSE_INPUT }],
+      locale: 'my',
+    });
+
+    expect(result.retryable).toBeUndefined();
+    expect(result.nextQuestion).toBeTruthy();
+    expect(result.briefDraft.category).toBe('graphic-design');
+    expect(insertAiCall).toHaveBeenCalledWith(
+      expect.objectContaining({
+        provider: 'demo-fallback',
+        errorKind: 'demo_fallback:AI_RATE_LIMIT',
+      }),
+    );
+    expect(log).toHaveBeenCalledWith(
+      '[demo-only] AI fallback cache firing',
+      expect.objectContaining({ feature: 'structure_brief' }),
+    );
+    log.mockRestore();
+  });
+
+  it('asks in Burmese when the opening is Burmese even if UI locale is en', async () => {
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await converseBrief({
+      messages: [{ role: 'user', content: DEMO_CONVERSE_INPUT }],
+      locale: 'en',
+    });
+
+    expect(result.nextQuestion).toMatch(/[\u1000-\u109F]/);
+    expect(result.briefDraft.language).toBe('my');
+  });
+
+  it('fires mid-conversation when a later turn rate-limits', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await converseBrief({
+      messages: [
+        { role: 'user', content: DEMO_CONVERSE_ALIASES[1]! },
+        { role: 'assistant', content: 'first question from earlier turn' },
+        { role: 'user', content: 'Inya Cafe' },
+      ],
+      locale: 'my',
+    });
+
+    expect(result.retryable).toBeUndefined();
+    expect(result.complete).toBe(false);
+    expect(result.nextQuestion).toBeTruthy();
+    expect(log).toHaveBeenCalledWith(
+      '[demo-only] AI fallback cache hit',
+      expect.objectContaining({ nextQuestionIndex: 1 }),
+    );
+    log.mockRestore();
+  });
+
+  it('completes the full demo converse with the provider always unavailable', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const replies = [
+      'Inya Cafe',
+      'Minimalist, brown and cream',
+      '300000-500000',
+      '2026-09-30',
+    ];
+
+    let messages: Array<{ role: 'user' | 'assistant'; content: string }> = [
+      { role: 'user', content: DEMO_CONVERSE_INPUT },
+    ];
+    let briefDraft = undefined as
+      | Awaited<ReturnType<typeof converseBrief>>['briefDraft']
+      | undefined;
+
+    for (let i = 0; i < 8; i += 1) {
+      const result = await converseBrief({
+        messages,
+        briefDraft,
+        locale: 'my',
+      });
+      expect(result.retryable).toBeUndefined();
+      briefDraft = result.briefDraft;
+
+      if (result.complete) {
+        expect(result.nextQuestion).toBeUndefined();
+        expect(isBriefDraftComplete(result.briefDraft)).toBe(true);
+        expect(result.briefDraft.category).toBe('graphic-design');
+        expect(result.briefDraft.deadline).toBe('2026-09-30');
+        expect(complete.mock.calls.length).toBeGreaterThanOrEqual(5);
+        log.mockRestore();
+        return;
+      }
+
+      expect(result.nextQuestion).toBeTruthy();
+      const reply = replies.shift() ?? 'ok';
+      messages = [
+        ...messages,
+        { role: 'assistant', content: result.nextQuestion! },
+        { role: 'user', content: reply },
+      ];
+    }
+
+    log.mockRestore();
+    throw new Error('demo converse did not complete');
+  });
+
+  it('completes seeded converse when AI_PROVIDER is unset', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    (config as { aiProvider: string }).aiProvider = '';
+
+    const result = await converseBrief({
+      messages: [{ role: 'user', content: DEMO_CONVERSE_INPUT }],
+      locale: 'my',
+    });
+
+    expect(result.nextQuestion).toBeTruthy();
+    expect(result.briefDraft.category).toBe('graphic-design');
+    expect(complete).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalledWith(
+      '[ai] request start',
+      expect.objectContaining({
+        feature: 'structure_brief',
+        fallbackEnabled: true,
+        seedOpening: true,
+      }),
+    );
+    expect(log).toHaveBeenCalledWith(
+      '[demo-only] AI fallback cache firing',
+      expect.objectContaining({
+        feature: 'structure_brief',
+        providerErrorKind: 'AI_NOT_CONFIGURED',
+      }),
+    );
+    log.mockRestore();
+  });
+
+  it('serves roadmap fixture when generateRoadmap fails for the demo goal', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await createRoadmap(
+      {
+        goal: DEMO_ROADMAP_INPUT,
+        locale: 'my',
+      },
+      'b0000000-0000-4000-8000-000000000001',
+    );
+
+    expect(result.id).toBe('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
+    expect(result.steps?.length).toBeGreaterThanOrEqual(4);
+    expect(result.retryable).toBeUndefined();
+    expect(insertRoadmap).toHaveBeenCalled();
+    expect(log).toHaveBeenCalledWith(
+      '[demo-only] AI fallback cache firing',
+      expect.objectContaining({ feature: 'roadmap' }),
+    );
+    log.mockRestore();
+  });
+});

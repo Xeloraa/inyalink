@@ -1,0 +1,93 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — full cafe-logo converse script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "matchInput": "ကော်ဖီဆိုင်အတွက် logo လိုချင်ပါတယ်",
+  "locale": "my",
+  "questions": [
+    "ဆိုင်နာမည် ဘာလဲ။ လိုဂိုမှာ ထည့်ရေးမယ့် စာသား ရှိပါသလား။",
+    "ပုံစံ ဘယ်လို လိုချင်ပါသလဲ — ရိုးရှင်း (minimalist)၊ ခေတ်မီ၊ သို့မဟုတ် ရိုးရာ။ အရောင် နှစ်သက်တာ ရှိပါသလား။",
+    "ဘတ်ဂျက် ဘယ်လောက်လောက် ထားမလဲ (ကျပ်)။ အနည်းဆုံးနဲ့ အများဆုံး ပြောပေးပါ။",
+    "ဘယ်တော့ လိုအပ်ပါသလဲ။ ရက်အတိအကျ (YYYY-MM-DD) ပြောနိုင်ရင် ပြောပေးပါ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "ကော်ဖီဆိုင် လိုဂို",
+      "description": "ကော်ဖီဆိုင်အတွက် logo ဒီဇိုင်း",
+      "requirements": ["logo"],
+      "budget_min_mmk": null,
+      "budget_max_mmk": null,
+      "deadline": null,
+      "reference_links": null,
+      "ai_confidence": 0.4,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Inya Cafe လိုဂို",
+      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် logo ဒီဇိုင်း",
+      "requirements": ["ဆိုင်နာမည်: Inya Cafe", "logo"],
+      "budget_min_mmk": null,
+      "budget_max_mmk": null,
+      "deadline": null,
+      "reference_links": null,
+      "ai_confidence": 0.55,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Inya Cafe လိုဂို",
+      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo ဒီဇိုင်း — အညိုနှင့် cream အရောင်",
+      "requirements": [
+        "ဆိုင်နာမည်: Inya Cafe",
+        "စတိုင်: Minimalist",
+        "အရောင်: အညို, cream"
+      ],
+      "budget_min_mmk": null,
+      "budget_max_mmk": null,
+      "deadline": null,
+      "reference_links": null,
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Inya Cafe လိုဂို",
+      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo ဒီဇိုင်း — အညိုနှင့် cream အရောင်",
+      "requirements": [
+        "ဆိုင်နာမည်: Inya Cafe",
+        "စတိုင်: Minimalist",
+        "အရောင်: အညို, cream",
+        "ဖိုင်: vector (AI/SVG)"
+      ],
+      "budget_min_mmk": 300000,
+      "budget_max_mmk": 500000,
+      "deadline": null,
+      "reference_links": null,
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "graphic-design",
+    "title": "Inya Cafe လိုဂို",
+    "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo ဒီဇိုင်း — အညိုနှင့် cream အရောင်၊ vector ဖိုင် လိုအပ်သည်။",
+    "requirements": [
+      "ဆိုင်နာမည်: Inya Cafe",
+      "စတိုင်: Minimalist",
+      "အရောင်: အညို, cream",
+      "ဖိုင်: vector (AI/SVG)"
+    ],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-09-30",
+    "reference_links": null,
+    "ai_confidence": 0.92,
+    "needs_human_review": false
+  }
+}

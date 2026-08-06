@@ -1,0 +1,83 @@
+import { Router } from 'express';
+import {
+  ProfessionalApplyInputSchema,
+  ProfessionalIdParamsSchema,
+  ProfessionalsListQuerySchema,
+} from '@inyalink/shared';
+import { validateBody, validateQuery } from '../../middleware/validate.js';
+import { AppError } from '../../middleware/errors.js';
+import { demoAuth, getAuth } from '../../lib/demoUser.js';
+import * as professionalsService from './professionals.service.js';
+
+export const professionalsRouter = Router();
+
+professionalsRouter.get('/categories', async (_req, res, next) => {
+  try {
+    const result = await professionalsService.listCategories();
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+professionalsRouter.get('/skills', async (_req, res, next) => {
+  try {
+    const result = await professionalsService.listSkills();
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+professionalsRouter.get(
+  '/',
+  validateQuery(ProfessionalsListQuerySchema),
+  async (req, res, next) => {
+    try {
+      const query = ProfessionalsListQuerySchema.parse(req.query);
+      const result = await professionalsService.listProfessionals({
+        categories: query.category,
+        minBudget: query.minBudget,
+        maxBudget: query.maxBudget,
+        acceptingOnly: query.acceptingOnly,
+        skills: query.skill,
+        q: query.q,
+        sort: query.sort,
+      });
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+professionalsRouter.post(
+  '/apply',
+  demoAuth,
+  validateBody(ProfessionalApplyInputSchema),
+  async (req, res, next) => {
+    try {
+      const body = ProfessionalApplyInputSchema.parse(req.body);
+      const result = await professionalsService.applyAsProfessional(
+        body,
+        getAuth(req).userId,
+      );
+      res.status(201).json(result);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+professionalsRouter.get('/:id', async (req, res, next) => {
+  try {
+    const params = ProfessionalIdParamsSchema.safeParse(req.params);
+    if (!params.success) {
+      throw new AppError(400, 'VALIDATION_ERROR', 'Invalid professional id');
+    }
+    const profile = await professionalsService.getPublicProfile(params.data.id);
+    res.json(profile);
+  } catch (err) {
+    next(err);
+  }
+});

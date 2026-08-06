@@ -1,0 +1,195 @@
+import { z } from 'zod';
+import { ProfessionalReputationSchema } from './matching.js';
+
+export const CategorySlugSchema = z.enum([
+  'graphic-design',
+  'photography',
+  'web-development',
+  'social-media-marketing',
+]);
+
+export type CategorySlug = z.infer<typeof CategorySlugSchema>;
+
+export const CategorySchema = z.object({
+  id: z.string().uuid(),
+  slug: CategorySlugSchema,
+  nameMy: z.string().min(1).max(80),
+  nameEn: z.string().min(1).max(80),
+});
+
+export type Category = z.infer<typeof CategorySchema>;
+
+export const CategoriesResponseSchema = z.object({
+  categories: z.array(CategorySchema),
+});
+
+export type CategoriesResponse = z.infer<typeof CategoriesResponseSchema>;
+
+export const PortfolioItemSchema = z.object({
+  id: z.string().uuid(),
+  caption: z.string().max(300).nullable(),
+  externalUrl: z.string().nullable(),
+  storagePath: z.string().nullable(),
+  sort: z.number().int().nonnegative(),
+});
+
+export type PortfolioItem = z.infer<typeof PortfolioItemSchema>;
+
+/** Six-cell public reputation + ops stats for the profile page. */
+export const ProfessionalProfileStatsSchema = ProfessionalReputationSchema.extend(
+  {
+    typicalTurnaroundDays: z.number().int().positive().nullable(),
+    minBudgetMmk: z.number().int().nonnegative().nullable(),
+  },
+);
+
+export type ProfessionalProfileStats = z.infer<
+  typeof ProfessionalProfileStatsSchema
+>;
+
+export const ProfessionalProfileSchema = z.object({
+  id: z.string().uuid(),
+  displayName: z.string().min(1).max(80),
+  avatarUrl: z.string().nullable(),
+  verified: z.boolean(),
+  headlineMy: z.string().max(120).nullable(),
+  headlineEn: z.string().max(120).nullable(),
+  bioMy: z.string().max(4000).nullable(),
+  bioEn: z.string().max(4000).nullable(),
+  location: z.string().max(80).nullable(),
+  category: CategorySchema.nullable(),
+  skills: z.array(z.string().min(1).max(40)).max(24),
+  acceptingWork: z.boolean(),
+  stats: ProfessionalProfileStatsSchema,
+  portfolio: z.array(PortfolioItemSchema).max(24),
+});
+
+export type ProfessionalProfile = z.infer<typeof ProfessionalProfileSchema>;
+
+export const ProfessionalIdParamsSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export type ProfessionalIdParams = z.infer<typeof ProfessionalIdParamsSchema>;
+
+export const ProfessionalListItemSchema = z.object({
+  id: z.string().uuid(),
+  displayName: z.string().min(1).max(80),
+  avatarUrl: z.string().nullable(),
+  verified: z.boolean(),
+  headlineMy: z.string().max(120).nullable(),
+  headlineEn: z.string().max(120).nullable(),
+  bioMy: z.string().max(4000).nullable(),
+  bioEn: z.string().max(4000).nullable(),
+  location: z.string().max(80).nullable(),
+  categorySlug: CategorySlugSchema.nullable(),
+  skills: z.array(z.string().min(1).max(40)).max(24),
+  acceptingWork: z.boolean(),
+  stats: ProfessionalProfileStatsSchema,
+  explanation: z.string().max(500).nullable().optional(),
+});
+
+export type ProfessionalListItem = z.infer<typeof ProfessionalListItemSchema>;
+
+export const ProfessionalsSortSchema = z.enum(['relevance', 'jobs', 'reply']);
+
+export type ProfessionalsSort = z.infer<typeof ProfessionalsSortSchema>;
+
+export const ProfessionalsListQuerySchema = z.object({
+  category: z
+    .union([CategorySlugSchema, z.array(CategorySlugSchema)])
+    .optional()
+    .transform((v) => {
+      if (v === undefined) return undefined;
+      return Array.isArray(v) ? v : [v];
+    }),
+  skill: z
+    .union([z.string().min(1).max(40), z.array(z.string().min(1).max(40))])
+    .optional()
+    .transform((v) => {
+      if (v === undefined) return undefined;
+      return Array.isArray(v) ? v : [v];
+    }),
+  q: z
+    .string()
+    .max(120)
+    .optional()
+    .transform((v) => {
+      const trimmed = v?.trim();
+      return trimmed ? trimmed : undefined;
+    }),
+  sort: ProfessionalsSortSchema.optional().default('relevance'),
+  minBudget: z.coerce.number().int().nonnegative().optional(),
+  maxBudget: z.coerce.number().int().nonnegative().optional(),
+  acceptingOnly: z
+    .union([z.literal('true'), z.literal('false'), z.boolean()])
+    .optional()
+    .transform((v) => v === true || v === 'true'),
+});
+
+export type ProfessionalsListQuery = z.infer<
+  typeof ProfessionalsListQuerySchema
+>;
+
+export const ProfessionalsListResponseSchema = z.object({
+  professionals: z.array(ProfessionalListItemSchema),
+});
+
+export type ProfessionalsListResponse = z.infer<
+  typeof ProfessionalsListResponseSchema
+>;
+
+/** One skill filter option in the directory rail, with how many pros offer it. */
+export const SkillFacetSchema = z.object({
+  name: z.string().min(1).max(40),
+  count: z.number().int().positive(),
+});
+
+export type SkillFacet = z.infer<typeof SkillFacetSchema>;
+
+export const ProfessionalSkillsResponseSchema = z.object({
+  skills: z.array(SkillFacetSchema),
+});
+
+export type ProfessionalSkillsResponse = z.infer<
+  typeof ProfessionalSkillsResponseSchema
+>;
+
+export const PortfolioUploadItemSchema = z.object({
+  /** External URL or local demo path — no identity-document uploads */
+  externalUrl: z.union([z.string().url(), z.string().startsWith('/')]),
+  caption: z.string().max(300).optional(),
+});
+
+export type PortfolioUploadItem = z.infer<typeof PortfolioUploadItemSchema>;
+
+/**
+ * Professional onboarding application.
+ * Never includes NRC, national ID, passport, selfie, or biometrics.
+ */
+export const ProfessionalApplyInputSchema = z.object({
+  displayName: z.string().trim().min(2).max(80),
+  categorySlug: CategorySlugSchema,
+  skills: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
+  headlineMy: z.string().trim().min(4).max(120),
+  headlineEn: z.string().trim().min(4).max(120),
+  bioMy: z.string().trim().min(20).max(2000),
+  bioEn: z.string().trim().min(20).max(2000),
+  typicalTurnaroundDays: z.number().int().min(1).max(90),
+  minBudgetMmk: z.number().int().min(10_000).max(100_000_000),
+  acceptingWork: z.boolean().default(true),
+  /** Free-text preference — never identity documents */
+  clientPreference: z.string().trim().max(500).optional(),
+  portfolio: z.array(PortfolioUploadItemSchema).min(1).max(8),
+});
+
+export type ProfessionalApplyInput = z.infer<typeof ProfessionalApplyInputSchema>;
+
+export const ProfessionalApplyResponseSchema = z.object({
+  professionalId: z.string().uuid(),
+  status: z.enum(['pending', 'approved', 'rejected', 'paused']),
+});
+
+export type ProfessionalApplyResponse = z.infer<
+  typeof ProfessionalApplyResponseSchema
+>;

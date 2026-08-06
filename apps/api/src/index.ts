@@ -1,0 +1,63 @@
+import express from 'express';
+import { HealthResponseSchema } from '@inyalink/shared';
+import { config } from './lib/config.js';
+import { errorMiddleware } from './middleware/errors.js';
+import { adminRouter } from './modules/admin/admin.routes.js';
+import { aiRouter } from './modules/ai/ai.routes.js';
+import { briefsRouter } from './modules/briefs/briefs.routes.js';
+import { matchingRouter } from './modules/matching/matching.routes.js';
+import { professionalsRouter } from './modules/professionals/professionals.routes.js';
+
+const app = express();
+
+/** Browser calls from Vercel → Railway need CORS; Vite proxy does not. */
+app.use((req, res, next) => {
+  const allowed = process.env['CORS_ORIGIN']?.trim() || '*';
+  const requestOrigin = req.headers.origin;
+  if (allowed === '*') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else if (
+    requestOrigin &&
+    allowed
+      .split(',')
+      .map((s) => s.trim())
+      .includes(requestOrigin)
+  ) {
+    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+    res.setHeader('Vary', 'Origin');
+  }
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,POST,PATCH,PUT,DELETE,OPTIONS',
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Demo-User-Id',
+  );
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+  next();
+});
+
+app.use(express.json({ limit: '256kb' }));
+
+app.get('/health', (_req, res) => {
+  const body = HealthResponseSchema.parse({ status: 'ok' });
+  res.json(body);
+});
+
+// Auth routes are parked for the hackathon (modules/auth stays intact);
+// demoAuth in lib/demoUser.ts stands in for requireAuth on every router.
+app.use('/api/v1/ai', aiRouter);
+app.use('/api/v1/briefs', briefsRouter);
+app.use('/api/v1/matching', matchingRouter);
+app.use('/api/v1/professionals', professionalsRouter);
+app.use('/api/v1/admin', adminRouter);
+
+app.use(errorMiddleware);
+
+app.listen(config.port, () => {
+  console.log(`api listening on :${config.port}`);
+});

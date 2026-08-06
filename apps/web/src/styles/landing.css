@@ -1,0 +1,103 @@
+/* Landing (Morning Water) — display type, scroll reveals, ambient motion. */
+
+/* Phone size keeps the goal input above the fold; Burmese runs long. */
+.text-hero {
+  font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.text-sect {
+  font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+  .text-hero {
+    font-size: 48px;
+  }
+}
+
+/* Burmese stacked diacritics clip below 1.8 — applies at display sizes too. */
+:lang(my) .text-hero,
+:lang(my) .text-sect {
+  line-height: 1.8;
+}
+
+/*
+ * Scroll-triggered reveal — safe by default.
+ * `.reveal` content is fully visible with no JS. useInView() adds
+ * `.reveal-armed` to the container before first paint to opt into the
+ * animation, then `.is-in` (from the observer or its fail-safe timer)
+ * plays it. opacity:0 only ever exists between arm and reveal; it is
+ * never a permanent resting state.
+ */
+.reveal {
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+
+.reveal-armed .reveal {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.reveal-armed.is-in .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+/* Ambient ripple breathing (hero + deep section art). */
+@keyframes ripple-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+.animate-ripple {
+  animation: ripple-breathe 16s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* AI thinking dots in the storyboard. */
+@keyframes dot-fade {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-dot {
+  animation: dot-fade 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Belt and braces: the hook never arms under reduced motion, but even
+     if it did, content must stay visible and static. */
+  .reveal,
+  .reveal-armed .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .animate-ripple,
+  .animate-dot {
+    animation: none;
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — English UI-locale full cafe-logo converse script. Matched on opening input; any failed turn serves the next question, then finalBrief.",
+  "matchInput": "ကော်ဖီဆိုင်အတွက် logo လိုချင်ပါတယ်",
+  "locale": "en",
+  "questions": [
+    "What is the cafe name, and should that text appear in the logo?",
+    "What style do you want — minimalist, modern, or traditional? Any preferred colours?",
+    "What budget range (kyat) should we plan for — minimum and maximum?",
+    "When do you need it? A concrete date (YYYY-MM-DD) helps."
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Cafe logo",
+      "description": "Logo design for a coffee shop",
+      "requirements": ["logo"],
+      "budget_min_mmk": null,
+      "budget_max_mmk": null,
+      "deadline": null,
+      "reference_links": null,
+      "ai_confidence": 0.4,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Inya Cafe logo",
+      "description": "Logo design for Inya Cafe",
+      "requirements": ["Business name: Inya Cafe", "logo"],
+      "budget_min_mmk": null,
+      "budget_max_mmk": null,
+      "deadline": null,
+      "reference_links": null,
+      "ai_confidence": 0.55,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Inya Cafe logo",
+      "description": "Minimalist logo for Inya Cafe in brown and cream",
+      "requirements": [
+        "Business name: Inya Cafe",
+        "Style: Minimalist",
+        "Colours: brown, cream"
+      ],
+      "budget_min_mmk": null,
+      "budget_max_mmk": null,
+      "deadline": null,
+      "reference_links": null,
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Inya Cafe logo",
+      "description": "Minimalist logo for Inya Cafe in brown and cream",
+      "requirements": [
+        "Business name: Inya Cafe",
+        "Style: Minimalist",
+        "Colours: brown, cream",
+        "Deliverable: vector (AI/SVG)"
+      ],
+      "budget_min_mmk": 300000,
+      "budget_max_mmk": 500000,
+      "deadline": null,
+      "reference_links": null,
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "graphic-design",
+    "title": "Inya Cafe logo",
+    "description": "Minimalist logo for Inya Cafe in brown and cream; vector files required.",
+    "requirements": [
+      "Business name: Inya Cafe",
+      "Style: Minimalist",
+      "Colours: brown, cream",
+      "Deliverable: vector (AI/SVG)"
+    ],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-09-30",
+    "reference_links": null,
+    "ai_confidence": 0.92,
+    "needs_human_review": false
+  }
+}
