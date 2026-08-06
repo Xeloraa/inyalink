@@ -13,7 +13,7 @@ if (!root) {
 }
 
 document.documentElement.lang =
-  localStorage.getItem('inyalink.locale') === 'en' ? 'en' : 'my';
+  localStorage.getItem('inyalink.locale') === 'my' ? 'my' : 'en';
 
 createRoot(root).render(
   <StrictMode>

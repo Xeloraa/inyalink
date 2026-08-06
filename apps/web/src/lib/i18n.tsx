@@ -36,7 +36,7 @@ function readStoredLocale(): Locale {
   } catch {
     /* ignore */
   }
-  return 'my';
+  return 'en';
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {

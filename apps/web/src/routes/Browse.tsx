@@ -192,7 +192,7 @@ export default function Browse() {
               </div>
             ) : (
               <ul
-                className={`flex flex-col gap-md transition-opacity duration-base ease-out ${
+                className={`flex flex-col gap-sm transition-opacity duration-base ease-out sm:gap-md ${
                   prosQuery.isPlaceholderData ? 'opacity-60' : ''
                 }`}
               >

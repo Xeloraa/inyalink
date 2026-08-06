@@ -3,14 +3,15 @@ import { Link } from 'react-router-dom';
 import { useI18n } from '../lib/i18n';
 import { LogoMark } from './Logo';
 
+/** Header nav never mid-word wraps — body uses overflow-wrap:anywhere for Burmese. */
 const NAV_LINK =
-  'tap-target hidden min-[380px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-md px-sm text-[13px] font-medium text-ink-700 no-underline transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800';
+  'tap-target hidden min-[380px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800 sm:px-sm sm:text-[13px]';
 
 const MENU_ITEM =
-  'tap-target flex w-full items-center whitespace-nowrap rounded-sm px-lg text-[13px] font-medium text-ink-700 no-underline transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-100';
+  'tap-target flex w-full items-center whitespace-nowrap rounded-sm px-lg text-[13px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-100';
 
 function langButtonClass(active: boolean): string {
-  return `inline-flex min-h-[48px] min-w-[44px] shrink-0 items-center justify-center whitespace-nowrap rounded-md px-sm text-[13px] font-medium transition-colors duration-fast ease-out focus-visible:shadow-focus ${
+  return `inline-flex min-h-[40px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus sm:min-h-[48px] sm:min-w-[44px] sm:px-sm sm:text-[13px] ${
     active
       ? 'bg-jade-600 text-white hover:bg-jade-400 active:bg-jade-800'
       : 'text-ink-500 hover:bg-jade-50 hover:text-ink-900 active:bg-jade-100'
@@ -63,20 +64,20 @@ export function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="border-b border-line bg-paper/90 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-container flex-nowrap items-center justify-between gap-sm px-4 py-sm md:px-8 lg:px-6">
+    <header className="border-b border-line bg-paper/90 backdrop-blur-sm [overflow-wrap:normal]">
+      <div className="mx-auto flex max-w-container flex-nowrap items-center justify-between gap-1 px-3 py-xs sm:gap-sm sm:px-4 sm:py-sm md:px-8 lg:px-6">
         <Link
           to="/"
-          className="inline-flex shrink-0 items-center gap-sm whitespace-nowrap font-display text-title font-semibold text-ink-900 no-underline transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:rounded-sm active:text-jade-800"
+          className="inline-flex shrink-0 items-center gap-xs whitespace-nowrap font-display text-[15px] font-semibold text-ink-900 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:rounded-sm active:text-jade-800 sm:gap-sm sm:text-title"
         >
           <span className="text-jade-600">
-            <LogoMark />
+            <LogoMark size={20} />
           </span>
           {t('app.name')}
         </Link>
 
         <nav
-          className="flex flex-nowrap items-center gap-xs"
+          className="flex flex-nowrap items-center gap-0.5 sm:gap-xs"
           aria-label={t('header.nav')}
         >
           <Link to="/browse" className={NAV_LINK}>
@@ -122,7 +123,7 @@ export function Header() {
           </div>
 
           <div
-            className="flex shrink-0 flex-nowrap items-center gap-xs"
+            className="flex shrink-0 flex-nowrap items-center gap-0.5 sm:gap-xs"
             role="group"
             aria-label={t('header.language')}
           >
