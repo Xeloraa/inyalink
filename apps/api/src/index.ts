@@ -1,6 +1,7 @@
 import express from 'express';
 import { HealthResponseSchema } from '@inyalink/shared';
 import { config } from './lib/config.js';
+import { isOriginAllowed, parseCorsOrigins } from './lib/cors.js';
 import { errorMiddleware } from './middleware/errors.js';
 import { adminRouter } from './modules/admin/admin.routes.js';
 import { aiRouter } from './modules/ai/ai.routes.js';
@@ -11,22 +12,28 @@ import { professionalsRouter } from './modules/professionals/professionals.route
 
 const app = express();
 
+const corsAllowlist = parseCorsOrigins(process.env['CORS_ORIGIN']);
+
 /** Browser calls from Vercel → Railway need CORS; Vite proxy does not. */
 app.use((req, res, next) => {
-  const allowed = process.env['CORS_ORIGIN']?.trim() || '*';
   const requestOrigin = req.headers.origin;
-  if (allowed === '*') {
+  const matched = isOriginAllowed(requestOrigin, corsAllowlist);
+
+  console.log('[cors]', {
+    origin: requestOrigin ?? null,
+    matched,
+    allowlist: corsAllowlist === '*' ? '*' : corsAllowlist,
+    method: req.method,
+    path: req.originalUrl ?? req.url,
+  });
+
+  if (corsAllowlist === '*') {
     res.setHeader('Access-Control-Allow-Origin', '*');
-  } else if (
-    requestOrigin &&
-    allowed
-      .split(',')
-      .map((s) => s.trim())
-      .includes(requestOrigin)
-  ) {
+  } else if (matched && requestOrigin) {
     res.setHeader('Access-Control-Allow-Origin', requestOrigin);
     res.setHeader('Vary', 'Origin');
   }
+
   res.setHeader(
     'Access-Control-Allow-Methods',
     'GET,POST,PATCH,PUT,DELETE,OPTIONS',
