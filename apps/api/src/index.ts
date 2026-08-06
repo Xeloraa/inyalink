@@ -4,6 +4,7 @@ import { config } from './lib/config.js';
 import { errorMiddleware } from './middleware/errors.js';
 import { adminRouter } from './modules/admin/admin.routes.js';
 import { aiRouter } from './modules/ai/ai.routes.js';
+import { authRouter } from './modules/auth/auth.routes.js';
 import { briefsRouter } from './modules/briefs/briefs.routes.js';
 import { matchingRouter } from './modules/matching/matching.routes.js';
 import { professionalsRouter } from './modules/professionals/professionals.routes.js';
@@ -48,8 +49,7 @@ app.get('/health', (_req, res) => {
   res.json(body);
 });
 
-// Auth routes are parked for the hackathon (modules/auth stays intact);
-// demoAuth in lib/demoUser.ts stands in for requireAuth on every router.
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/ai', aiRouter);
 app.use('/api/v1/briefs', briefsRouter);
 app.use('/api/v1/matching', matchingRouter);

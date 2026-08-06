@@ -4,7 +4,7 @@ import { useAuth } from '../lib/auth';
 import { useI18n } from '../lib/i18n';
 import { getSupabaseBrowser, isSupabaseConfigured } from '../lib/supabase';
 
-/** OAuth redirect target — waits for Supabase session, then goes to /app. */
+/** OAuth redirect target — waits for Supabase session, then goes to /browse. */
 export default function AuthCallback() {
   const { t } = useI18n();
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function AuthCallback() {
 
   useEffect(() => {
     if (!loading && session) {
-      void navigate('/app', { replace: true });
+      void navigate('/browse', { replace: true });
     }
   }, [loading, session, navigate]);
 

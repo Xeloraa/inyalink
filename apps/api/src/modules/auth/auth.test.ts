@@ -55,7 +55,7 @@ describe('auth.service', () => {
       id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
       displayName: 'Min Thet',
       role: 'client',
-      locale: 'my',
+      locale: 'en',
     });
 
     const session = await authService.ensureClientProfile(googleUser());
@@ -63,7 +63,7 @@ describe('auth.service', () => {
       expect.objectContaining({
         id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
         displayName: 'Min Thet',
-        locale: 'my',
+        locale: 'en',
       }),
     );
     expect(session.role).toBe('client');

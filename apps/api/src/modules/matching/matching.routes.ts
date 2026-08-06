@@ -7,13 +7,13 @@ import {
 } from '@inyalink/shared';
 import { validateQuery } from '../../middleware/validate.js';
 import { AppError } from '../../middleware/errors.js';
-import { demoAuth, getAuth } from '../../lib/demoUser.js';
+import { attachSession, getAuth } from '../../middleware/requireAuth.js';
 import { getCandidateExplanation } from './matching.explain.js';
 import * as matchingService from './matching.service.js';
 
 export const matchingRouter = Router();
 
-matchingRouter.use(demoAuth);
+matchingRouter.use(attachSession);
 
 /** GET /api/v1/matching/feed — open briefs for the acting professional */
 matchingRouter.get('/feed', async (req, res, next) => {

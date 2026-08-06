@@ -7,12 +7,12 @@ import {
 } from '@inyalink/shared';
 import { validateBody } from '../../middleware/validate.js';
 import { AppError } from '../../middleware/errors.js';
-import { demoAuth, getAuth } from '../../lib/demoUser.js';
+import { attachSession, getAuth } from '../../middleware/requireAuth.js';
 import * as briefsService from './briefs.service.js';
 
 export const briefsRouter = Router();
 
-briefsRouter.use(demoAuth);
+briefsRouter.use(attachSession);
 
 briefsRouter.post('/', validateBody(CreateBriefInputSchema), async (req, res, next) => {
   try {

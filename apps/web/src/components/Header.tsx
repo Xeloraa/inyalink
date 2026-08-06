@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../lib/auth';
 import { useI18n } from '../lib/i18n';
 import { LogoMark } from './Logo';
 
 /** Header nav never mid-word wraps — body uses overflow-wrap:anywhere for Burmese. */
 const NAV_LINK =
-  'tap-target hidden min-[380px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800 sm:px-sm sm:text-[13px]';
+  'tap-target hidden min-[420px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800 sm:px-sm sm:text-[13px]';
+
+const QUIET_LINK =
+  'tap-target hidden min-[520px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium text-ink-400 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800 sm:px-sm sm:text-[13px]';
 
 const MENU_ITEM =
   'tap-target flex w-full items-center whitespace-nowrap rounded-sm px-lg text-[13px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-100';
@@ -42,6 +46,7 @@ function BurgerIcon({ open }: { open: boolean }) {
 
 export function Header() {
   const { locale, setLocale, t } = useI18n();
+  const { session, loading, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -86,9 +91,12 @@ export function Header() {
           <Link to="/app/briefs" className={NAV_LINK}>
             {t('header.proFeed')}
           </Link>
+          <Link to="/profile/create" className={QUIET_LINK}>
+            {t('header.proJoin')}
+          </Link>
 
-          {/* Below 380px the nav links collapse into this menu; the header row never wraps. */}
-          <div ref={menuRef} className="relative min-[380px]:hidden">
+          {/* Below 420px the nav links collapse into this menu; the header row never wraps. */}
+          <div ref={menuRef} className="relative min-[420px]:hidden">
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
@@ -102,7 +110,7 @@ export function Header() {
             {menuOpen ? (
               <div
                 id="header-menu"
-                className="absolute right-0 top-full z-50 mt-xs w-44 rounded-md border border-line bg-white p-xs shadow-lg"
+                className="absolute right-0 top-full z-50 mt-xs w-52 rounded-md border border-line bg-white p-xs shadow-lg"
               >
                 <Link
                   to="/browse"
@@ -118,9 +126,52 @@ export function Header() {
                 >
                   {t('header.proFeed')}
                 </Link>
+                <Link
+                  to="/profile/create"
+                  className={MENU_ITEM}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {t('header.proJoin')}
+                </Link>
+                {!loading && !session ? (
+                  <Link
+                    to="/login"
+                    className={MENU_ITEM}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {t('header.login')}
+                  </Link>
+                ) : null}
+                {!loading && session ? (
+                  <button
+                    type="button"
+                    className={MENU_ITEM}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      void signOut();
+                    }}
+                  >
+                    {t('header.signOut')}
+                  </button>
+                ) : null}
               </div>
             ) : null}
           </div>
+
+          {!loading && !session ? (
+            <Link to="/login" className={NAV_LINK}>
+              {t('header.login')}
+            </Link>
+          ) : null}
+          {!loading && session ? (
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className={NAV_LINK}
+            >
+              {t('header.signOut')}
+            </button>
+          ) : null}
 
           <div
             className="flex shrink-0 flex-nowrap items-center gap-0.5 sm:gap-xs"

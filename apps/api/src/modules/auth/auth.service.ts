@@ -44,7 +44,7 @@ export async function ensureClientProfile(user: User): Promise<AuthSession> {
   const created = await repo.insertClientProfile({
     id: user.id,
     displayName: displayNameFromUser(user),
-    locale: 'my',
+    locale: 'en',
   });
 
   return {

@@ -6,7 +6,7 @@ import {
 } from '@inyalink/shared';
 import { validateBody, validateQuery } from '../../middleware/validate.js';
 import { AppError } from '../../middleware/errors.js';
-import { demoAuth, getAuth } from '../../lib/demoUser.js';
+import { getAuth, requireAuth } from '../../middleware/requireAuth.js';
 import * as professionalsService from './professionals.service.js';
 
 export const professionalsRouter = Router();
@@ -53,7 +53,7 @@ professionalsRouter.get(
 
 professionalsRouter.post(
   '/apply',
-  demoAuth,
+  requireAuth,
   validateBody(ProfessionalApplyInputSchema),
   async (req, res, next) => {
     try {

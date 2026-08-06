@@ -3,11 +3,9 @@ import type { AuthSession } from '@inyalink/shared';
 import { config } from './config.js';
 
 /**
- * Hackathon mode: Google sign-in is parked, so every request acts as a
- * seeded demo user. Default is the demo client. When DEMO_MODE is on,
- * pass `X-Demo-User-Id` to act as a seeded professional (for /app/briefs).
- *
- * To re-enable real auth, swap routers back to `middleware/requireAuth.js`.
+ * Demo sessions for local/scripts and DEMO_MODE when no Bearer token is
+ * present. Real Google sign-in always wins via `attachSession` /
+ * `requireAuth` in middleware/requireAuth.ts.
  */
 
 export const DEMO_CLIENT_ID = 'b0000000-0000-4000-8000-000000000001';
@@ -20,7 +18,7 @@ const DEMO_USERS: Record<
   [DEMO_CLIENT_ID]: {
     role: 'client',
     displayName: 'Demo Client 01',
-    locale: 'my',
+    locale: 'en',
   },
   [DEMO_PRO_ID]: {
     role: 'professional',
@@ -48,12 +46,11 @@ export const DEMO_SESSION: AuthSession = {
   userId: DEMO_CLIENT_ID,
   role: 'client',
   displayName: 'Demo Client 01',
-  locale: 'my',
+  locale: 'en',
 };
 
-type DemoAuthedRequest = Request & { auth: AuthSession };
-
-function resolveDemoSession(req: Request): AuthSession {
+/** Resolve demo identity from optional `X-Demo-User-Id` when DEMO_MODE is on. */
+export function resolveDemoSession(req: Request): AuthSession {
   if (!config.demoMode) return DEMO_SESSION;
   const header = req.header('x-demo-user-id')?.trim();
   if (!header || !DEMO_USERS[header]) return DEMO_SESSION;
@@ -66,16 +63,15 @@ function resolveDemoSession(req: Request): AuthSession {
   };
 }
 
-/** Drop-in stand-in for requireAuth: attaches the demo session, never 401s. */
+/**
+ * @deprecated Prefer `attachSession` from middleware/requireAuth.js.
+ * Kept for scripts that import demoAuth directly.
+ */
 export function demoAuth(
   req: Request,
   _res: Response,
   next: NextFunction,
 ): void {
-  (req as DemoAuthedRequest).auth = resolveDemoSession(req);
+  (req as Request & { auth: AuthSession }).auth = resolveDemoSession(req);
   next();
-}
-
-export function getAuth(req: Request): AuthSession {
-  return (req as DemoAuthedRequest).auth ?? DEMO_SESSION;
 }

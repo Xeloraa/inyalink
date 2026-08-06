@@ -23,12 +23,6 @@ import type {
 } from '@inyalink/shared';
 import { apiFetch } from './apiClient';
 
-const DEMO_PRO_HEADER = 'a0000000-0000-4000-8000-000000000001';
-
-function demoProHeaders(): HeadersInit {
-  return { 'X-Demo-User-Id': DEMO_PRO_HEADER };
-}
-
 export function converseBrief(body: ConverseBriefInput) {
   return apiFetch<ConverseBriefResponse>('/api/v1/ai/brief/converse', {
     method: 'POST',
@@ -77,22 +71,20 @@ export function getMatchCandidates(briefId: string) {
 }
 
 export function getMatchingFeed() {
-  return apiFetch<MatchingFeedResponse>('/api/v1/matching/feed', {
-    headers: demoProHeaders(),
-  });
+  return apiFetch<MatchingFeedResponse>('/api/v1/matching/feed');
 }
 
 export function expressInterest(briefId: string) {
   return apiFetch<BriefInterestResponse>(
     `/api/v1/matching/briefs/${encodeURIComponent(briefId)}/interest`,
-    { method: 'POST', headers: demoProHeaders() },
+    { method: 'POST' },
   );
 }
 
 export function withdrawInterest(briefId: string) {
   return apiFetch<BriefInterestResponse>(
     `/api/v1/matching/briefs/${encodeURIComponent(briefId)}/interest`,
-    { method: 'DELETE', headers: demoProHeaders() },
+    { method: 'DELETE' },
   );
 }
 
