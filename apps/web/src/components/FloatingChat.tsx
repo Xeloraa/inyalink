@@ -7,6 +7,7 @@ import {
 import {
   classifyClarifyReply,
   classifyInputShape,
+  matchRoadmapStep,
   signalsDontKnow,
   type ChatMessage,
 } from '@inyalink/shared';
@@ -129,6 +130,9 @@ export function FloatingChat() {
     resolveClarifyToQuick,
     resolveClarifyToPlan,
     handoffToRoadmap,
+    beginStepHire,
+    continueAsPlan,
+    continueAsQuick,
     loadConversation,
     startNewConversation,
   } = useDemoFlow();
@@ -181,7 +185,8 @@ export function FloatingChat() {
       : locale;
 
   const showBriefCard = complete && path === 'quick';
-  const composerLocked = planning || showBriefCard || briefBusy || matchBusy;
+  /** Only lock while a network action is in flight — never after roadmap/brief. */
+  const composerLocked = busy || briefBusy || matchBusy;
 
   useEffect(() => {
     if (
@@ -217,10 +222,10 @@ export function FloatingChat() {
   }, [messages, busy, open, roadmapSteps, matches, complete, matchBusy]);
 
   useEffect(() => {
-    if (!open || historyOpen) return;
+    if (!open || historyOpen || composerLocked) return;
     const id = window.setTimeout(() => inputRef.current?.focus(), 220);
     return () => window.clearTimeout(id);
-  }, [open, historyOpen]);
+  }, [open, historyOpen, composerLocked, roadmapSteps.length, complete]);
 
   useEffect(() => {
     setComplete(converseComplete);
@@ -344,8 +349,9 @@ export function FloatingChat() {
 
   useEffect(() => {
     if (path !== 'quick' || converseStarted || !goal) return;
-    if (messages.length !== 1 || messages[0]?.role !== 'user') return;
-    bootQuickTurn(messages, goal);
+    if (messages.length === 0) return;
+    if (messages[messages.length - 1]?.role !== 'user') return;
+    bootQuickTurn(messages, `${goal}#${messages.length}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path, goal, converseStarted, messages]);
 
@@ -410,7 +416,7 @@ export function FloatingChat() {
   async function onSend(e: FormEvent) {
     e.preventDefault();
     const text = reply.trim();
-    if (!text || busy) return;
+    if (!text || busy || briefBusy || matchBusy) return;
 
     if (!active) {
       setReply('');
@@ -453,6 +459,88 @@ export function FloatingChat() {
       if (result.path === 'quick') {
         bootQuickTurn(result.messages, result.goal);
       }
+      return;
+    }
+
+    // After roadmap: pick a step → brief; new goal → new plan; hire → quick.
+    if (planning && roadmapSteps.length > 0) {
+      setReply('');
+      const step = matchRoadmapStep(text, roadmapSteps);
+      console.log('[classify] plan follow-up', {
+        text,
+        step: step?.order ?? null,
+      });
+      if (step) {
+        beginStepHire(step, text);
+        return;
+      }
+      const shape = classifyInputShape(text);
+      if (shape === 'goal') {
+        continueAsPlan(text, text);
+        return;
+      }
+      if (shape === 'service') {
+        continueAsQuick(text, text);
+        return;
+      }
+      if (shape === 'unrelated') {
+        const redirect = translateIn(
+          detectResponseLocale(text),
+          'converse.unrelatedRedirect',
+        );
+        setMessages([
+          ...messages,
+          { role: 'user', content: text },
+          { role: 'assistant', content: redirect },
+        ]);
+        return;
+      }
+      const prompt = translateIn(
+        detectResponseLocale(text),
+        'roadmap.pickStep',
+      );
+      setMessages([
+        ...messages,
+        { role: 'user', content: text },
+        { role: 'assistant', content: prompt },
+      ]);
+      return;
+    }
+
+    // After brief/matches: never lock — re-route a new goal or hire.
+    if (complete) {
+      setReply('');
+      const step =
+        roadmapSteps.length > 0
+          ? matchRoadmapStep(text, roadmapSteps)
+          : null;
+      if (step) {
+        beginStepHire(step, text);
+        return;
+      }
+      const shape = classifyInputShape(text);
+      console.log('[classify] post-brief follow-up', { text, shape });
+      if (shape === 'goal') {
+        continueAsPlan(text, text);
+        return;
+      }
+      if (shape === 'service') {
+        continueAsQuick(text, text);
+        return;
+      }
+      if (shape === 'unrelated') {
+        const redirect = translateIn(
+          detectResponseLocale(text),
+          'converse.unrelatedRedirect',
+        );
+        setMessages([
+          ...messages,
+          { role: 'user', content: text },
+          { role: 'assistant', content: redirect },
+        ]);
+        return;
+      }
+      continueAsQuick(text, text);
       return;
     }
 
@@ -596,10 +684,11 @@ export function FloatingChat() {
               ))}
               {busy ? <ThinkingBubble /> : null}
               {busy ? <RotatingProgress active /> : null}
-              {planning && roadmapSteps.length > 0 ? (
+              {roadmapSteps.length > 0 ? (
                 <RoadmapCards
                   steps={roadmapSteps}
                   disclaimer={roadmapDisclaimer}
+                  showPrompt={planning}
                 />
               ) : null}
               {showBriefCard ? (
@@ -659,14 +748,13 @@ export function FloatingChat() {
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
                   placeholder={t('converse.placeholder')}
-                  disabled={busy || composerLocked || !open || historyOpen}
+                  disabled={composerLocked || !open || historyOpen}
                   tabIndex={open && !historyOpen ? 0 : -1}
                   className="tap-target font-myanmar min-w-0 flex-1 rounded-md border border-line px-md text-body-lg leading-burmese outline-none focus:border-jade-400 focus:shadow-focus disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={
-                    busy ||
                     composerLocked ||
                     !reply.trim() ||
                     !open ||

@@ -3,6 +3,7 @@ export { formatMmk } from './money.js';
 export {
   classifyClarifyReply,
   classifyInputShape,
+  matchRoadmapStep,
   signalsDontKnow,
   type InputShape,
 } from './classifyInputShape.js';

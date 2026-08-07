@@ -238,3 +238,62 @@ export function classifyClarifyReply(raw: string): 'goal' | 'service' {
   // Still vague after one question — roadmap is safer than inventing a hire.
   return 'goal';
 }
+
+/**
+ * Match a follow-up message to a roadmap step (by number, ordinal, or title).
+ * Used after a plan renders so "step 2" / the step title starts a hire brief.
+ */
+export function matchRoadmapStep<T extends { order: number; title: string; category_slug: string }>(
+  raw: string,
+  steps: T[],
+): T | null {
+  const text = fold(raw);
+  if (!text || steps.length === 0) return null;
+
+  const byOrder = (order: number): T | null =>
+    steps.find((s) => s.order === order) ?? null;
+
+  const digit = text.match(
+    /(?:^|[^\d])(?:step|number|#|အဆင့်)?\s*([1-6])(?:[^\d]|$)/i,
+  );
+  if (digit?.[1]) return byOrder(Number(digit[1]));
+
+  const ordinals: Array<[RegExp, number]> = [
+    [/\b(first|1st)\b/, 1],
+    [/\b(second|2nd)\b/, 2],
+    [/\b(third|3rd)\b/, 3],
+    [/\b(fourth|4th)\b/, 4],
+    [/\b(fifth|5th)\b/, 5],
+    [/\b(sixth|6th)\b/, 6],
+    [/ပထမ/, 1],
+    [/ဒုတိယ/, 2],
+    [/တတိယ/, 3],
+    [/စတုတ္ထ/, 4],
+  ];
+  for (const [re, order] of ordinals) {
+    if (re.test(text)) return byOrder(order);
+  }
+
+  let best: T | null = null;
+  let bestLen = 0;
+  for (const step of steps) {
+    const title = fold(step.title);
+    const cat = fold(step.category_slug.replace(/-/g, ' '));
+    if (title.length >= 3 && text.includes(title) && title.length > bestLen) {
+      best = step;
+      bestLen = title.length;
+    }
+    if (cat.length >= 4 && text.includes(cat) && cat.length > bestLen) {
+      best = step;
+      bestLen = cat.length;
+    }
+    // Significant title tokens (≥4 code points) — Burmese-safe.
+    for (const token of title.split(/[\s/|,·•]+/).filter((w) => [...w].length >= 4)) {
+      if (text.includes(token) && token.length > bestLen) {
+        best = step;
+        bestLen = token.length;
+      }
+    }
+  }
+  return best;
+}

@@ -66,6 +66,12 @@ type DemoFlowValue = DemoFlowState & {
   resolveClarifyToPlan: () => void;
   /** Mid-chat handoff to roadmap (dont-know / API redirect). */
   handoffToRoadmap: () => void;
+  /** After a roadmap: hire for one step, keep transcript + plan cards. */
+  beginStepHire: (step: RoadmapStep, userText: string) => void;
+  /** Follow-up that changes the goal — new plan, same transcript. */
+  continueAsPlan: (goal: string, userText: string) => void;
+  /** Follow-up that starts a hire brief — same transcript. */
+  continueAsQuick: (goal: string, userText: string) => void;
   /** Resume a saved conversation in the panel. */
   loadConversation: (detail: ConversationDetail) => void;
   /** Empty panel for a fresh chat (keeps history elsewhere). */
@@ -260,6 +266,59 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const beginStepHire = useCallback((step: RoadmapStep, userText: string) => {
+    setState((s) => ({
+      ...s,
+      path: 'quick',
+      goal: step.title,
+      messages: [...s.messages, { role: 'user', content: userText }],
+      briefDraft: {
+        category: step.category_slug,
+        title: step.title,
+        description: step.why,
+        budget_min_mmk: step.est_min_mmk,
+        budget_max_mmk: step.est_max_mmk,
+      },
+      briefId: null,
+      converseStarted: false,
+      converseComplete: false,
+      matches: null,
+    }));
+  }, []);
+
+  const continueAsPlan = useCallback((nextGoal: string, userText: string) => {
+    const trimmed = nextGoal.trim();
+    setState((s) => ({
+      ...s,
+      path: 'plan',
+      goal: trimmed,
+      messages: [...s.messages, { role: 'user', content: userText }],
+      briefDraft: {},
+      briefId: null,
+      roadmapId: null,
+      roadmapSteps: [],
+      roadmapDisclaimer: null,
+      converseStarted: true,
+      converseComplete: false,
+      matches: null,
+    }));
+  }, []);
+
+  const continueAsQuick = useCallback((nextGoal: string, userText: string) => {
+    const trimmed = nextGoal.trim();
+    setState((s) => ({
+      ...s,
+      path: 'quick',
+      goal: trimmed,
+      messages: [...s.messages, { role: 'user', content: userText }],
+      briefDraft: {},
+      briefId: null,
+      converseStarted: false,
+      converseComplete: false,
+      matches: null,
+    }));
+  }, []);
+
   const loadConversation = useCallback((detail: ConversationDetail) => {
     const path: ConversationPath | DemoPath = detail.path ?? 'quick';
     const opening =
@@ -302,6 +361,9 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       resolveClarifyToQuick,
       resolveClarifyToPlan,
       handoffToRoadmap,
+      beginStepHire,
+      continueAsPlan,
+      continueAsQuick,
       loadConversation,
       startNewConversation,
       reset,
@@ -325,6 +387,9 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       resolveClarifyToQuick,
       resolveClarifyToPlan,
       handoffToRoadmap,
+      beginStepHire,
+      continueAsPlan,
+      continueAsQuick,
       loadConversation,
       startNewConversation,
       reset,

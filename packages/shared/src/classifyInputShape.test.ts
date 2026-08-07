@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   classifyClarifyReply,
   classifyInputShape,
+  matchRoadmapStep,
   signalsDontKnow,
 } from './classifyInputShape.js';
 
@@ -92,5 +93,41 @@ describe('signalsDontKnow', () => {
     expect(signalsDontKnow('မသေချာပါ — ဒီမေးခွန်းကို ကျော်မယ်။')).toBe(
       false,
     );
+  });
+});
+
+describe('matchRoadmapStep', () => {
+  const steps = [
+    {
+      order: 1,
+      title: 'Brand logo',
+      category_slug: 'graphic-design',
+    },
+    {
+      order: 2,
+      title: 'Shop photography',
+      category_slug: 'photography',
+    },
+    {
+      order: 3,
+      title: 'Menu design',
+      category_slug: 'print-design',
+    },
+  ];
+
+  it('matches by step number', () => {
+    expect(matchRoadmapStep('step 2', steps)?.order).toBe(2);
+    expect(matchRoadmapStep('1', steps)?.order).toBe(1);
+    expect(matchRoadmapStep('အဆင့် 3', steps)?.order).toBe(3);
+  });
+
+  it('matches by ordinal or title', () => {
+    expect(matchRoadmapStep('the first one', steps)?.order).toBe(1);
+    expect(matchRoadmapStep('Shop photography please', steps)?.order).toBe(2);
+    expect(matchRoadmapStep('photography', steps)?.order).toBe(2);
+  });
+
+  it('returns null when nothing matches', () => {
+    expect(matchRoadmapStep('tell me more about costs', steps)).toBeNull();
   });
 });

@@ -4,10 +4,16 @@ import { useI18n } from '../../lib/i18n';
 type RoadmapCardsProps = {
   steps: RoadmapStep[];
   disclaimer: string | null;
+  /** Ask which step to hire for — shown while still on the plan path. */
+  showPrompt?: boolean;
 };
 
 /** Compact roadmap steps inside the chat panel — one line of description each. */
-export function RoadmapCards({ steps, disclaimer }: RoadmapCardsProps) {
+export function RoadmapCards({
+  steps,
+  disclaimer,
+  showPrompt = true,
+}: RoadmapCardsProps) {
   const { t, locale } = useI18n();
   const moneyLocale = locale === 'en' ? 'en' : 'my';
   const ordered = steps.slice().sort((a, b) => a.order - b.order);
@@ -44,6 +50,11 @@ export function RoadmapCards({ steps, disclaimer }: RoadmapCardsProps) {
             {t('roadmap.disclaimer')}:{' '}
           </span>
           {disclaimer}
+        </p>
+      ) : null}
+      {showPrompt ? (
+        <p className="pt-xs text-body-sm font-medium leading-burmese text-ink-900 [overflow-wrap:anywhere]">
+          {t('roadmap.pickStep')}
         </p>
       ) : null}
     </div>

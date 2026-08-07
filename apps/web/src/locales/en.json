@@ -172,6 +172,7 @@
   "roadmap.title": "Guided plan",
   "roadmap.disclaimer": "Note",
   "roadmap.budget": "Estimated cost",
+  "roadmap.pickStep": "Which step do you want to start with?",
   "header.login": "Log in",
   "header.signOut": "Sign out",
   "header.proJoin": "Are you a professional?",
