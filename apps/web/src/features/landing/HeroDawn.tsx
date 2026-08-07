@@ -33,7 +33,7 @@ export function HeroDawn({
 
   return (
     <FullBleed
-      className="overflow-hidden bg-[linear-gradient(180deg,var(--paper)_0%,var(--jade-50)_58%,rgba(223,242,232,0.55)_100%)]"
+      className="overflow-x-clip bg-[linear-gradient(180deg,var(--paper)_0%,var(--jade-50)_58%,rgba(223,242,232,0.55)_100%)]"
       labelledBy="hero-heading"
     >
       <div
@@ -51,7 +51,7 @@ export function HeroDawn({
 
       <div className="relative flex min-h-[calc(100vh-4.5rem)] flex-col supports-[height:100svh]:min-h-[calc(100svh-4.5rem)]">
         <div className="grid flex-1 items-center gap-4xl py-xl md:py-4xl lg:grid-cols-2 lg:gap-5xl">
-          <div>
+          <div className="min-w-0">
             <p className="animate-fade-up inline-flex items-center gap-sm text-caption font-medium text-jade-800">
               <span aria-hidden className="inline-block h-px w-6 bg-jade-400" />
               {t('landing.eyebrow')}
@@ -61,9 +61,9 @@ export function HeroDawn({
               id="hero-heading"
               className="text-hero animate-fade-up delay-1 mt-lg text-ink-900 md:mt-xl"
             >
-              {t('landing.headlineBefore')}
+              <span className="block">{t('landing.headlineBefore')}</span>
               {t('landing.headlineAccent') ? (
-                <span className="block text-jade-600">
+                <span className="block text-jade-800">
                   {t('landing.headlineAccent')}
                 </span>
               ) : null}

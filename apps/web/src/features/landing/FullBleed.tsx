@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
 /**
- * Full-viewport-width section. Breaks out of AppShell's centered container
- * with a 50vw negative margin, then restores the same container inside so
- * content stays aligned with the rest of the page.
+ * Full-viewport-width section. Escapes AppShell main padding with matching
+ * negative margins, then restores the same max-width + padding as Header
+ * so content shares one left edge.
  */
 export function FullBleed({
   children,
@@ -22,7 +22,7 @@ export function FullBleed({
     <section
       id={id}
       aria-labelledby={labelledBy}
-      className={`relative mx-[calc(50%-50vw)] ${className}`}
+      className={`relative -mx-5 md:-mx-8 lg:-mx-6 ${className}`}
     >
       <div
         className={`relative mx-auto max-w-container px-5 md:px-8 lg:px-6 ${innerClassName}`}

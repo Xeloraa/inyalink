@@ -197,7 +197,7 @@ export function Header() {
 
   return (
     <header className="relative z-50 border-b border-line bg-paper/90 backdrop-blur-sm [overflow-wrap:normal]">
-      <div className="mx-auto flex max-w-container flex-nowrap items-center justify-between gap-1 px-3 py-xs sm:gap-sm sm:px-4 sm:py-sm md:px-8 lg:px-6">
+      <div className="mx-auto flex max-w-container flex-nowrap items-center justify-between gap-1 px-5 py-xs sm:gap-sm sm:py-sm md:px-8 lg:px-6">
         <Link
           to="/"
           className="inline-flex shrink-0 items-center gap-xs whitespace-nowrap font-display text-[15px] font-semibold text-ink-900 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:rounded-sm active:text-jade-800 sm:gap-sm sm:text-title"
