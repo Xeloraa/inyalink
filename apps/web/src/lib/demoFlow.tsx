@@ -15,7 +15,16 @@ import {
 } from '@inyalink/shared';
 
 export type DemoPath = 'quick' | 'plan' | 'clarify';
-export type StartDestination = 'roadmap' | 'panel';
+
+/** Result of classifying an opening message — includes the seeded turn. */
+export type StartFromInputResult =
+  | { destination: 'roadmap'; path: 'plan'; goal: string }
+  | {
+      destination: 'panel';
+      path: 'quick' | 'clarify';
+      goal: string;
+      messages: ChatMessage[];
+    };
 
 type DemoFlowState = {
   path: DemoPath | null;
@@ -37,7 +46,7 @@ type DemoFlowValue = DemoFlowState & {
   startPlan: (goal: string) => void;
   startClarify: (goal: string) => void;
   /** Classify opening text. Logs decision. Returns where the UI should go. */
-  startFromInput: (goal: string) => StartDestination;
+  startFromInput: (goal: string) => StartFromInputResult;
   setMessages: (messages: ChatMessage[]) => void;
   setBriefDraft: (draft: BriefDraft) => void;
   setBriefId: (id: string) => void;
@@ -105,7 +114,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startFromInput = useCallback(
-    (goal: string): StartDestination => {
+    (goal: string): StartFromInputResult => {
       const trimmed = goal.trim();
       const shape = classifyInputShape(trimmed);
       console.log('[classify]', {
@@ -115,14 +124,24 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       });
       if (shape === 'goal') {
         startPlan(trimmed);
-        return 'roadmap';
+        return { destination: 'roadmap', path: 'plan', goal: trimmed };
       }
       if (shape === 'service') {
         startQuick(trimmed);
-        return 'panel';
+        return {
+          destination: 'panel',
+          path: 'quick',
+          goal: trimmed,
+          messages: [{ role: 'user', content: trimmed }],
+        };
       }
       startClarify(trimmed);
-      return 'panel';
+      return {
+        destination: 'panel',
+        path: 'clarify',
+        goal: trimmed,
+        messages: [{ role: 'user', content: trimmed }],
+      };
     },
     [startClarify, startPlan, startQuick],
   );

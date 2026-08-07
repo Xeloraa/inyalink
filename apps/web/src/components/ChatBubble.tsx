@@ -6,13 +6,12 @@ type ChatBubbleProps = {
 /**
  * Conversation bubble — hugs content; alignment + colour carry the speaker.
  * Spec: 06-design-system.md § Chat bubbles.
+ * User: right, max 78%. AI: left, max 86%. Both w-fit (never full-width stretch).
  */
 export function ChatBubble({ role, children }: ChatBubbleProps) {
   const isUser = role === 'user';
   return (
-    <div
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
-    >
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <p
         className={`font-myanmar w-fit px-lg py-md text-body-lg leading-burmese [overflow-wrap:anywhere] ${
           isUser

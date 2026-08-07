@@ -3,7 +3,6 @@ import { AppShell } from './components/AppShell';
 import AuthCallback from './routes/AuthCallback';
 import BriefReview from './routes/BriefReview';
 import Browse from './routes/Browse';
-import Converse from './routes/Converse';
 import Landing from './routes/Landing';
 import Login from './routes/Login';
 import Matches from './routes/Matches';
@@ -25,7 +24,6 @@ export default function App() {
           <Route path="app" element={<Navigate to="/app/briefs" replace />} />
           <Route path="app/briefs" element={<ProBriefs />} />
           <Route path="profile/create" element={<ProfileCreate />} />
-          <Route path="converse" element={<Converse />} />
           <Route path="brief" element={<BriefReview />} />
           <Route path="matches/:briefId" element={<Matches />} />
           <Route path="roadmap" element={<Roadmap />} />
@@ -34,6 +32,8 @@ export default function App() {
           <Route path="signup" element={<Signup />} />
           <Route path="auth/callback" element={<AuthCallback />} />
         </Route>
+        {/* Legacy bookmark — chat is the floating panel, not a page. */}
+        <Route path="converse" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -24,8 +24,8 @@ export default function Landing() {
   function submitGoal(text: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
-    const destination = startFromInput(trimmed);
-    if (destination === 'roadmap') {
+    const result = startFromInput(trimmed);
+    if (result.destination === 'roadmap') {
       void navigate('/roadmap');
       return;
     }

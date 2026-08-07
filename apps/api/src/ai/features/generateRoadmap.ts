@@ -1,4 +1,5 @@
 import type { RoadmapStep, UiLocale } from '@inyalink/shared';
+import { detectResponseLocale } from '@inyalink/burmese';
 import { getProvider } from '../providers/index.js';
 import { renderPrompt } from '../prompts/load.js';
 import {
@@ -10,7 +11,10 @@ import type { AiCallLogger } from '../telemetry.js';
 export type GenerateRoadmapArgs = {
   goal: string;
   categorySlugs: string[];
-  /** UI my/en toggle — response language, independent of goal language. */
+  /**
+   * UI my/en toggle — kept for API compatibility. Plan copy follows the
+   * goal message language instead.
+   */
   locale: UiLocale;
   model: string;
   log: AiCallLogger;
@@ -86,10 +90,11 @@ export async function generateRoadmap(
 
   const allowed = new Set(args.categorySlugs);
   const fallbackSlug = args.categorySlugs[0] ?? 'graphic-design';
+  const responseLocale = detectResponseLocale(args.goal);
   const provider = getProvider();
   const prompt = renderPrompt('roadmap', {
     categories: args.categorySlugs.map((s) => `- ${s}`).join('\n'),
-    language: args.locale,
+    language: responseLocale,
   });
 
   const started = Date.now();
@@ -171,7 +176,7 @@ export async function generateRoadmap(
 
   return {
     ok: true,
-    language: args.locale,
+    language: responseLocale,
     steps,
     disclaimer: result.data.disclaimer,
     remappedSlugs,

@@ -44,7 +44,8 @@ export function HeroInput({
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    // Enter submits; Shift+Enter inserts a newline (desktop chat convention).
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (value.trim()) onSubmit();
     }

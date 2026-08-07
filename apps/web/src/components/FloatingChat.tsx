@@ -90,7 +90,7 @@ function countAssistantQuestions(messages: ChatMessage[]): number {
 
 /**
  * Floating conversation panel — the only AI chat surface.
- * Opens from the hero (and resume chip). No FAB.
+ * Opens from the hero / browse bar / profile. No FAB, no /converse page.
  */
 export function FloatingChat() {
   const { t, locale } = useI18n();
@@ -117,7 +117,12 @@ export function FloatingChat() {
   const [complete, setComplete] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const bootRef = useRef<string | null>(null);
+  /** Guards StrictMode double-invoke for the opening quick turn. */
+  const bootKeyRef = useRef<string | null>(null);
+  const clarifyBootRef = useRef<string | null>(null);
+  const prevConverseStarted = useRef(converseStarted);
+  const briefDraftRef = useRef(briefDraft);
+  briefDraftRef.current = briefDraft;
 
   const clarifying = path === 'clarify';
   const active = path === 'quick' || path === 'clarify';
@@ -158,6 +163,16 @@ export function FloatingChat() {
     });
   }, [messages, busy, open]);
 
+  // New quick/clarify session (converseStarted flipped false) may reuse the
+  // same goal text — clear the boot gate so the opening turn runs again.
+  useEffect(() => {
+    if (prevConverseStarted.current && !converseStarted) {
+      bootKeyRef.current = null;
+      clarifyBootRef.current = null;
+    }
+    prevConverseStarted.current = converseStarted;
+  }, [converseStarted]);
+
   function goRoadmap() {
     handoffToRoadmap();
     setOpen(false);
@@ -170,7 +185,7 @@ export function FloatingChat() {
     try {
       const result = await converseBrief({
         messages: nextMessages,
-        briefDraft,
+        briefDraft: briefDraftRef.current,
         locale,
       });
       if (result.redirectTo === 'roadmap') {
@@ -202,28 +217,39 @@ export function FloatingChat() {
     }
   }
 
-  // Bootstrap clarify question or first structureBrief turn once per goal.
+  /**
+   * First AI turn for a quick-hire session. Called from the boot effect
+   * (hero submit) and from onSend (empty panel). Uses bootKeyRef so
+   * StrictMode / re-renders cannot drop or double the opening turn.
+   */
+  function bootQuickTurn(seedMessages: ChatMessage[], seedGoal: string) {
+    const key = `quick:${seedGoal}`;
+    if (bootKeyRef.current === key) return;
+    bootKeyRef.current = key;
+    markConverseStarted();
+    void runTurn(seedMessages);
+  }
+
+  // Hero (and any external startQuick) — first turn must not wait for a
+  // second user message. Depends on messages so the seeded user turn is fresh.
   useEffect(() => {
-    if (!active || !goal) return;
-    const bootKey = `${path}:${goal}`;
-    if (bootRef.current === bootKey) return;
-
-    if (clarifying) {
-      if (messages.length === 1 && messages[0]?.role === 'user') {
-        bootRef.current = bootKey;
-        const question = translateIn(contentLocale, 'converse.clarifyQuestion');
-        setMessages([...messages, { role: 'assistant', content: question }]);
-      }
-      return;
-    }
-
-    if (path === 'quick' && !converseStarted) {
-      bootRef.current = bootKey;
-      markConverseStarted();
-      void runTurn(messages);
-    }
+    if (path !== 'quick' || converseStarted || !goal) return;
+    if (messages.length !== 1 || messages[0]?.role !== 'user') return;
+    bootQuickTurn(messages, goal);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, path, goal, clarifying, converseStarted]);
+  }, [path, goal, converseStarted, messages]);
+
+  // Clarify path — inject the one local question (no API).
+  useEffect(() => {
+    if (!clarifying || !goal) return;
+    if (messages.length !== 1 || messages[0]?.role !== 'user') return;
+    const key = `clarify:${goal}`;
+    if (clarifyBootRef.current === key) return;
+    clarifyBootRef.current = key;
+    const question = translateIn(contentLocale, 'converse.clarifyQuestion');
+    setMessages([...messages, { role: 'assistant', content: question }]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clarifying, goal, messages.length]);
 
   async function onSend(e: FormEvent) {
     e.preventDefault();
@@ -233,11 +259,16 @@ export function FloatingChat() {
     // Panel opened empty (e.g. browse bar) — classify the first message.
     if (!active) {
       setReply('');
-      const destination = startFromInput(text);
-      if (destination === 'roadmap') {
+      const result = startFromInput(text);
+      if (result.destination === 'roadmap') {
         setOpen(false);
         void navigate('/roadmap');
+        return;
       }
+      if (result.path === 'quick') {
+        bootQuickTurn(result.messages, result.goal);
+      }
+      // clarify: the clarify effect injects the local question
       return;
     }
 
@@ -284,28 +315,14 @@ export function FloatingChat() {
     await runTurn(next);
   }
 
-  // Resume chip when panel closed mid-conversation (not a second entry point).
-  if (!open) {
-    if (active && messages.length > 0) {
-      return (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="tap-target fixed bottom-5 right-5 z-40 max-w-[240px] truncate rounded-full border border-line bg-white px-lg py-md text-body-sm text-ink-700 shadow-md hover:border-jade-400 hover:text-jade-600 focus-visible:shadow-focus md:bottom-8 md:right-8"
-        >
-          {t('chat.continue')}
-        </button>
-      );
-    }
-    return null;
-  }
+  if (!open) return null;
 
   return (
     <div
       id="floating-chat-panel"
       role="dialog"
       aria-label={t('chat.title')}
-      className="fixed inset-x-0 bottom-0 z-50 flex max-h-[min(72vh,640px)] flex-col rounded-t-xl border border-line bg-white shadow-lg md:inset-auto md:bottom-6 md:right-6 md:h-[min(560px,70vh)] md:max-h-none md:w-[min(420px,calc(100vw-2rem))] md:rounded-xl"
+      className="fixed bottom-4 right-4 z-50 flex h-[min(560px,calc(100dvh-6rem))] w-[min(420px,calc(100vw-2rem))] flex-col rounded-xl border border-line bg-white shadow-lg"
     >
       <header className="flex shrink-0 items-center justify-between border-b border-line-soft px-lg py-md">
         <div className="min-w-0">
@@ -326,7 +343,7 @@ export function FloatingChat() {
 
       <div
         ref={listRef}
-        className="flex flex-1 flex-col justify-end gap-md overflow-y-auto px-lg py-lg"
+        className="flex min-h-0 flex-1 flex-col justify-end gap-md overflow-y-auto px-lg py-lg"
         aria-live="polite"
       >
         {messages.length === 0 ? (
