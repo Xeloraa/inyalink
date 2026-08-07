@@ -1,11 +1,21 @@
 /* Landing (Morning Water) — display type, scroll reveals, ambient motion. */
 
-/* Phone size keeps the goal input above the fold; Burmese runs long. */
-.text-hero {
+/* Question line — quieter lead-in. */
+.text-hero-question {
   font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
-  font-size: 32px;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+/* Directive — larger, heavier; leads the eye. */
+.text-hero-directive {
+  font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+  font-size: 40px;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.15;
   letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
@@ -19,14 +29,20 @@
 }
 
 @media (min-width: 768px) {
-  .text-hero {
-    font-size: 48px;
-    line-height: 1.15;
+  .text-hero-question {
+    font-size: 44px;
+    line-height: 1.2;
+  }
+
+  .text-hero-directive {
+    font-size: 64px;
+    line-height: 1.1;
   }
 }
 
 /* Burmese stacked diacritics clip below 1.8 — applies at display sizes too. */
-:lang(my) .text-hero,
+:lang(my) .text-hero-question,
+:lang(my) .text-hero-directive,
 :lang(my) .text-sect {
   line-height: 1.8;
 }

@@ -59,26 +59,30 @@ export function HeroDawn({
 
             <h1
               id="hero-heading"
-              className="text-hero animate-fade-up delay-1 mt-lg text-ink-900 md:mt-xl"
+              className="animate-fade-up delay-1 mt-lg text-ink-900 md:mt-xl"
             >
-              <span className="block">{t('landing.headlineBefore')}</span>
+              <span className="text-hero-question block">
+                {t('landing.headlineBefore')}
+              </span>
               {t('landing.headlineAccent') ? (
-                <span className="block text-jade-800">
+                <span className="text-hero-directive mt-xs block text-jade-600">
                   {t('landing.headlineAccent')}
                 </span>
               ) : null}
               {t('landing.headlineAfter') ? (
-                <span className="block">{t('landing.headlineAfter')}</span>
+                <span className="text-hero-question block">
+                  {t('landing.headlineAfter')}
+                </span>
               ) : null}
             </h1>
 
-            <p className="animate-fade-up delay-2 mt-md max-w-hero text-body text-ink-500 md:mt-lg md:text-body-lg">
+            <p className="animate-fade-up delay-2 mt-sm max-w-hero text-[18px] leading-burmese text-ink-500">
               {t('landing.subhead')}
             </p>
 
             <div
               ref={heroRef}
-              className="animate-fade-up delay-3 relative mt-xl w-full md:mt-2xl"
+              className="animate-fade-up delay-3 relative mt-2xl w-full md:mt-3xl"
             >
               <HeroInput
                 value={goal}
