@@ -1,16 +1,13 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
 import AuthCallback from './routes/AuthCallback';
-import BriefReview from './routes/BriefReview';
 import Browse from './routes/Browse';
 import Landing from './routes/Landing';
 import Login from './routes/Login';
-import Matches from './routes/Matches';
 import ProBriefs from './routes/ProBriefs';
 import ProfessionalProfile from './routes/ProfessionalProfile';
 import ProfessionalsEdit from './routes/ProfessionalsEdit';
 import ProfessionalsJoin from './routes/ProfessionalsJoin';
-import Roadmap from './routes/Roadmap';
 import Signup from './routes/Signup';
 
 export default function App() {
@@ -30,16 +27,16 @@ export default function App() {
             path="profile/create"
             element={<Navigate to="/professionals/join" replace />}
           />
-          <Route path="brief" element={<BriefReview />} />
-          <Route path="matches/:briefId" element={<Matches />} />
-          <Route path="roadmap" element={<Roadmap />} />
 
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="auth/callback" element={<AuthCallback />} />
         </Route>
-        {/* Legacy bookmark — chat is the floating panel, not a page. */}
+        {/* Legacy AI pages — everything renders in the floating panel now. */}
         <Route path="converse" element={<Navigate to="/" replace />} />
+        <Route path="roadmap" element={<Navigate to="/" replace />} />
+        <Route path="brief" element={<Navigate to="/" replace />} />
+        <Route path="matches/:briefId" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

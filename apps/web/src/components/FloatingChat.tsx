@@ -4,7 +4,6 @@ import {
   useState,
   type FormEvent,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   classifyClarifyReply,
   classifyInputShape,
@@ -12,7 +11,15 @@ import {
   type ChatMessage,
 } from '@inyalink/shared';
 import { detectResponseLocale } from '@inyalink/burmese';
-import { converseBrief } from '../lib/api';
+import {
+  converseBrief,
+  createBrief,
+  generateRoadmap,
+  getMatchCandidates,
+  submitBrief,
+  updateBrief,
+} from '../lib/api';
+import { ApiError } from '../lib/apiClient';
 import { useAuth } from '../lib/auth';
 import {
   fetchConversationDetail,
@@ -20,6 +27,9 @@ import {
 } from '../lib/conversationStore';
 import { useDemoFlow } from '../lib/demoFlow';
 import { translateIn, useI18n } from '../lib/i18n';
+import { BriefSummaryCard } from '../features/chat/BriefSummaryCard';
+import { MatchAvatarRow } from '../features/chat/MatchAvatarRow';
+import { RoadmapCards } from '../features/chat/RoadmapCards';
 import { ChatBubble, ThinkingBubble } from './ChatBubble';
 import { ChatHistoryPanel } from './ChatHistoryPanel';
 import { useChatUi } from './chatUi';
@@ -87,12 +97,11 @@ function HistoryIcon() {
 }
 
 /**
- * Floating conversation panel — the only AI chat surface.
- * FAB reopens after close; hero / browse bar / profile also open it.
+ * Floating conversation panel — the only AI output surface.
+ * Clarifying questions, roadmap, brief, and matches all render here.
  */
 export function FloatingChat() {
   const { t, locale } = useI18n();
-  const navigate = useNavigate();
   const { open, setOpen } = useChatUi();
   const { session } = useAuth();
   const signedIn = Boolean(session);
@@ -102,14 +111,21 @@ export function FloatingChat() {
     path,
     messages,
     briefDraft,
+    briefId,
+    roadmapSteps,
+    roadmapDisclaimer,
+    matches,
     converseStarted,
     converseComplete,
     startFromInput,
     setMessages,
     setBriefDraft,
+    setBriefId,
     setConversationId,
     markConverseStarted,
     markConverseComplete,
+    setMatches,
+    setRoadmap,
     resolveClarifyToQuick,
     resolveClarifyToPlan,
     handoffToRoadmap,
@@ -121,27 +137,41 @@ export function FloatingChat() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [complete, setComplete] = useState(false);
+  const [briefBusy, setBriefBusy] = useState(false);
+  const [briefError, setBriefError] = useState<string | null>(null);
+  const [matchBusy, setMatchBusy] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyRefresh, setHistoryRefresh] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  /** Guards StrictMode double-invoke for the opening quick turn. */
   const bootKeyRef = useRef<string | null>(null);
   const clarifyBootRef = useRef<string | null>(null);
   const unrelatedBootRef = useRef<string | null>(null);
+  const roadmapBootRef = useRef<string | null>(null);
   const prevConverseStarted = useRef(converseStarted);
   const conversationIdRef = useRef(conversationId);
   conversationIdRef.current = conversationId;
   const briefDraftRef = useRef(briefDraft);
   briefDraftRef.current = briefDraft;
+  const briefIdRef = useRef(briefId);
+  briefIdRef.current = briefId;
+
   const persistPath =
-    path === 'quick' || path === 'clarify' || path === 'unrelated'
+    path === 'quick' ||
+    path === 'plan' ||
+    path === 'clarify' ||
+    path === 'unrelated'
       ? path
       : null;
 
   const clarifying = path === 'clarify';
   const unrelated = path === 'unrelated';
-  const active = path === 'quick' || path === 'clarify' || path === 'unrelated';
+  const planning = path === 'plan';
+  const active =
+    path === 'quick' ||
+    path === 'plan' ||
+    path === 'clarify' ||
+    path === 'unrelated';
 
   const latestUser = [...messages].reverse().find((m) => m.role === 'user');
   const contentLocale = latestUser
@@ -150,12 +180,18 @@ export function FloatingChat() {
       ? detectResponseLocale(goal)
       : locale;
 
-  // Open panel whenever a chat path is active; close on roadmap handoff.
+  const showBriefCard = complete && path === 'quick';
+  const showComposer = !complete && !planning;
+
   useEffect(() => {
-    if (path === 'quick' || path === 'clarify' || path === 'unrelated') {
+    if (
+      path === 'quick' ||
+      path === 'plan' ||
+      path === 'clarify' ||
+      path === 'unrelated'
+    ) {
       setOpen(true);
     }
-    if (path === 'plan') setOpen(false);
   }, [path, setOpen]);
 
   useEffect(() => {
@@ -178,9 +214,8 @@ export function FloatingChat() {
       top: listRef.current.scrollHeight,
       behavior: 'smooth',
     });
-  }, [messages, busy, open]);
+  }, [messages, busy, open, roadmapSteps, matches, complete, matchBusy]);
 
-  // Focus composer when the panel opens (not while browsing history).
   useEffect(() => {
     if (!open || historyOpen) return;
     const id = window.setTimeout(() => inputRef.current?.focus(), 220);
@@ -191,7 +226,6 @@ export function FloatingChat() {
     setComplete(converseComplete);
   }, [conversationId, converseComplete]);
 
-  // Persist transcript after each turn (DB when signed in, else sessionStorage).
   useEffect(() => {
     if (!persistPath || messages.length === 0) return;
     const timer = window.setTimeout(() => {
@@ -211,33 +245,55 @@ export function FloatingChat() {
           setHistoryRefresh((n) => n + 1);
         })
         .catch(() => {
-          /* best-effort — chat still works offline / on API blip */
+          /* best-effort */
         });
     }, 400);
     return () => window.clearTimeout(timer);
-  }, [
-    messages,
-    persistPath,
-    complete,
-    signedIn,
-    setConversationId,
-  ]);
+  }, [messages, persistPath, complete, signedIn, setConversationId]);
 
-  // New quick/clarify session (converseStarted flipped false) may reuse the
-  // same goal text — clear the boot gate so the opening turn runs again.
   useEffect(() => {
     if (prevConverseStarted.current && !converseStarted) {
       bootKeyRef.current = null;
       clarifyBootRef.current = null;
       unrelatedBootRef.current = null;
+      roadmapBootRef.current = null;
     }
     prevConverseStarted.current = converseStarted;
   }, [converseStarted]);
 
   function goRoadmap() {
     handoffToRoadmap();
-    setOpen(false);
-    void navigate('/roadmap');
+  }
+
+  async function loadRoadmap(seedGoal: string) {
+    const key = `plan:${seedGoal}`;
+    if (roadmapBootRef.current === key) return;
+    roadmapBootRef.current = key;
+    setBusy(true);
+    setNotice(null);
+    try {
+      const result = await generateRoadmap(seedGoal, locale);
+      if (result.retryable) {
+        roadmapBootRef.current = null;
+        setNotice(result.notice ?? t('rateLimit.body'));
+        return;
+      }
+      if (!result.id || !result.steps || !result.disclaimer) {
+        roadmapBootRef.current = null;
+        setNotice(t('rateLimit.body'));
+        return;
+      }
+      setRoadmap({
+        id: result.id,
+        steps: result.steps,
+        disclaimer: result.disclaimer,
+      });
+    } catch {
+      roadmapBootRef.current = null;
+      setNotice(t('rateLimit.body'));
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function runTurn(nextMessages: ChatMessage[]) {
@@ -268,10 +324,7 @@ export function FloatingChat() {
       setComplete(result.complete);
       if (result.complete) {
         markConverseComplete();
-      }
-      if (result.complete && !result.nextQuestion) {
-        setOpen(false);
-        void navigate('/brief');
+        setMatches(null);
       }
     } catch {
       setNotice(t('rateLimit.body'));
@@ -281,11 +334,6 @@ export function FloatingChat() {
     }
   }
 
-  /**
-   * First AI turn for a quick-hire session. Called from the boot effect
-   * (hero submit) and from onSend (empty panel). Uses bootKeyRef so
-   * StrictMode / re-renders cannot drop or double the opening turn.
-   */
   function bootQuickTurn(seedMessages: ChatMessage[], seedGoal: string) {
     const key = `quick:${seedGoal}`;
     if (bootKeyRef.current === key) return;
@@ -294,8 +342,6 @@ export function FloatingChat() {
     void runTurn(seedMessages);
   }
 
-  // Hero (and any external startQuick) — first turn must not wait for a
-  // second user message. Depends on messages so the seeded user turn is fresh.
   useEffect(() => {
     if (path !== 'quick' || converseStarted || !goal) return;
     if (messages.length !== 1 || messages[0]?.role !== 'user') return;
@@ -303,7 +349,13 @@ export function FloatingChat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path, goal, converseStarted, messages]);
 
-  // Clarify path — inject the one local question (no API).
+  useEffect(() => {
+    if (!planning || !goal) return;
+    if (roadmapSteps.length > 0) return;
+    void loadRoadmap(goal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planning, goal, roadmapSteps.length]);
+
   useEffect(() => {
     if (!clarifying || !goal) return;
     if (messages.length !== 1 || messages[0]?.role !== 'user') return;
@@ -315,7 +367,6 @@ export function FloatingChat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clarifying, goal, messages.length]);
 
-  // Unrelated path — §11 warm redirect (no API, never the hire-vs-plan clarify).
   useEffect(() => {
     if (!unrelated || !goal) return;
     if (messages.length !== 1 || messages[0]?.role !== 'user') return;
@@ -327,24 +378,46 @@ export function FloatingChat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unrelated, goal, messages.length]);
 
+  async function onFindMatches(urgent: boolean) {
+    setBriefBusy(true);
+    setBriefError(null);
+    setMatchBusy(true);
+    try {
+      const draft = briefDraftRef.current;
+      const body = {
+        source: 'ai_chat' as const,
+        raw_input: goal || undefined,
+        draft,
+      };
+      const saved = briefIdRef.current
+        ? await updateBrief(briefIdRef.current, { draft })
+        : await createBrief(body);
+      setBriefId(saved.id);
+      await submitBrief(saved.id, { urgent });
+      const result = await getMatchCandidates(saved.id);
+      setMatches(result.candidates);
+    } catch (err) {
+      setBriefError(
+        err instanceof ApiError ? err.message : t('matches.loadError'),
+      );
+      setMatches(null);
+    } finally {
+      setBriefBusy(false);
+      setMatchBusy(false);
+    }
+  }
+
   async function onSend(e: FormEvent) {
     e.preventDefault();
     const text = reply.trim();
     if (!text || busy) return;
 
-    // Panel opened empty (e.g. browse bar) — classify the first message.
     if (!active) {
       setReply('');
       const result = startFromInput(text);
-      if (result.destination === 'roadmap') {
-        setOpen(false);
-        void navigate('/roadmap');
-        return;
-      }
       if (result.path === 'quick') {
         bootQuickTurn(result.messages, result.goal);
       }
-      // clarify / unrelated: effects inject the local reply
       return;
     }
 
@@ -354,15 +427,12 @@ export function FloatingChat() {
       console.log('[classify] clarify reply', { text, shape });
       if (shape === 'goal') {
         resolveClarifyToPlan();
-        setOpen(false);
-        void navigate('/roadmap');
         return;
       }
       resolveClarifyToQuick();
       return;
     }
 
-    // Persist on unrelated → redirect once more; business-shaped → re-route.
     if (unrelated) {
       setReply('');
       const shape = classifyInputShape(text);
@@ -380,11 +450,6 @@ export function FloatingChat() {
         return;
       }
       const result = startFromInput(text);
-      if (result.destination === 'roadmap') {
-        setOpen(false);
-        void navigate('/roadmap');
-        return;
-      }
       if (result.path === 'quick') {
         bootQuickTurn(result.messages, result.goal);
       }
@@ -407,12 +472,10 @@ export function FloatingChat() {
   }
 
   async function onSkip() {
-    if (busy || complete) return;
+    if (busy || complete || planning) return;
     if (unrelated) return;
     if (clarifying) {
       resolveClarifyToPlan();
-      setOpen(false);
-      void navigate('/roadmap');
       return;
     }
     const skipText = translateIn(contentLocale, 'converse.skipReply');
@@ -428,9 +491,11 @@ export function FloatingChat() {
       setComplete(detail.complete);
       setHistoryOpen(false);
       setNotice(null);
+      setBriefError(null);
       bootKeyRef.current = `quick:${detail.id}:loaded`;
       clarifyBootRef.current = `clarify:${detail.id}:loaded`;
       unrelatedBootRef.current = `unrelated:${detail.id}:loaded`;
+      roadmapBootRef.current = `plan:${detail.id}:loaded`;
     } catch {
       setNotice(t('chat.historyError'));
     }
@@ -440,11 +505,13 @@ export function FloatingChat() {
     startNewConversation();
     setComplete(false);
     setNotice(null);
+    setBriefError(null);
     setReply('');
     setHistoryOpen(false);
     bootKeyRef.current = null;
     clarifyBootRef.current = null;
     unrelatedBootRef.current = null;
+    roadmapBootRef.current = null;
   }
 
   return (
@@ -532,32 +599,53 @@ export function FloatingChat() {
             ))}
             {busy ? <ThinkingBubble /> : null}
             {busy ? <RotatingProgress active /> : null}
+            {planning && roadmapSteps.length > 0 ? (
+              <RoadmapCards
+                steps={roadmapSteps}
+                disclaimer={roadmapDisclaimer}
+              />
+            ) : null}
+            {showBriefCard ? (
+              <BriefSummaryCard
+                draft={briefDraft}
+                goal={goal}
+                busy={briefBusy || matchBusy}
+                error={briefError}
+                onChange={setBriefDraft}
+                onFindMatches={(urgent) => void onFindMatches(urgent)}
+              />
+            ) : null}
+            {matchBusy && !matches ? (
+              <>
+                <ThinkingBubble />
+                <RotatingProgress active />
+              </>
+            ) : null}
+            {matches && matches.length > 0 ? (
+              <MatchAvatarRow matches={matches} />
+            ) : null}
+            {matches && matches.length === 0 && !matchBusy ? (
+              <ChatBubble role="assistant">{t('matches.waitingBody')}</ChatBubble>
+            ) : null}
           </div>
 
           {notice ? (
             <div className="shrink-0 px-xl pb-lg">
               <RateLimitNotice
                 notice={notice}
-                onRetry={() => void runTurn(messages)}
+                onRetry={() => {
+                  if (planning && goal) {
+                    roadmapBootRef.current = null;
+                    void loadRoadmap(goal);
+                    return;
+                  }
+                  void runTurn(messages);
+                }}
               />
             </div>
           ) : null}
 
-          {complete ? (
-            <div className="shrink-0 border-t border-line-soft p-lg">
-              <button
-                type="button"
-                tabIndex={open ? 0 : -1}
-                className="tap-target w-full rounded-md bg-jade-600 px-lg py-md text-body font-medium text-white hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800"
-                onClick={() => {
-                  setOpen(false);
-                  void navigate('/brief');
-                }}
-              >
-                {t('converse.done')}
-              </button>
-            </div>
-          ) : (
+          {showComposer ? (
             <form
               onSubmit={(e) => void onSend(e)}
               className="shrink-0 border-t border-line-soft p-lg"
@@ -585,7 +673,7 @@ export function FloatingChat() {
                   {t('converse.send')}
                 </button>
               </div>
-              {active && !unrelated ? (
+              {active && !unrelated && !planning ? (
                 <div className="mt-md flex justify-end">
                   <button
                     type="button"
@@ -599,7 +687,7 @@ export function FloatingChat() {
                 </div>
               ) : null}
             </form>
-          )}
+          ) : null}
         </div>
       </div>
     </>

@@ -18,15 +18,13 @@ import {
 
 export type DemoPath = 'quick' | 'plan' | 'clarify' | 'unrelated';
 
-/** Result of classifying an opening message — includes the seeded turn. */
-export type StartFromInputResult =
-  | { destination: 'roadmap'; path: 'plan'; goal: string }
-  | {
-      destination: 'panel';
-      path: 'quick' | 'clarify' | 'unrelated';
-      goal: string;
-      messages: ChatMessage[];
-    };
+/** Result of classifying an opening message — always stays in the panel. */
+export type StartFromInputResult = {
+  destination: 'panel';
+  path: DemoPath;
+  goal: string;
+  messages: ChatMessage[];
+};
 
 type DemoFlowState = {
   conversationId: string | null;
@@ -49,7 +47,7 @@ type DemoFlowValue = DemoFlowState & {
   startPlan: (goal: string) => void;
   startClarify: (goal: string) => void;
   startUnrelated: (goal: string) => void;
-  /** Classify opening text. Logs decision. Returns where the UI should go. */
+  /** Classify opening text. Logs decision. Always opens the panel. */
   startFromInput: (goal: string) => StartFromInputResult;
   setMessages: (messages: ChatMessage[]) => void;
   setBriefDraft: (draft: BriefDraft) => void;
@@ -63,6 +61,7 @@ type DemoFlowValue = DemoFlowState & {
     steps: RoadmapStep[];
     disclaimer: string;
   }) => void;
+  clearRoadmap: () => void;
   resolveClarifyToQuick: () => void;
   resolveClarifyToPlan: () => void;
   /** Mid-chat handoff to roadmap (dont-know / API redirect). */
@@ -105,10 +104,12 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startPlan = useCallback((goal: string) => {
+    const trimmed = goal.trim();
     setState({
       ...initial,
       path: 'plan',
-      goal: goal.trim(),
+      goal: trimmed,
+      messages: [{ role: 'user', content: trimmed }],
     });
   }, []);
 
@@ -138,28 +139,19 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
     (goal: string): StartFromInputResult => {
       const trimmed = goal.trim();
       const shape = classifyInputShape(trimmed);
+      const messages: ChatMessage[] = [{ role: 'user', content: trimmed }];
       console.log('[classify]', {
         input: trimmed,
         shape,
-        destination:
-          shape === 'goal'
-            ? 'roadmap'
-            : shape === 'unrelated'
-              ? 'panel-redirect'
-              : 'panel',
+        destination: 'panel',
       });
       if (shape === 'goal') {
         startPlan(trimmed);
-        return { destination: 'roadmap', path: 'plan', goal: trimmed };
+        return { destination: 'panel', path: 'plan', goal: trimmed, messages };
       }
       if (shape === 'service') {
         startQuick(trimmed);
-        return {
-          destination: 'panel',
-          path: 'quick',
-          goal: trimmed,
-          messages: [{ role: 'user', content: trimmed }],
-        };
+        return { destination: 'panel', path: 'quick', goal: trimmed, messages };
       }
       if (shape === 'unrelated') {
         startUnrelated(trimmed);
@@ -167,7 +159,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
           destination: 'panel',
           path: 'unrelated',
           goal: trimmed,
-          messages: [{ role: 'user', content: trimmed }],
+          messages,
         };
       }
       startClarify(trimmed);
@@ -175,7 +167,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
         destination: 'panel',
         path: 'clarify',
         goal: trimmed,
-        messages: [{ role: 'user', content: trimmed }],
+        messages,
       };
     },
     [startClarify, startPlan, startQuick, startUnrelated],
@@ -221,6 +213,15 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const clearRoadmap = useCallback(() => {
+    setState((s) => ({
+      ...s,
+      roadmapId: null,
+      roadmapSteps: [],
+      roadmapDisclaimer: null,
+    }));
+  }, []);
+
   const resolveClarifyToQuick = useCallback(() => {
     setState((s) => ({
       ...s,
@@ -233,17 +234,29 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
 
   const resolveClarifyToPlan = useCallback(() => {
     setState((s) => ({
-      ...initial,
+      ...s,
       path: 'plan',
-      goal: s.goal,
+      converseStarted: true,
+      converseComplete: false,
+      roadmapId: null,
+      roadmapSteps: [],
+      roadmapDisclaimer: null,
+      matches: null,
+      briefId: null,
     }));
   }, []);
 
   const handoffToRoadmap = useCallback(() => {
     setState((s) => ({
-      ...initial,
+      ...s,
       path: 'plan',
-      goal: s.goal,
+      converseStarted: true,
+      converseComplete: false,
+      roadmapId: null,
+      roadmapSteps: [],
+      roadmapDisclaimer: null,
+      matches: null,
+      briefId: null,
     }));
   }, []);
 
@@ -285,6 +298,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       markConverseComplete,
       setMatches,
       setRoadmap,
+      clearRoadmap,
       resolveClarifyToQuick,
       resolveClarifyToPlan,
       handoffToRoadmap,
@@ -307,6 +321,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       markConverseComplete,
       setMatches,
       setRoadmap,
+      clearRoadmap,
       resolveClarifyToQuick,
       resolveClarifyToPlan,
       handoffToRoadmap,

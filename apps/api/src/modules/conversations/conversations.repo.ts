@@ -27,7 +27,12 @@ function toIso(value: unknown): string {
 }
 
 function parsePath(value: unknown): ConversationPath | null {
-  if (value === 'quick' || value === 'clarify' || value === 'unrelated') {
+  if (
+    value === 'quick' ||
+    value === 'plan' ||
+    value === 'clarify' ||
+    value === 'unrelated'
+  ) {
     return value;
   }
   return null;

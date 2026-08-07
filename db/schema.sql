@@ -249,7 +249,7 @@ create table ai_conversations (
   id           uuid primary key default gen_random_uuid(),
   user_id      uuid not null references profiles(id) on delete cascade,
   title        text not null check (length(title) between 1 and 120),
-  path         text check (path is null or path in ('quick', 'clarify', 'unrelated')),
+  path         text check (path is null or path in ('quick', 'plan', 'clarify', 'unrelated')),
   brief_draft  jsonb not null default '{}'::jsonb,
   complete     boolean not null default false,
   created_at   timestamptz not null default now(),

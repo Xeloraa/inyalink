@@ -2,9 +2,10 @@ import { z } from 'zod';
 import { BriefDraftSchema } from './brief.js';
 import { ChatMessageSchema } from './ai.js';
 
-/** Chat panel path that can be resumed (plan navigates away). */
+/** Chat panel path that can be resumed. */
 export const ConversationPathSchema = z.enum([
   'quick',
+  'plan',
   'clarify',
   'unrelated',
 ]);

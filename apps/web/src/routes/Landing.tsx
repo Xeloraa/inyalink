@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Commitments } from '../features/landing/Commitments';
 import { DeepStory } from '../features/landing/DeepStory';
 import { HeroDawn } from '../features/landing/HeroDawn';
@@ -15,7 +14,6 @@ import { useDemoFlow } from '../lib/demoFlow';
  * and a dusk close. The hero input is the page's single AI entry point.
  */
 export default function Landing() {
-  const navigate = useNavigate();
   const { startFromInput } = useDemoFlow();
   const { setOpen } = useChatUi();
   const [goal, setGoal] = useState('');
@@ -25,11 +23,7 @@ export default function Landing() {
     const trimmed = text.trim();
     if (!trimmed) return;
     setGoal('');
-    const result = startFromInput(trimmed);
-    if (result.destination === 'roadmap') {
-      void navigate('/roadmap');
-      return;
-    }
+    startFromInput(trimmed);
     setOpen(true);
   }
 
