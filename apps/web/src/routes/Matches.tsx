@@ -1,7 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import type { MatchCandidate, MatchingCandidatesResponse } from '@inyalink/shared';
-import { getMatchCandidates, getMatchExplanation } from '../lib/api';
+import type {
+  Engagement,
+  MatchCandidate,
+  MatchingCandidatesResponse,
+} from '@inyalink/shared';
+import {
+  createEngagement,
+  getMatchCandidates,
+  getMatchExplanation,
+  listEngagementsForBrief,
+} from '../lib/api';
 import { ApiError } from '../lib/apiClient';
 import { useI18n } from '../lib/i18n';
 import { ProgressNotice } from '../components/Notices';
@@ -12,6 +21,13 @@ type CandidateView = MatchCandidate & {
   explanationNotice?: string;
 };
 
+function engagementForPro(
+  engagements: Engagement[],
+  professionalId: string,
+): Engagement | undefined {
+  return engagements.find((e) => e.professionalId === professionalId);
+}
+
 export default function Matches() {
   const { briefId = '' } = useParams();
   const { t, locale } = useI18n();
@@ -19,94 +35,140 @@ export default function Matches() {
     null,
   );
   const [candidates, setCandidates] = useState<CandidateView[]>([]);
+  const [engagements, setEngagements] = useState<Engagement[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   const [explaining, setExplaining] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
+  const [proposeBusy, setProposeBusy] = useState<string | null>(null);
+  const [proposeError, setProposeError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadCandidates = useCallback(async () => {
     if (!briefId) return;
-    let cancelled = false;
+    setLoadingList(true);
+    setListError(null);
 
-    async function loadCandidates() {
-      setLoadingList(true);
-      setListError(null);
-      setCandidates([]);
-
-      let loaded: MatchCandidate[] = [];
-      try {
-        const result = await getMatchCandidates(briefId);
-        if (cancelled) return;
-        setPayload(result);
-        loaded = result.candidates;
-        setCandidates(loaded);
-      } catch (err) {
-        if (!cancelled) {
-          setListError(
-            err instanceof ApiError ? err.message : t('matches.loadError'),
-          );
-          setLoadingList(false);
-        }
-        return;
-      } finally {
-        if (!cancelled) setLoadingList(false);
-      }
-
-      if (loaded.length === 0) return;
-      setExplaining(true);
-      await Promise.all(
-        loaded.map(async (c) => {
-          try {
-            const expl = await getMatchExplanation(
-              briefId,
-              c.professionalId,
-              locale,
-            );
-            if (cancelled) return;
-            setCandidates((prev) =>
-              prev.map((row) =>
-                row.professionalId === c.professionalId
-                  ? {
-                      ...row,
-                      explanation: expl.explanation,
-                      explanationRetryable: expl.retryable,
-                      explanationNotice: expl.notice,
-                    }
-                  : row,
-              ),
-            );
-          } catch {
-            if (cancelled) return;
-            setCandidates((prev) =>
-              prev.map((row) =>
-                row.professionalId === c.professionalId
-                  ? {
-                      ...row,
-                      explanation: null,
-                      explanationRetryable: true,
-                      explanationNotice: t('rateLimit.body'),
-                    }
-                  : row,
-              ),
-            );
-          }
-        }),
+    let loaded: MatchCandidate[] = [];
+    try {
+      const [result, eng] = await Promise.all([
+        getMatchCandidates(briefId),
+        listEngagementsForBrief(briefId).catch(() => ({ engagements: [] })),
+      ]);
+      setPayload(result);
+      loaded = result.candidates;
+      setCandidates(loaded);
+      setEngagements(eng.engagements);
+    } catch (err) {
+      setListError(
+        err instanceof ApiError ? err.message : t('matches.loadError'),
       );
-      if (!cancelled) setExplaining(false);
+      setLoadingList(false);
+      return;
+    } finally {
+      setLoadingList(false);
     }
 
-    void loadCandidates();
-    return () => {
-      cancelled = true;
-    };
+    if (loaded.length === 0) return;
+    setExplaining(true);
+    await Promise.all(
+      loaded.map(async (c) => {
+        try {
+          const expl = await getMatchExplanation(
+            briefId,
+            c.professionalId,
+            locale,
+          );
+          setCandidates((prev) =>
+            prev.map((row) =>
+              row.professionalId === c.professionalId
+                ? {
+                    ...row,
+                    explanation: expl.explanation,
+                    explanationRetryable: expl.retryable,
+                    explanationNotice: expl.notice,
+                  }
+                : row,
+            ),
+          );
+        } catch {
+          setCandidates((prev) =>
+            prev.map((row) =>
+              row.professionalId === c.professionalId
+                ? {
+                    ...row,
+                    explanation: null,
+                    explanationRetryable: true,
+                    explanationNotice: t('rateLimit.body'),
+                  }
+                : row,
+            ),
+          );
+        }
+      }),
+    );
+    setExplaining(false);
   }, [briefId, locale, t]);
+
+  useEffect(() => {
+    void loadCandidates();
+  }, [loadCandidates]);
+
+  // Refresh after declines/backfill while any proposal is outstanding.
+  useEffect(() => {
+    if (!briefId) return;
+    const hasProposed = engagements.some((e) => e.status === 'proposed');
+    if (!hasProposed && payload?.status !== 'ready') return;
+    const id = window.setInterval(() => {
+      void (async () => {
+        try {
+          const [result, eng] = await Promise.all([
+            getMatchCandidates(briefId),
+            listEngagementsForBrief(briefId),
+          ]);
+          setPayload(result);
+          setCandidates((prev) => {
+            const byId = new Map(prev.map((c) => [c.professionalId, c]));
+            return result.candidates.map((c) => ({
+              ...c,
+              explanation: byId.get(c.professionalId)?.explanation ?? null,
+              explanationRetryable: byId.get(c.professionalId)
+                ?.explanationRetryable,
+              explanationNotice: byId.get(c.professionalId)?.explanationNotice,
+            }));
+          });
+          setEngagements(eng.engagements);
+        } catch {
+          /* keep showing last good list */
+        }
+      })();
+    }, 12_000);
+    return () => window.clearInterval(id);
+  }, [briefId, engagements, payload?.status]);
+
+  async function onPropose(professionalId: string) {
+    if (!briefId) return;
+    setProposeBusy(professionalId);
+    setProposeError(null);
+    try {
+      const eng = await createEngagement({ briefId, professionalId });
+      setEngagements((prev) => {
+        const others = prev.filter((e) => e.professionalId !== professionalId);
+        return [...others, eng];
+      });
+    } catch (err) {
+      setProposeError(
+        err instanceof ApiError ? err.message : t('matches.proposeError'),
+      );
+    } finally {
+      setProposeBusy(null);
+    }
+  }
 
   const heading =
     payload?.status === 'ready'
       ? payload.showInterestCount
-        ? t('matches.ofInterested').replace(
-            '{count}',
-            String(candidates.length),
-          ).replace('{n}', String(payload.interestedCount))
+        ? t('matches.ofInterested')
+            .replace('{count}', String(candidates.length))
+            .replace('{n}', String(payload.interestedCount))
         : t('matches.rankedByFit')
       : t('matches.title');
 
@@ -129,11 +191,16 @@ export default function Matches() {
           <button
             type="button"
             className="mt-3 rounded bg-jade-600 px-3 py-1.5 text-sm text-white"
-            onClick={() => window.location.reload()}
+            onClick={() => void loadCandidates()}
           >
             {t('common.retry')}
           </button>
         </div>
+      ) : null}
+      {proposeError ? (
+        <p className="text-sm text-danger" role="alert">
+          {proposeError}
+        </p>
       ) : null}
 
       {payload?.status === 'waiting' ? (
@@ -151,6 +218,7 @@ export default function Matches() {
             locale === 'en'
               ? (c.headlineEn ?? c.headlineMy)
               : (c.headlineMy ?? c.headlineEn);
+          const eng = engagementForPro(engagements, c.professionalId);
           return (
             <li
               key={c.professionalId}
@@ -237,13 +305,35 @@ export default function Matches() {
 
               <PortfolioThumbs items={c.portfolio} label={t('matches.portfolio')} />
 
-              <div className="mt-4">
+              <div className="mt-4 flex flex-wrap items-center gap-3">
                 <Link
                   to={`/professionals/${c.professionalId}`}
-                  className="tap-target inline-flex rounded-md bg-jade-600 px-4 py-2.5 text-sm font-medium text-white"
+                  className="tap-target inline-flex rounded-md border border-line px-4 py-2.5 text-sm font-medium text-ink-700"
                 >
                   {t('browse.viewProfile')}
                 </Link>
+                {eng?.status === 'proposed' ? (
+                  <span className="text-sm text-jade-800">
+                    {t('matches.proposed')}
+                  </span>
+                ) : eng?.status === 'accepted' ? (
+                  <span className="text-sm text-jade-800">
+                    {t('matches.accepted')}
+                  </span>
+                ) : eng?.status === 'declined' ? (
+                  <span className="text-sm text-ink-400">
+                    {t('matches.declined')}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={proposeBusy === c.professionalId}
+                    onClick={() => void onPropose(c.professionalId)}
+                    className="tap-target inline-flex rounded-md bg-jade-600 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-40"
+                  >
+                    {t('matches.propose')}
+                  </button>
+                )}
               </div>
             </li>
           );

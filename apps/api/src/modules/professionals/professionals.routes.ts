@@ -6,6 +6,8 @@ import {
   ProfessionalIdParamsSchema,
   ProfessionalUpdateInputSchema,
   ProfessionalsListQuerySchema,
+  WorkLinkCreateInputSchema,
+  WorkLinkIdParamsSchema,
 } from '@inyalink/shared';
 import { validateBody, validateQuery } from '../../middleware/validate.js';
 import { AppError } from '../../middleware/errors.js';
@@ -118,6 +120,44 @@ professionalsRouter.delete(
       await professionalsService.deleteMyPortfolioItem(
         getAuth(req).userId,
         params.data.itemId,
+      );
+      res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+professionalsRouter.post(
+  '/me/work-links',
+  attachSession,
+  validateBody(WorkLinkCreateInputSchema),
+  async (req, res, next) => {
+    try {
+      const body = WorkLinkCreateInputSchema.parse(req.body);
+      const item = await professionalsService.addMyWorkLink(
+        getAuth(req).userId,
+        body,
+      );
+      res.status(201).json(item);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+professionalsRouter.delete(
+  '/me/work-links/:linkId',
+  attachSession,
+  async (req, res, next) => {
+    try {
+      const params = WorkLinkIdParamsSchema.safeParse(req.params);
+      if (!params.success) {
+        throw new AppError(400, 'VALIDATION_ERROR', 'Invalid work link id');
+      }
+      await professionalsService.deleteMyWorkLink(
+        getAuth(req).userId,
+        params.data.linkId,
       );
       res.status(204).send();
     } catch (err) {

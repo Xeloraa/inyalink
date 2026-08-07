@@ -35,6 +35,62 @@ export const PortfolioItemSchema = z.object({
 
 export type PortfolioItem = z.infer<typeof PortfolioItemSchema>;
 
+export const WorkLinkPlatformSchema = z.enum([
+  'github',
+  'behance',
+  'dribbble',
+  'website',
+  'instagram',
+  'facebook',
+  'linkedin',
+  'other',
+]);
+
+export type WorkLinkPlatform = z.infer<typeof WorkLinkPlatformSchema>;
+
+export const MAX_WORK_LINKS = 12 as const;
+
+export const WorkLinkSchema = z.object({
+  id: z.string().uuid(),
+  platform: WorkLinkPlatformSchema,
+  url: z.string().url().max(500),
+  label: z.string().min(1).max(80).nullable(),
+  sort: z.number().int().nonnegative(),
+  verifiedAt: z.string(),
+});
+
+export type WorkLink = z.infer<typeof WorkLinkSchema>;
+
+export const WorkLinkCreateInputSchema = z.object({
+  platform: WorkLinkPlatformSchema,
+  url: z
+    .string()
+    .trim()
+    .url()
+    .max(500)
+    .refine(
+      (u) => {
+        try {
+          const parsed = new URL(u);
+          return parsed.protocol === 'https:' || parsed.protocol === 'http:';
+        } catch {
+          return false;
+        }
+      },
+      { message: 'URL must be http or https' },
+    ),
+  /** Optional display label — mainly for platform `other`. */
+  label: z.string().trim().min(1).max(80).optional(),
+});
+
+export type WorkLinkCreateInput = z.infer<typeof WorkLinkCreateInputSchema>;
+
+export const WorkLinkIdParamsSchema = z.object({
+  linkId: z.string().uuid(),
+});
+
+export type WorkLinkIdParams = z.infer<typeof WorkLinkIdParamsSchema>;
+
 /** Six-cell public reputation + ops stats for the profile page. */
 export const ProfessionalProfileStatsSchema = ProfessionalReputationSchema.extend(
   {
@@ -62,6 +118,7 @@ export const ProfessionalProfileSchema = z.object({
   acceptingWork: z.boolean(),
   stats: ProfessionalProfileStatsSchema,
   portfolio: z.array(PortfolioItemSchema).max(24),
+  workLinks: z.array(WorkLinkSchema).max(MAX_WORK_LINKS),
 });
 
 export type ProfessionalProfile = z.infer<typeof ProfessionalProfileSchema>;

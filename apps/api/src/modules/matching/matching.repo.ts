@@ -483,6 +483,20 @@ export async function listInterestedProIds(briefId: string): Promise<string[]> {
   return rows.map((r) => r.professional_id);
 }
 
+/** Pros who already left the top-3 path (declined / cancelled) — do not re-surface. */
+export async function listTerminalEngagementProIds(
+  briefId: string,
+): Promise<string[]> {
+  const sql = getSql();
+  const rows = await sql<{ professional_id: string }[]>`
+    select professional_id
+    from engagements
+    where brief_id = ${briefId}::uuid
+      and status in ('declined', 'cancelled')
+  `;
+  return rows.map((r) => r.professional_id);
+}
+
 export async function seedInterests(
   briefId: string,
   professionalIds: string[],

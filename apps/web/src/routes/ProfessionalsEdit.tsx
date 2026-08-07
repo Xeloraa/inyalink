@@ -6,10 +6,14 @@ import type {
   PortfolioItem,
   ProfessionalMe,
   ProfessionalUpdateInput,
+  WorkLink,
+  WorkLinkPlatform,
 } from '@inyalink/shared';
 import {
   addMyPortfolioItem,
+  addMyWorkLink,
   deleteMyPortfolioItem,
+  deleteMyWorkLink,
   getCategories,
   getMyProfessional,
   updateMyProfessional,
@@ -21,6 +25,7 @@ import { CategoryFields } from '../features/professionals/CategoryFields';
 import { PortfolioFields } from '../features/professionals/PortfolioFields';
 import { QuestionnaireFields } from '../features/professionals/QuestionnaireFields';
 import { SkillsFields } from '../features/professionals/SkillsFields';
+import { WorkLinksEditor } from '../features/professionals/WorkLinksFields';
 
 function EditForm({ initial }: { initial: ProfessionalMe }) {
   const { t } = useI18n();
@@ -38,6 +43,11 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>(initial.portfolio);
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [portfolioCaption, setPortfolioCaption] = useState('');
+  const [workLinks, setWorkLinks] = useState<WorkLink[]>(initial.workLinks);
+  const [workPlatform, setWorkPlatform] = useState<WorkLinkPlatform>('website');
+  const [workUrl, setWorkUrl] = useState('');
+  const [workLabel, setWorkLabel] = useState('');
+  const [workBusy, setWorkBusy] = useState(false);
   const [headlineMy, setHeadlineMy] = useState(initial.headlineMy ?? '');
   const [headlineEn, setHeadlineEn] = useState(initial.headlineEn ?? '');
   const [bioMy, setBioMy] = useState(initial.bioMy ?? '');
@@ -100,6 +110,40 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
       setPortfolio((prev) => prev.filter((_, j) => j !== index));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('edit.saveError'));
+    }
+  }
+
+  async function onAddWorkLink() {
+    const url = workUrl.trim();
+    if (!url) return;
+    setWorkBusy(true);
+    setError(null);
+    try {
+      const link = await addMyWorkLink({
+        platform: workPlatform,
+        url,
+        label: workPlatform === 'other' ? workLabel.trim() || undefined : undefined,
+      });
+      setWorkLinks((prev) => [...prev, link]);
+      setWorkUrl('');
+      setWorkLabel('');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('edit.saveError'));
+    } finally {
+      setWorkBusy(false);
+    }
+  }
+
+  async function onRemoveWorkLink(id: string) {
+    setWorkBusy(true);
+    setError(null);
+    try {
+      await deleteMyWorkLink(id);
+      setWorkLinks((prev) => prev.filter((l) => l.id !== id));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('edit.saveError'));
+    } finally {
+      setWorkBusy(false);
     }
   }
 
@@ -197,6 +241,24 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
             }))}
             onAdd={() => void onAddPortfolio()}
             onRemove={(i) => void onRemovePortfolio(i)}
+          />
+        </fieldset>
+
+        <fieldset className="space-y-lg">
+          <legend className="text-title text-ink-900">
+            {t('workLinks.title')}
+          </legend>
+          <WorkLinksEditor
+            links={workLinks}
+            platform={workPlatform}
+            onPlatformChange={setWorkPlatform}
+            url={workUrl}
+            onUrlChange={setWorkUrl}
+            label={workLabel}
+            onLabelChange={setWorkLabel}
+            onAdd={() => void onAddWorkLink()}
+            onRemove={(id) => void onRemoveWorkLink(id)}
+            busy={workBusy}
           />
         </fieldset>
 

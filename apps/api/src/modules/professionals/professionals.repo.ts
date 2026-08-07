@@ -573,6 +573,130 @@ export async function countPortfolioItems(
   return toInt(rows[0]?.n) ?? 0;
 }
 
+export type WorkLinkRow = {
+  id: string;
+  platform:
+    | 'github'
+    | 'behance'
+    | 'dribbble'
+    | 'website'
+    | 'instagram'
+    | 'facebook'
+    | 'linkedin'
+    | 'other';
+  url: string;
+  label: string | null;
+  sort: number;
+  verifiedAt: string;
+};
+
+function toIso(value: unknown): string {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') return value;
+  return new Date().toISOString();
+}
+
+export async function listWorkLinks(
+  professionalId: string,
+): Promise<WorkLinkRow[]> {
+  const sql = getSql();
+  const rows = await sql<
+    {
+      id: string;
+      platform: WorkLinkRow['platform'];
+      url: string;
+      label: string | null;
+      sort: number;
+      verified_at: unknown;
+    }[]
+  >`
+    select id, platform, url, label, sort, verified_at
+    from work_links
+    where professional_id = ${professionalId}::uuid
+    order by sort asc, created_at asc
+  `;
+  return rows.map((r) => ({
+    id: r.id,
+    platform: r.platform,
+    url: r.url,
+    label: r.label,
+    sort: r.sort,
+    verifiedAt: toIso(r.verified_at),
+  }));
+}
+
+export async function countWorkLinks(professionalId: string): Promise<number> {
+  const sql = getSql();
+  const rows = await sql<{ n: string | number }[]>`
+    select count(*)::int as n
+    from work_links
+    where professional_id = ${professionalId}::uuid
+  `;
+  return toInt(rows[0]?.n) ?? 0;
+}
+
+export async function insertWorkLink(args: {
+  professionalId: string;
+  platform: WorkLinkRow['platform'];
+  url: string;
+  label: string | null;
+  verifiedAt: Date;
+}): Promise<WorkLinkRow> {
+  const sql = getSql();
+  const maxRows = await sql<{ max_sort: number | null }[]>`
+    select max(sort) as max_sort
+    from work_links
+    where professional_id = ${args.professionalId}::uuid
+  `;
+  const nextSort = (maxRows[0]?.max_sort ?? -1) + 1;
+  const rows = await sql<
+    {
+      id: string;
+      platform: WorkLinkRow['platform'];
+      url: string;
+      label: string | null;
+      sort: number;
+      verified_at: unknown;
+    }[]
+  >`
+    insert into work_links (
+      professional_id, platform, url, label, sort, verified_at
+    ) values (
+      ${args.professionalId}::uuid,
+      ${args.platform}::work_link_platform,
+      ${args.url},
+      ${args.label},
+      ${nextSort},
+      ${args.verifiedAt.toISOString()}::timestamptz
+    )
+    returning id, platform, url, label, sort, verified_at
+  `;
+  const r = rows[0];
+  if (!r) throw new Error('work_link insert returned no row');
+  return {
+    id: r.id,
+    platform: r.platform,
+    url: r.url,
+    label: r.label,
+    sort: r.sort,
+    verifiedAt: toIso(r.verified_at),
+  };
+}
+
+export async function deleteWorkLink(
+  professionalId: string,
+  linkId: string,
+): Promise<boolean> {
+  const sql = getSql();
+  const rows = await sql<{ id: string }[]>`
+    delete from work_links
+    where id = ${linkId}::uuid
+      and professional_id = ${professionalId}::uuid
+    returning id
+  `;
+  return rows.length > 0;
+}
+
 export async function upsertApplicantProfile(args: {
   userId: string;
   displayName: string;

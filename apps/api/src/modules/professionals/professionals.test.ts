@@ -17,6 +17,10 @@ vi.mock('./professionals.repo.js', () => ({
   addPortfolioItem: vi.fn(),
   deletePortfolioItem: vi.fn(),
   countPortfolioItems: vi.fn(),
+  listWorkLinks: vi.fn(),
+  countWorkLinks: vi.fn(),
+  insertWorkLink: vi.fn(),
+  deleteWorkLink: vi.fn(),
 }));
 
 vi.mock('@inyalink/burmese', () => ({
@@ -72,6 +76,11 @@ describe('professionals.service', () => {
     vi.mocked(repo.addPortfolioItem).mockReset();
     vi.mocked(repo.deletePortfolioItem).mockReset();
     vi.mocked(repo.countPortfolioItems).mockReset();
+    vi.mocked(repo.listWorkLinks).mockReset();
+    vi.mocked(repo.countWorkLinks).mockReset();
+    vi.mocked(repo.insertWorkLink).mockReset();
+    vi.mocked(repo.deleteWorkLink).mockReset();
+    vi.mocked(repo.listWorkLinks).mockResolvedValue([]);
   });
 
   it('lists professionals with bilingual bios for the directory rows', async () => {

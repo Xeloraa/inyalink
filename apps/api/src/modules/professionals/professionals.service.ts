@@ -12,9 +12,16 @@ import type {
   ProfessionalUpdateInput,
   ProfessionalsListResponse,
   ProfessionalsSort,
+  WorkLink,
+  WorkLinkCreateInput,
 } from '@inyalink/shared';
+import { MAX_WORK_LINKS } from '@inyalink/shared';
 import { AppError } from '../../middleware/errors.js';
 import { config } from '../../lib/config.js';
+import {
+  assertPlatformUrl,
+  assertUrlResolves,
+} from '../../lib/workLinkCheck.js';
 import * as repo from './professionals.repo.js';
 
 /** Soft location labels for seeded pros until a city column exists. */
@@ -83,6 +90,7 @@ function sortRows(
 function toMe(
   row: repo.ProfessionalProfileRow,
   portfolio: repo.PortfolioRow[],
+  workLinks: repo.WorkLinkRow[],
 ): ProfessionalMe {
   return {
     id: row.userId,
@@ -124,6 +132,14 @@ function toMe(
       externalUrl: p.externalUrl,
       storagePath: p.storagePath,
       sort: p.sort,
+    })),
+    workLinks: workLinks.map((w) => ({
+      id: w.id,
+      platform: w.platform,
+      url: w.url,
+      label: w.label,
+      sort: w.sort,
+      verifiedAt: w.verifiedAt,
     })),
   };
 }
@@ -218,7 +234,8 @@ export async function getPublicProfile(
   }
 
   const portfolio = await repo.listPortfolio(id);
-  const me = toMe(row, portfolio);
+  const workLinks = await repo.listWorkLinks(id);
+  const me = toMe(row, portfolio, workLinks);
   const { status: _status, ...profile } = me;
   return profile;
 }
@@ -231,7 +248,8 @@ export async function getMyProfessional(
     throw new AppError(404, 'NOT_FOUND', 'Professional profile not found');
   }
   const portfolio = await repo.listPortfolio(userId);
-  return toMe(row, portfolio);
+  const workLinks = await repo.listWorkLinks(userId);
+  return toMe(row, portfolio, workLinks);
 }
 
 export async function applyAsProfessional(
@@ -395,5 +413,72 @@ export async function deleteMyPortfolioItem(
   const deleted = await repo.deletePortfolioItem(userId, itemId);
   if (!deleted) {
     throw new AppError(404, 'NOT_FOUND', 'Portfolio item not found');
+  }
+}
+
+export async function addMyWorkLink(
+  userId: string,
+  input: WorkLinkCreateInput,
+): Promise<WorkLink> {
+  const existing = await repo.getProfileByUserId(userId);
+  if (!existing) {
+    throw new AppError(404, 'NOT_FOUND', 'Professional profile not found');
+  }
+
+  const count = await repo.countWorkLinks(userId);
+  if (count >= MAX_WORK_LINKS) {
+    throw new AppError(
+      400,
+      'VALIDATION_ERROR',
+      `Work links are limited to ${MAX_WORK_LINKS}`,
+    );
+  }
+
+  const url = input.url.trim();
+  assertPlatformUrl(input.platform, url);
+  await assertUrlResolves(url);
+
+  try {
+    const row = await repo.insertWorkLink({
+      professionalId: userId,
+      platform: input.platform,
+      url,
+      label: input.label
+        ? normalizeToUnicode(input.label.trim())
+        : null,
+      verifiedAt: new Date(),
+    });
+    return {
+      id: row.id,
+      platform: row.platform,
+      url: row.url,
+      label: row.label,
+      sort: row.sort,
+      verifiedAt: row.verifiedAt,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '';
+    if (message.includes('work_links_one_named_platform')) {
+      throw new AppError(
+        409,
+        'PLATFORM_EXISTS',
+        'You already have a link for that platform',
+      );
+    }
+    throw err;
+  }
+}
+
+export async function deleteMyWorkLink(
+  userId: string,
+  linkId: string,
+): Promise<void> {
+  const existing = await repo.getProfileByUserId(userId);
+  if (!existing) {
+    throw new AppError(404, 'NOT_FOUND', 'Professional profile not found');
+  }
+  const deleted = await repo.deleteWorkLink(userId, linkId);
+  if (!deleted) {
+    throw new AppError(404, 'NOT_FOUND', 'Work link not found');
   }
 }

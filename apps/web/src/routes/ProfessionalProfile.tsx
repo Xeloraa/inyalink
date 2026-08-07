@@ -7,6 +7,7 @@ import { ApiError } from '../lib/apiClient';
 import { useChatUi } from '../components/FloatingChat';
 import { useI18n } from '../lib/i18n';
 import { RateLimitNotice } from '../components/Notices';
+import { WorkLinksDisplay } from '../features/professionals/WorkLinksFields';
 
 function CheckIcon() {
   return (
@@ -277,6 +278,15 @@ export default function ProfessionalProfilePage() {
           ) : null}
         </div>
       </section>
+
+      {profile.workLinks.length > 0 ? (
+        <section className="mt-3xl" aria-labelledby="work-links-heading">
+          <h2 id="work-links-heading" className="text-title text-ink-900">
+            {t('workLinks.title')}
+          </h2>
+          <WorkLinksDisplay links={profile.workLinks} />
+        </section>
+      ) : null}
 
       <section className="mt-3xl" aria-labelledby="portfolio-heading">
         <h2 id="portfolio-heading" className="text-title text-ink-900">

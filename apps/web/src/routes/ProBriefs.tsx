@@ -11,6 +11,7 @@ import { ApiError } from '../lib/apiClient';
 import { useAuth } from '../lib/auth';
 import { useI18n } from '../lib/i18n';
 import { ProgressNotice, RateLimitNotice } from '../components/Notices';
+import { EngagementInbox } from '../features/engagements/EngagementInbox';
 
 export default function ProBriefs() {
   const { t, locale } = useI18n();
@@ -116,6 +117,8 @@ export default function ProBriefs() {
       {error ? (
         <RateLimitNotice notice={error} onRetry={() => void reload()} />
       ) : null}
+
+      <EngagementInbox />
 
       {!loading && items.length === 0 ? (
         <div className="rounded-lg border border-line bg-paper p-5 leading-[1.8]">

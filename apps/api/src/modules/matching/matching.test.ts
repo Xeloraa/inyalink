@@ -27,6 +27,7 @@ vi.mock('./matching.repo.js', () => ({
   deleteInterest: vi.fn(async () => undefined),
   countInterests: vi.fn(async () => 0),
   listInterestedProIds: vi.fn(async () => []),
+  listTerminalEngagementProIds: vi.fn(async () => []),
   seedInterests: vi.fn(async () => undefined),
   listOpenFeedForCategory: vi.fn(async () => []),
   listSurfacedCandidates: vi.fn(async () => []),

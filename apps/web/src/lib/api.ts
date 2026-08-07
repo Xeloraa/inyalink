@@ -9,6 +9,11 @@ import type {
   ConverseBriefInput,
   ConverseBriefResponse,
   CreateBriefInput,
+  CreateEngagementInput,
+  DeclineEngagementInput,
+  Engagement,
+  EngagementInboxResponse,
+  EngagementListResponse,
   GenerateRoadmapResponse,
   LogoutResponse,
   MatchExplanationResponse,
@@ -27,6 +32,8 @@ import type {
   SubmitBriefInput,
   UpdateBriefInput,
   UpsertConversationInput,
+  WorkLink,
+  WorkLinkCreateInput,
 } from '@inyalink/shared';
 import { apiFetch } from './apiClient';
 
@@ -119,6 +126,40 @@ export function withdrawInterest(briefId: string) {
   return apiFetch<BriefInterestResponse>(
     `/api/v1/matching/briefs/${encodeURIComponent(briefId)}/interest`,
     { method: 'DELETE' },
+  );
+}
+
+export function getEngagementInbox() {
+  return apiFetch<EngagementInboxResponse>('/api/v1/engagements/inbox');
+}
+
+export function listEngagementsForBrief(briefId: string) {
+  return apiFetch<EngagementListResponse>(
+    `/api/v1/engagements?briefId=${encodeURIComponent(briefId)}`,
+  );
+}
+
+export function createEngagement(body: CreateEngagementInput) {
+  return apiFetch<Engagement>('/api/v1/engagements', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export function acceptEngagement(id: string) {
+  return apiFetch<Engagement>(
+    `/api/v1/engagements/${encodeURIComponent(id)}/accept`,
+    { method: 'POST' },
+  );
+}
+
+export function declineEngagement(id: string, body: DeclineEngagementInput) {
+  return apiFetch<Engagement>(
+    `/api/v1/engagements/${encodeURIComponent(id)}/decline`,
+    {
+      method: 'POST',
+      body: JSON.stringify(body),
+    },
   );
 }
 
@@ -221,6 +262,21 @@ export function addMyPortfolioItem(body: PortfolioUploadItem) {
 export function deleteMyPortfolioItem(itemId: string) {
   return apiFetch<void>(
     `/api/v1/professionals/me/portfolio/${encodeURIComponent(itemId)}`,
+    { method: 'DELETE' },
+  );
+}
+
+export function addMyWorkLink(body: WorkLinkCreateInput) {
+  return apiFetch<WorkLink>('/api/v1/professionals/me/work-links', {
+    method: 'POST',
+    body: JSON.stringify(body),
+    timeoutMs: 20_000,
+  });
+}
+
+export function deleteMyWorkLink(linkId: string) {
+  return apiFetch<void>(
+    `/api/v1/professionals/me/work-links/${encodeURIComponent(linkId)}`,
     { method: 'DELETE' },
   );
 }

@@ -142,6 +142,7 @@ create table engagements (
   matched_by      uuid references profiles(id),   -- null = automated match
   decline_reason  text,
   proposed_at     timestamptz not null default now(),
+  respond_by      timestamptz,
   accepted_at     timestamptz,
   delivered_at    timestamptz,
   confirmed_at    timestamptz,

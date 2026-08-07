@@ -21,6 +21,10 @@ create type engagement_status as enum (
   'proposed', 'accepted', 'declined', 'in_progress',
   'delivered', 'confirmed', 'disputed', 'cancelled'
 );
+create type work_link_platform as enum (
+  'github', 'behance', 'dribbble', 'website',
+  'instagram', 'facebook', 'linkedin', 'other'
+);
 
 -- ---------------------------------------------------------------- profiles
 -- Extends Supabase auth.users. Phone lives in auth.users only — not duplicated.
@@ -83,6 +87,23 @@ create table portfolio_items (
 );
 
 create index on portfolio_items (professional_id, sort);
+
+-- Outbound verified profile links. Link-out only — never scrape or import.
+create table work_links (
+  id              uuid primary key default gen_random_uuid(),
+  professional_id uuid not null references professionals(user_id) on delete cascade,
+  platform        work_link_platform not null,
+  url             text not null check (length(url) between 8 and 500),
+  label           text check (label is null or length(label) between 1 and 80),
+  sort            int not null default 0,
+  verified_at     timestamptz not null,
+  created_at      timestamptz not null default now()
+);
+
+create index on work_links (professional_id, sort, created_at);
+create unique index work_links_one_named_platform_idx
+  on work_links (professional_id, platform)
+  where platform <> 'other';
 
 -- ---------------------------------------------------------------- roadmaps
 
@@ -182,6 +203,7 @@ create table engagements (
   matched_by      uuid references profiles(id),   -- null = automated match
   decline_reason  text,
   proposed_at     timestamptz not null default now(),
+  respond_by      timestamptz,                    -- accept/decline deadline (24h)
   accepted_at     timestamptz,
   delivered_at    timestamptz,
   confirmed_at    timestamptz,
@@ -193,6 +215,9 @@ create table engagements (
 create index on engagements (professional_id, status);
 create index on engagements (brief_id);
 create index on engagements (status) where status in ('proposed', 'disputed');
+create index engagements_respond_by_proposed_idx
+  on engagements (respond_by)
+  where status = 'proposed';
 
 -- ---------------------------------------------------------------- messages
 -- 90-day retention is a DATABASE DEFAULT, not application logic.
@@ -322,6 +347,7 @@ create index on audit_log (actor_id, created_at desc);
 alter table profiles        enable row level security;
 alter table professionals   enable row level security;
 alter table portfolio_items enable row level security;
+alter table work_links      enable row level security;
 alter table briefs          enable row level security;
 alter table roadmaps        enable row level security;
 alter table engagements     enable row level security;
@@ -344,6 +370,16 @@ create policy portfolio_of_approved on portfolio_items
     where p.user_id = portfolio_items.professional_id
       and p.status = 'approved'
   ));
+
+create policy work_links_of_approved on work_links
+  for select using (exists (
+    select 1 from professionals p
+    where p.user_id = work_links.professional_id
+      and p.status = 'approved'
+  ));
+
+create policy own_work_links on work_links
+  for all using (professional_id = auth.uid());
 
 create policy own_briefs on briefs
   for all using (client_id = auth.uid());

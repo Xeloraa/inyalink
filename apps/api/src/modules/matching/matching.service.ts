@@ -156,6 +156,73 @@ export async function resolveBriefMatching(briefId: string): Promise<void> {
   await repo.markBriefRanked(briefId, fallbackUsed);
 }
 
+/**
+ * After a top-3 professional declines or expires: drop them from the
+ * surfaced set, pull the next-best interested pro(s) not already shown,
+ * and re-rank 1–3. Never exposes the full pool.
+ */
+export async function backfillAfterDecline(
+  briefId: string,
+  declinedProfessionalId: string,
+): Promise<void> {
+  const brief = await repo.getBriefForMatching(briefId);
+  if (!brief?.categoryId || !brief.rankedAt) return;
+
+  const surfaced = await repo.listSurfacedCandidates(briefId);
+  const remainingIds = surfaced
+    .map((s) => s.professionalId)
+    .filter((id) => id !== declinedProfessionalId);
+
+  const interestedIds = await repo.listInterestedProIds(briefId);
+  const terminal = new Set(await repo.listTerminalEngagementProIds(briefId));
+  terminal.add(declinedProfessionalId);
+
+  const fromInterest = new Set(interestedIds);
+  const fillCandidates = interestedIds.filter(
+    (id) => !remainingIds.includes(id) && !terminal.has(id),
+  );
+
+  const need = Math.max(0, 3 - remainingIds.length);
+  let fillIds: string[] = [];
+  if (need > 0 && fillCandidates.length > 0) {
+    const fillPool = await repo.listProsByIds(fillCandidates);
+    const fillCaptions = await repo.listPortfolioCaptions(
+      fillPool.map((p) => p.userId),
+    );
+    const scoredFill = scorePool(fillPool, brief, fillCaptions, fromInterest);
+    fillIds = rankTopCandidates(scoredFill, need).map((s) => s.professionalId);
+  }
+
+  const poolIds = [...remainingIds, ...fillIds];
+  if (poolIds.length === 0) {
+    await repo.replaceSurfacedCandidates(briefId, []);
+    return;
+  }
+
+  const pool = await repo.listProsByIds(poolIds);
+  const captions = await repo.listPortfolioCaptions(pool.map((p) => p.userId));
+  const scored = scorePool(pool, brief, captions, fromInterest);
+  const top = rankTopCandidates(scored, 3);
+
+  await repo.replaceSurfacedCandidates(
+    briefId,
+    top.map((item, i) => ({
+      professionalId: item.professionalId,
+      rank: i + 1,
+      score: Number(item.score.toFixed(4)),
+      scoreBreakdown: {
+        skillOverlap: Number(item.breakdown.skillOverlap.toFixed(4)),
+        portfolioRelevance: Number(item.breakdown.portfolioRelevance.toFixed(4)),
+        budgetFit: Number(item.breakdown.budgetFit.toFixed(4)),
+        completionRate: Number(item.breakdown.completionRate.toFixed(4)),
+      },
+      rankReason: item.rankReason,
+      guaranteedResponse: false,
+      fromInterest: item.fromInterest,
+    })),
+  );
+}
+
 async function maybeEarlyClose(briefId: string): Promise<void> {
   const brief = await repo.getBriefForMatching(briefId);
   if (!brief || brief.rankedAt) return;
