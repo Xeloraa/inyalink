@@ -8,7 +8,8 @@ import Login from './routes/Login';
 import Matches from './routes/Matches';
 import ProBriefs from './routes/ProBriefs';
 import ProfessionalProfile from './routes/ProfessionalProfile';
-import ProfileCreate from './routes/ProfileCreate';
+import ProfessionalsEdit from './routes/ProfessionalsEdit';
+import ProfessionalsJoin from './routes/ProfessionalsJoin';
 import Roadmap from './routes/Roadmap';
 import Signup from './routes/Signup';
 
@@ -18,12 +19,17 @@ export default function App() {
       <Routes>
         <Route element={<AppShell />}>
           <Route index element={<Landing />} />
+          <Route path="professionals/join" element={<ProfessionalsJoin />} />
+          <Route path="professionals/me/edit" element={<ProfessionalsEdit />} />
           <Route path="professionals/:id" element={<ProfessionalProfile />} />
 
           <Route path="browse" element={<Browse />} />
           <Route path="app" element={<Navigate to="/app/briefs" replace />} />
           <Route path="app/briefs" element={<ProBriefs />} />
-          <Route path="profile/create" element={<ProfileCreate />} />
+          <Route
+            path="profile/create"
+            element={<Navigate to="/professionals/join" replace />}
+          />
           <Route path="brief" element={<BriefReview />} />
           <Route path="matches/:briefId" element={<Matches />} />
           <Route path="roadmap" element={<Roadmap />} />

@@ -163,6 +163,15 @@ export const PortfolioUploadItemSchema = z.object({
 
 export type PortfolioUploadItem = z.infer<typeof PortfolioUploadItemSchema>;
 
+export const ProStatusSchema = z.enum([
+  'pending',
+  'approved',
+  'rejected',
+  'paused',
+]);
+
+export type ProStatus = z.infer<typeof ProStatusSchema>;
+
 /**
  * Professional onboarding application.
  * Never includes NRC, national ID, passport, selfie, or biometrics.
@@ -178,8 +187,6 @@ export const ProfessionalApplyInputSchema = z.object({
   typicalTurnaroundDays: z.number().int().min(1).max(90),
   minBudgetMmk: z.number().int().min(10_000).max(100_000_000),
   acceptingWork: z.boolean().default(true),
-  /** Free-text preference — never identity documents */
-  clientPreference: z.string().trim().max(500).optional(),
   portfolio: z.array(PortfolioUploadItemSchema).min(1).max(8),
 });
 
@@ -187,9 +194,58 @@ export type ProfessionalApplyInput = z.infer<typeof ProfessionalApplyInputSchema
 
 export const ProfessionalApplyResponseSchema = z.object({
   professionalId: z.string().uuid(),
-  status: z.enum(['pending', 'approved', 'rejected', 'paused']),
+  status: ProStatusSchema,
 });
 
 export type ProfessionalApplyResponse = z.infer<
   typeof ProfessionalApplyResponseSchema
 >;
+
+/** Own professional row — any status, for join gate + profile edit. */
+export const ProfessionalMeSchema = ProfessionalProfileSchema.extend({
+  status: ProStatusSchema,
+});
+
+export type ProfessionalMe = z.infer<typeof ProfessionalMeSchema>;
+
+/**
+ * Partial profile update. Portfolio is managed via dedicated add/delete routes.
+ * Never includes NRC, national ID, passport, selfie, or biometrics.
+ */
+export const ProfessionalUpdateInputSchema = z
+  .object({
+    displayName: z.string().trim().min(2).max(80).optional(),
+    categorySlug: CategorySlugSchema.optional(),
+    skills: z.array(z.string().trim().min(1).max(40)).min(1).max(12).optional(),
+    headlineMy: z.string().trim().min(4).max(120).optional(),
+    headlineEn: z.string().trim().min(4).max(120).optional(),
+    bioMy: z.string().trim().min(20).max(2000).optional(),
+    bioEn: z.string().trim().min(20).max(2000).optional(),
+    typicalTurnaroundDays: z.number().int().min(1).max(90).optional(),
+    minBudgetMmk: z.number().int().min(10_000).max(100_000_000).optional(),
+    acceptingWork: z.boolean().optional(),
+  })
+  .refine(
+    (v) =>
+      v.displayName !== undefined ||
+      v.categorySlug !== undefined ||
+      v.skills !== undefined ||
+      v.headlineMy !== undefined ||
+      v.headlineEn !== undefined ||
+      v.bioMy !== undefined ||
+      v.bioEn !== undefined ||
+      v.typicalTurnaroundDays !== undefined ||
+      v.minBudgetMmk !== undefined ||
+      v.acceptingWork !== undefined,
+    { message: 'At least one field is required' },
+  );
+
+export type ProfessionalUpdateInput = z.infer<
+  typeof ProfessionalUpdateInputSchema
+>;
+
+export const PortfolioItemIdParamsSchema = z.object({
+  itemId: z.string().uuid(),
+});
+
+export type PortfolioItemIdParams = z.infer<typeof PortfolioItemIdParamsSchema>;

@@ -6,10 +6,12 @@
  * customers", "ဆိုင်ဖွင့်ချင်တယ်").
  * SERVICE: user names a hireable deliverable or role ("logo", "website",
  * "content writer").
+ * UNRELATED: dating, homework, personal advice, etc. — warm redirect, never
+ * treat as a brief (structure-brief §11). Checked only when no hire/goal signal.
  * AMBIGUOUS: neither signal is clear, or both compete — ask one question.
  */
 
-export type InputShape = 'goal' | 'service' | 'ambiguous';
+export type InputShape = 'goal' | 'service' | 'unrelated' | 'ambiguous';
 
 function fold(text: string): string {
   return text
@@ -101,6 +103,49 @@ const GOAL_PATTERNS: RegExp[] = [
   /လမ်းညွှန်|အစီအစဉ်/,
 ];
 
+/**
+ * Clearly off-platform asks — dating, homework, trivia, medical/relationship
+ * counselling. Must not fall through to ambiguous (which asks hire-vs-plan).
+ * Only applied when no service/goal signal fired.
+ */
+const UNRELATED_PATTERNS: RegExp[] = [
+  // Dating / relationships
+  /\bgirlfriends?\b/,
+  /\bboyfriends?\b/,
+  /\bwife\b/,
+  /\bhusbands?\b/,
+  /\blooking\s+for\s+(love|a\s+date|someone\s+to\s+date)\b/,
+  /\bfind\s+(love|a\s+date|a\s+partner\s+to\s+date)\b/,
+  /\bwant\s+a\s+(girlfriend|boyfriend|wife|husband)\b/,
+  /\bneed\s+a\s+(girlfriend|boyfriend|wife|husband)\b/,
+  /\bhow\s+(do|can)\s+i\s+(get|find)\s+a\s+(girlfriend|boyfriend)\b/,
+  /\bdating\s+(advice|tips|app|apps)\b/,
+  /\brelationship\s+advice\b/,
+  /\bmarry\s+me\b/,
+  /\bask\s+(her|him)\s+out\b/,
+  // Homework / school / general knowledge
+  /\b(do|write|finish|help\s+with)\s+(my\s+)?homework\b/,
+  /\b(write|help\s+with)\s+(my\s+)?(essay|assignment|thesis)\b/,
+  /\bwhat\s+is\s+the\s+capital\s+of\b/,
+  /\bwho\s+(invented|discovered|wrote)\b/,
+  /\bsolve\s+(this\s+)?(math|equation)\b/,
+  // Medical / personal counselling (not business)
+  /\bdiagnose\b/,
+  /\b(my\s+)?symptoms?\b/,
+  /\bmental\s+health\s+advice\b/,
+  /\btherapy\s+for\s+(me|myself|depression|anxiety)\b/,
+  // Burmese — dating / personal
+  /ချစ်သူ/,
+  /မိန်းမယူ|ယောက်ျားယူ/,
+  /အိမ်ထောင်/,
+  /အချစ်ရေး/,
+  // Burmese — homework / school
+  /အိမ်စာ/,
+  /စာမေးပွဲ/,
+  /အက်ဆေး/,
+  /\bessay\b/,
+];
+
 /** User declined to answer / has no idea — stop probing, hand off to roadmap. */
 const DONT_KNOW_PATTERNS: RegExp[] = [
   /\bi don'?t know\b/,
@@ -127,6 +172,8 @@ function matchesAny(text: string, patterns: RegExp[]): boolean {
 /**
  * Classify opening text. Prefer an explicit deliverable over a vague
  * business noun; when both goal and service signals fire, return ambiguous.
+ * Unrelated (dating, homework, …) only when no hire/goal signal — so
+ * "logo for my girlfriend's cafe" stays service.
  */
 export function classifyInputShape(raw: string): InputShape {
   const text = fold(raw);
@@ -138,6 +185,7 @@ export function classifyInputShape(raw: string): InputShape {
   if (service && goal) return 'ambiguous';
   if (service) return 'service';
   if (goal) return 'goal';
+  if (matchesAny(text, UNRELATED_PATTERNS)) return 'unrelated';
   return 'ambiguous';
 }
 

@@ -2,14 +2,19 @@ import { normalizeToUnicode } from '@inyalink/burmese';
 import type {
   CategoriesResponse,
   CategorySlug,
+  PortfolioItem,
+  PortfolioUploadItem,
   ProfessionalApplyInput,
   ProfessionalApplyResponse,
+  ProfessionalMe,
   ProfessionalProfile,
   ProfessionalSkillsResponse,
+  ProfessionalUpdateInput,
   ProfessionalsListResponse,
   ProfessionalsSort,
 } from '@inyalink/shared';
 import { AppError } from '../../middleware/errors.js';
+import { config } from '../../lib/config.js';
 import * as repo from './professionals.repo.js';
 
 /** Soft location labels for seeded pros until a city column exists. */
@@ -20,6 +25,7 @@ const DEMO_LOCATIONS: Record<string, string> = {
 };
 
 const SKILL_FACET_LIMIT = 12;
+const MAX_PORTFOLIO_ITEMS = 8;
 
 /**
  * Text-match score for the directory search box. Name beats headline beats
@@ -72,6 +78,54 @@ function sortRows(
     );
   }
   return rows;
+}
+
+function toMe(
+  row: repo.ProfessionalProfileRow,
+  portfolio: repo.PortfolioRow[],
+): ProfessionalMe {
+  return {
+    id: row.userId,
+    displayName: row.displayName,
+    avatarUrl: row.avatarUrl,
+    verified: row.status === 'approved',
+    status: row.status,
+    headlineMy: row.headlineMy,
+    headlineEn: row.headlineEn,
+    bioMy: row.bioMy,
+    bioEn: row.bioEn,
+    location: DEMO_LOCATIONS[row.userId] ?? 'မြန်မာ',
+    category:
+      row.categoryId &&
+      row.categorySlug &&
+      row.categoryNameMy &&
+      row.categoryNameEn
+        ? {
+            id: row.categoryId,
+            slug: row.categorySlug,
+            nameMy: row.categoryNameMy,
+            nameEn: row.categoryNameEn,
+          }
+        : null,
+    skills: row.skills,
+    acceptingWork: row.acceptingWork,
+    stats: {
+      completedCount: row.completedCount,
+      declinedCount: row.declinedCount,
+      uniqueClients: row.uniqueClients,
+      completionRatePct: row.completionRatePct,
+      medianResponseMins: row.medianResponseMins,
+      typicalTurnaroundDays: row.typicalTurnaroundDays,
+      minBudgetMmk: row.minBudgetMmk,
+    },
+    portfolio: portfolio.map((p) => ({
+      id: p.id,
+      caption: p.caption,
+      externalUrl: p.externalUrl,
+      storagePath: p.storagePath,
+      sort: p.sort,
+    })),
+  };
 }
 
 export async function listProfessionals(filters: {
@@ -164,45 +218,20 @@ export async function getPublicProfile(
   }
 
   const portfolio = await repo.listPortfolio(id);
+  const me = toMe(row, portfolio);
+  const { status: _status, ...profile } = me;
+  return profile;
+}
 
-  return {
-    id: row.userId,
-    displayName: row.displayName,
-    avatarUrl: row.avatarUrl,
-    verified: row.status === 'approved',
-    headlineMy: row.headlineMy,
-    headlineEn: row.headlineEn,
-    bioMy: row.bioMy,
-    bioEn: row.bioEn,
-    location: DEMO_LOCATIONS[row.userId] ?? 'မြန်မာ',
-    category:
-      row.categoryId && row.categorySlug && row.categoryNameMy && row.categoryNameEn
-        ? {
-            id: row.categoryId,
-            slug: row.categorySlug,
-            nameMy: row.categoryNameMy,
-            nameEn: row.categoryNameEn,
-          }
-        : null,
-    skills: row.skills,
-    acceptingWork: row.acceptingWork,
-    stats: {
-      completedCount: row.completedCount,
-      declinedCount: row.declinedCount,
-      uniqueClients: row.uniqueClients,
-      completionRatePct: row.completionRatePct,
-      medianResponseMins: row.medianResponseMins,
-      typicalTurnaroundDays: row.typicalTurnaroundDays,
-      minBudgetMmk: row.minBudgetMmk,
-    },
-    portfolio: portfolio.map((p) => ({
-      id: p.id,
-      caption: p.caption,
-      externalUrl: p.externalUrl,
-      storagePath: p.storagePath,
-      sort: p.sort,
-    })),
-  };
+export async function getMyProfessional(
+  userId: string,
+): Promise<ProfessionalMe> {
+  const row = await repo.getProfileByUserId(userId);
+  if (!row) {
+    throw new AppError(404, 'NOT_FOUND', 'Professional profile not found');
+  }
+  const portfolio = await repo.listPortfolio(userId);
+  return toMe(row, portfolio);
 }
 
 export async function applyAsProfessional(
@@ -214,10 +243,25 @@ export async function applyAsProfessional(
     throw new AppError(400, 'VALIDATION_ERROR', 'Unknown category');
   }
 
+  const existing = await repo.getProfileByUserId(userId);
+  if (
+    existing &&
+    (existing.status === 'pending' || existing.status === 'approved')
+  ) {
+    throw new AppError(
+      409,
+      'ALREADY_APPLIED',
+      'Professional profile already exists',
+    );
+  }
+
   await repo.upsertApplicantProfile({
     userId,
     displayName: normalizeToUnicode(input.displayName.trim()),
   });
+
+  // DEMO_MODE auto-approves so stage demos reach the interest feed immediately.
+  const status = config.demoMode ? 'approved' : 'pending';
 
   const result = await repo.insertApplication({
     userId,
@@ -230,6 +274,7 @@ export async function applyAsProfessional(
     typicalTurnaroundDays: input.typicalTurnaroundDays,
     minBudgetMmk: input.minBudgetMmk,
     acceptingWork: input.acceptingWork,
+    status,
     portfolio: input.portfolio.map((p) => ({
       externalUrl: p.externalUrl,
       caption: p.caption
@@ -239,4 +284,116 @@ export async function applyAsProfessional(
   });
 
   return result;
+}
+
+export async function updateMyProfessional(
+  userId: string,
+  input: ProfessionalUpdateInput,
+): Promise<ProfessionalMe> {
+  const existing = await repo.getProfileByUserId(userId);
+  if (!existing) {
+    throw new AppError(404, 'NOT_FOUND', 'Professional profile not found');
+  }
+
+  let categoryId: string | undefined;
+  if (input.categorySlug) {
+    const category = await repo.getCategoryBySlug(input.categorySlug);
+    if (!category) {
+      throw new AppError(400, 'VALIDATION_ERROR', 'Unknown category');
+    }
+    categoryId = category.id;
+  }
+
+  if (input.displayName !== undefined) {
+    await repo.updateDisplayName(
+      userId,
+      normalizeToUnicode(input.displayName.trim()),
+    );
+  }
+
+  await repo.updateProfessional({
+    userId,
+    categoryId,
+    headlineMy:
+      input.headlineMy !== undefined
+        ? normalizeToUnicode(input.headlineMy.trim())
+        : undefined,
+    headlineEn:
+      input.headlineEn !== undefined
+        ? normalizeToUnicode(input.headlineEn.trim())
+        : undefined,
+    bioMy:
+      input.bioMy !== undefined
+        ? normalizeToUnicode(input.bioMy.trim())
+        : undefined,
+    bioEn:
+      input.bioEn !== undefined
+        ? normalizeToUnicode(input.bioEn.trim())
+        : undefined,
+    skills: input.skills?.map((s) => normalizeToUnicode(s.trim())),
+    typicalTurnaroundDays: input.typicalTurnaroundDays,
+    minBudgetMmk: input.minBudgetMmk,
+    acceptingWork: input.acceptingWork,
+  });
+
+  return getMyProfessional(userId);
+}
+
+export async function addMyPortfolioItem(
+  userId: string,
+  input: PortfolioUploadItem,
+): Promise<PortfolioItem> {
+  const existing = await repo.getProfileByUserId(userId);
+  if (!existing) {
+    throw new AppError(404, 'NOT_FOUND', 'Professional profile not found');
+  }
+
+  const count = await repo.countPortfolioItems(userId);
+  if (count >= MAX_PORTFOLIO_ITEMS) {
+    throw new AppError(
+      400,
+      'VALIDATION_ERROR',
+      `Portfolio is limited to ${MAX_PORTFOLIO_ITEMS} items`,
+    );
+  }
+
+  const row = await repo.addPortfolioItem({
+    professionalId: userId,
+    externalUrl: input.externalUrl,
+    caption: input.caption
+      ? normalizeToUnicode(input.caption.trim())
+      : undefined,
+  });
+
+  return {
+    id: row.id,
+    caption: row.caption,
+    externalUrl: row.externalUrl,
+    storagePath: row.storagePath,
+    sort: row.sort,
+  };
+}
+
+export async function deleteMyPortfolioItem(
+  userId: string,
+  itemId: string,
+): Promise<void> {
+  const existing = await repo.getProfileByUserId(userId);
+  if (!existing) {
+    throw new AppError(404, 'NOT_FOUND', 'Professional profile not found');
+  }
+
+  const count = await repo.countPortfolioItems(userId);
+  if (count <= 1) {
+    throw new AppError(
+      400,
+      'VALIDATION_ERROR',
+      'Keep at least one portfolio item',
+    );
+  }
+
+  const deleted = await repo.deletePortfolioItem(userId, itemId);
+  if (!deleted) {
+    throw new AppError(404, 'NOT_FOUND', 'Portfolio item not found');
+  }
 }

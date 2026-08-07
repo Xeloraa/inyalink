@@ -42,6 +42,24 @@ describe('classifyInputShape', () => {
     ).toBe('ambiguous');
     expect(classifyInputShape('help with my business')).toBe('ambiguous');
   });
+
+  it('routes dating / personal / homework to unrelated (§11)', () => {
+    expect(classifyInputShape('I want a girlfriend')).toBe('unrelated');
+    expect(classifyInputShape('how do I get a boyfriend')).toBe('unrelated');
+    expect(classifyInputShape('relationship advice please')).toBe('unrelated');
+    expect(classifyInputShape('do my homework')).toBe('unrelated');
+    expect(classifyInputShape('what is the capital of France')).toBe(
+      'unrelated',
+    );
+    expect(classifyInputShape('ချစ်သူ လိုချင်တယ်')).toBe('unrelated');
+    expect(classifyInputShape('အိမ်စာ ကူညီပေးပါ')).toBe('unrelated');
+  });
+
+  it('keeps hireable asks as service even if dating words appear', () => {
+    expect(
+      classifyInputShape("I need a logo for my girlfriend's cafe"),
+    ).toBe('service');
+  });
 });
 
 describe('classifyClarifyReply', () => {

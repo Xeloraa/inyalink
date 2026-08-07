@@ -4,6 +4,8 @@ import type {
   BriefResponse,
   CategoriesResponse,
   CategorySlug,
+  ConversationDetail,
+  ConversationListResponse,
   ConverseBriefInput,
   ConverseBriefResponse,
   CreateBriefInput,
@@ -12,14 +14,19 @@ import type {
   MatchExplanationResponse,
   MatchingCandidatesResponse,
   MatchingFeedResponse,
+  PortfolioItem,
+  PortfolioUploadItem,
   ProfessionalApplyInput,
   ProfessionalApplyResponse,
+  ProfessionalMe,
   ProfessionalProfile,
   ProfessionalSkillsResponse,
+  ProfessionalUpdateInput,
   ProfessionalsListResponse,
   ProfessionalsSort,
   SubmitBriefInput,
   UpdateBriefInput,
+  UpsertConversationInput,
 } from '@inyalink/shared';
 import { apiFetch } from './apiClient';
 
@@ -29,6 +36,33 @@ export function converseBrief(body: ConverseBriefInput) {
     body: JSON.stringify(body),
     timeoutMs: 45_000,
   });
+}
+
+export function listConversations() {
+  return apiFetch<ConversationListResponse>('/api/v1/conversations');
+}
+
+export function getConversation(id: string) {
+  return apiFetch<ConversationDetail>(
+    `/api/v1/conversations/${encodeURIComponent(id)}`,
+  );
+}
+
+export function createConversation(body: UpsertConversationInput) {
+  return apiFetch<ConversationDetail>('/api/v1/conversations', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export function updateConversation(id: string, body: UpsertConversationInput) {
+  return apiFetch<ConversationDetail>(
+    `/api/v1/conversations/${encodeURIComponent(id)}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    },
+  );
 }
 
 export function generateRoadmap(goal: string, locale: 'my' | 'en' = 'my') {
@@ -163,4 +197,30 @@ export function applyAsProfessional(body: ProfessionalApplyInput) {
     body: JSON.stringify(body),
     timeoutMs: 30_000,
   });
+}
+
+export function getMyProfessional() {
+  return apiFetch<ProfessionalMe>('/api/v1/professionals/me');
+}
+
+export function updateMyProfessional(body: ProfessionalUpdateInput) {
+  return apiFetch<ProfessionalMe>('/api/v1/professionals/me', {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+    timeoutMs: 30_000,
+  });
+}
+
+export function addMyPortfolioItem(body: PortfolioUploadItem) {
+  return apiFetch<PortfolioItem>('/api/v1/professionals/me/portfolio', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export function deleteMyPortfolioItem(itemId: string) {
+  return apiFetch<void>(
+    `/api/v1/professionals/me/portfolio/${encodeURIComponent(itemId)}`,
+    { method: 'DELETE' },
+  );
 }

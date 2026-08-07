@@ -7,6 +7,7 @@ import { adminRouter } from './modules/admin/admin.routes.js';
 import { aiRouter } from './modules/ai/ai.routes.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { briefsRouter } from './modules/briefs/briefs.routes.js';
+import { conversationsRouter } from './modules/conversations/conversations.routes.js';
 import { matchingRouter } from './modules/matching/matching.routes.js';
 import { professionalsRouter } from './modules/professionals/professionals.routes.js';
 
@@ -59,6 +60,7 @@ app.get('/health', (_req, res) => {
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/ai', aiRouter);
 app.use('/api/v1/briefs', briefsRouter);
+app.use('/api/v1/conversations', conversationsRouter);
 app.use('/api/v1/matching', matchingRouter);
 app.use('/api/v1/professionals', professionalsRouter);
 app.use('/api/v1/admin', adminRouter);

@@ -8,13 +8,23 @@ vi.mock('./professionals.repo.js', () => ({
   listCategories: vi.fn(),
   getCategoryBySlug: vi.fn(),
   getApprovedProfileById: vi.fn(),
+  getProfileByUserId: vi.fn(),
   listPortfolio: vi.fn(),
   insertApplication: vi.fn(),
   upsertApplicantProfile: vi.fn(),
+  updateProfessional: vi.fn(),
+  updateDisplayName: vi.fn(),
+  addPortfolioItem: vi.fn(),
+  deletePortfolioItem: vi.fn(),
+  countPortfolioItems: vi.fn(),
 }));
 
 vi.mock('@inyalink/burmese', () => ({
   normalizeToUnicode: (text: string) => text,
+}));
+
+vi.mock('../../lib/config.js', () => ({
+  config: { demoMode: true },
 }));
 
 function makeRow(
@@ -52,10 +62,16 @@ describe('professionals.service', () => {
     vi.mocked(repo.listSkillFacets).mockReset();
     vi.mocked(repo.listCategories).mockReset();
     vi.mocked(repo.getApprovedProfileById).mockReset();
+    vi.mocked(repo.getProfileByUserId).mockReset();
     vi.mocked(repo.listPortfolio).mockReset();
     vi.mocked(repo.getCategoryBySlug).mockReset();
     vi.mocked(repo.insertApplication).mockReset();
     vi.mocked(repo.upsertApplicantProfile).mockReset();
+    vi.mocked(repo.updateProfessional).mockReset();
+    vi.mocked(repo.updateDisplayName).mockReset();
+    vi.mocked(repo.addPortfolioItem).mockReset();
+    vi.mocked(repo.deletePortfolioItem).mockReset();
+    vi.mocked(repo.countPortfolioItems).mockReset();
   });
 
   it('lists professionals with bilingual bios for the directory rows', async () => {
@@ -214,5 +230,82 @@ describe('professionals.service', () => {
     ]);
     const result = await service.listCategories();
     expect(result.categories[0]?.slug).toBe('graphic-design');
+  });
+
+  it('auto-approves applications when DEMO_MODE is on', async () => {
+    vi.mocked(repo.getProfileByUserId).mockResolvedValue(null);
+    vi.mocked(repo.getCategoryBySlug).mockResolvedValue({
+      id: 'c0000000-0000-4000-8000-000000000001',
+      slug: 'graphic-design',
+      nameMy: 'ဂရပ်ဖစ်',
+      nameEn: 'Graphic Design',
+    });
+    vi.mocked(repo.upsertApplicantProfile).mockResolvedValue();
+    vi.mocked(repo.insertApplication).mockResolvedValue({
+      professionalId: 'a0000000-0000-4000-8000-000000000099',
+      status: 'approved',
+    });
+
+    const result = await service.applyAsProfessional(
+      {
+        displayName: 'New Pro',
+        categorySlug: 'graphic-design',
+        skills: ['logo'],
+        headlineMy: 'လိုဂိုဒီဇိုင်း',
+        headlineEn: 'Logo design',
+        bioMy: 'ကျွန်ုပ်သည် လိုဂိုဒီဇိုင်း လုပ်ပါသည်။ အသေးစား စီးပွားရေးများအတွက်။',
+        bioEn: 'I design logos for small businesses across Myanmar.',
+        typicalTurnaroundDays: 5,
+        minBudgetMmk: 100_000,
+        acceptingWork: true,
+        portfolio: [{ externalUrl: 'https://example.com/work.jpg' }],
+      },
+      'a0000000-0000-4000-8000-000000000099',
+    );
+
+    expect(result.status).toBe('approved');
+    expect(repo.insertApplication).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'approved' }),
+    );
+  });
+
+  it('rejects a second apply when already pending or approved', async () => {
+    vi.mocked(repo.getCategoryBySlug).mockResolvedValue({
+      id: 'c0000000-0000-4000-8000-000000000001',
+      slug: 'graphic-design',
+      nameMy: 'ဂရပ်ဖစ်',
+      nameEn: 'Graphic Design',
+    });
+    vi.mocked(repo.getProfileByUserId).mockResolvedValue(makeRow());
+
+    await expect(
+      service.applyAsProfessional(
+        {
+          displayName: 'New Pro',
+          categorySlug: 'graphic-design',
+          skills: ['logo'],
+          headlineMy: 'လိုဂိုဒီဇိုင်း',
+          headlineEn: 'Logo design',
+          bioMy: 'ကျွန်ုပ်သည် လိုဂိုဒီဇိုင်း လုပ်ပါသည်။ အသေးစား စီးပွားရေးများအတွက်။',
+          bioEn: 'I design logos for small businesses across Myanmar.',
+          typicalTurnaroundDays: 5,
+          minBudgetMmk: 100_000,
+          acceptingWork: true,
+          portfolio: [{ externalUrl: 'https://example.com/work.jpg' }],
+        },
+        'a0000000-0000-4000-8000-000000000001',
+      ),
+    ).rejects.toMatchObject({ code: 'ALREADY_APPLIED', statusCode: 409 });
+  });
+
+  it('returns own professional profile with status', async () => {
+    vi.mocked(repo.getProfileByUserId).mockResolvedValue(makeRow());
+    vi.mocked(repo.listPortfolio).mockResolvedValue([]);
+
+    const me = await service.getMyProfessional(
+      'a0000000-0000-4000-8000-000000000001',
+    );
+    expect(me.status).toBe('approved');
+    expect(me.displayName).toBe('မင်းထက် · Min Thet');
   });
 });

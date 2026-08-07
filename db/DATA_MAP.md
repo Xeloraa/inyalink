@@ -21,6 +21,8 @@ kept may be compelled. Prefer short retention and hard delete.
 | `briefs` | table | Central work request: status, source, raw input, structured fields, budget, deadline, AI flags, plus interest window (`interest_opens_at`/`closes_at`), `matching_mode`, `urgent`, `fallback_used`, `ranked_at`. | Concierge + AI produce the same object; interest-then-rank hang off this. | Until client account deletion (cascade). Closed/cancelled briefs retained for ops history until then. |
 | `engagements` | table | Match/transaction record: brief ↔ professional, status machine, amount, match/decline reasons, timestamps. | Reputation and completion metrics derive only from here. | Until brief deletion (cascade) or explicit purge policy later. Prefer retain through dispute window. |
 | `messages` | table | Engagement thread body + sender. `expires_at` defaults to now + 90 days. | Coordination between client and professional. | **90 days** via column default + `pg_cron` hard delete (`delete-expired-messages`). Never soft-delete. |
+| `ai_conversations` | table | Signed-in floating-chat session: title (from opening message), path, brief_draft JSON, complete flag. `expires_at` defaults to now + 90 days. | Resume hire conversations; holds business plans/budgets. | **90 days** via column default + `pg_cron` hard delete (`delete-expired-ai-conversations`). Never soft-delete. Anonymous chat stays in browser sessionStorage only — never uploaded on sign-in. |
+| `ai_conversation_messages` | table | Ordered user/assistant turns for an `ai_conversations` row. | Transcript for resume. | Cascades with parent conversation (same 90-day hard delete). |
 | `professional_reputation` | view | Aggregates from engagements: completed/declined counts, unique clients, completion rate, median response minutes. | Computed reputation; no stored scores to drift. | N/A (derived). Do not surface publicly until ≥50 platform-wide confirmed engagements. |
 | `ai_calls` | table | Telemetry per model call: feature, provider, model, optional brief id, tokens, cost, latency, success/error. | Cost control and quality; Burmese tokenization needs monitoring. | Operational. Propose 180-day hard delete once volume justifies a job; until then retain for cost audit. No message/body content. |
 | `audit_log` | table | Actor, action, entity type/id, JSON metadata. | Admin/accountability trail for reviews, matches, deletions. | Operational/compliance. Propose 2-year hard delete; metadata must not store identity documents or message bodies. |
@@ -30,7 +32,7 @@ kept may be compelled. Prefer short retention and hard delete.
 
 - Identity documents, NRC, passport, Smart Card, selfie, biometrics
 - Phone numbers in app tables (Auth only)
-- Soft-delete columns on `messages` (`deleted_at`)
+- Soft-delete columns on `messages` or `ai_conversations` (`deleted_at`)
 - Star ratings stored as mutable rows (reputation is a view)
 
 ## Storage

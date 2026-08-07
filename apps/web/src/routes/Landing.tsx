@@ -24,6 +24,7 @@ export default function Landing() {
   function submitGoal(text: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
+    setGoal('');
     const result = startFromInput(trimmed);
     if (result.destination === 'roadmap') {
       void navigate('/roadmap');
@@ -39,8 +40,7 @@ export default function Landing() {
   }
 
   function applyChip(text: string) {
-    setGoal(text);
-    focusInput();
+    submitGoal(text);
   }
 
   function backToInput() {

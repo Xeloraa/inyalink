@@ -1,12 +1,15 @@
 import { Router } from 'express';
 import {
+  PortfolioItemIdParamsSchema,
+  PortfolioUploadItemSchema,
   ProfessionalApplyInputSchema,
   ProfessionalIdParamsSchema,
+  ProfessionalUpdateInputSchema,
   ProfessionalsListQuerySchema,
 } from '@inyalink/shared';
 import { validateBody, validateQuery } from '../../middleware/validate.js';
 import { AppError } from '../../middleware/errors.js';
-import { getAuth, requireAuth } from '../../middleware/requireAuth.js';
+import { getAuth, attachSession } from '../../middleware/requireAuth.js';
 import * as professionalsService from './professionals.service.js';
 
 export const professionalsRouter = Router();
@@ -55,10 +58,78 @@ professionalsRouter.get(
   },
 );
 
-/** Mutating — signed-in user only. */
+/** Own profile — must be registered before /:id. */
+professionalsRouter.get('/me', attachSession, async (req, res, next) => {
+  try {
+    const profile = await professionalsService.getMyProfessional(
+      getAuth(req).userId,
+    );
+    res.json(profile);
+  } catch (err) {
+    next(err);
+  }
+});
+
+professionalsRouter.patch(
+  '/me',
+  attachSession,
+  validateBody(ProfessionalUpdateInputSchema),
+  async (req, res, next) => {
+    try {
+      const body = ProfessionalUpdateInputSchema.parse(req.body);
+      const profile = await professionalsService.updateMyProfessional(
+        getAuth(req).userId,
+        body,
+      );
+      res.json(profile);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+professionalsRouter.post(
+  '/me/portfolio',
+  attachSession,
+  validateBody(PortfolioUploadItemSchema),
+  async (req, res, next) => {
+    try {
+      const body = PortfolioUploadItemSchema.parse(req.body);
+      const item = await professionalsService.addMyPortfolioItem(
+        getAuth(req).userId,
+        body,
+      );
+      res.status(201).json(item);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+professionalsRouter.delete(
+  '/me/portfolio/:itemId',
+  attachSession,
+  async (req, res, next) => {
+    try {
+      const params = PortfolioItemIdParamsSchema.safeParse(req.params);
+      if (!params.success) {
+        throw new AppError(400, 'VALIDATION_ERROR', 'Invalid portfolio item id');
+      }
+      await professionalsService.deleteMyPortfolioItem(
+        getAuth(req).userId,
+        params.data.itemId,
+      );
+      res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+/** Mutating — session required (DEMO_MODE falls back to demo identity). */
 professionalsRouter.post(
   '/apply',
-  requireAuth,
+  attachSession,
   validateBody(ProfessionalApplyInputSchema),
   async (req, res, next) => {
     try {

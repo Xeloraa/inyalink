@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { takeAuthReturnTo } from '../lib/authReturnTo';
 import { useI18n } from '../lib/i18n';
 import { getSupabaseBrowser, isSupabaseConfigured } from '../lib/supabase';
 
@@ -38,7 +39,7 @@ export default function AuthCallback() {
 
   useEffect(() => {
     if (!loading && session) {
-      void navigate('/browse', { replace: true });
+      void navigate(takeAuthReturnTo('/browse'), { replace: true });
     }
   }, [loading, session, navigate]);
 

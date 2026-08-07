@@ -157,7 +157,7 @@ export function Header() {
               {t('header.proFeed')}
             </Link>
             <Link
-              to="/profile/create"
+              to="/professionals/join"
               role="menuitem"
               className={MENU_ITEM}
               onClick={() => setMenuOpen(false)}
@@ -218,7 +218,7 @@ export function Header() {
           <Link to="/app/briefs" className={NAV_LINK}>
             {t('header.proFeed')}
           </Link>
-          <Link to="/profile/create" className={QUIET_LINK}>
+          <Link to="/professionals/join" className={QUIET_LINK}>
             {t('header.proJoin')}
           </Link>
 
