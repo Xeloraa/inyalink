@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/((?!assets/|images/).*)",
+      "source": "/((?!assets/|images/|og\\.png|favicon\\.svg|apple-touch-icon\\.png).*)",
       "destination": "/index.html"
     }
   ],
@@ -9,7 +9,7 @@
     {
       "source": "/og.png",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" },
+        { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" },
         { "key": "Content-Type", "value": "image/png" }
       ]
     }
