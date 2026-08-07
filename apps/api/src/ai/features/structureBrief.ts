@@ -187,7 +187,18 @@ export async function structureBrief(
   briefDraft = { ...briefDraft, language: responseLocale };
   let nextQuestion = result.data.nextQuestion ?? undefined;
   let complete = result.data.complete;
+  const redirectTo =
+    result.data.redirectTo === 'roadmap' ? ('roadmap' as const) : undefined;
   const minOk = isBriefDraftComplete(briefDraft);
+
+  if (redirectTo === 'roadmap') {
+    return {
+      briefDraft,
+      complete: false,
+      redirectTo,
+      nextQuestion: undefined,
+    };
+  }
 
   if (questionsRemaining === 0) {
     nextQuestion = undefined;

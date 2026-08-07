@@ -4,10 +4,10 @@
   "matchInput": "ကော်ဖီဆိုင်အတွက် logo လိုချင်ပါတယ်",
   "locale": "en",
   "questions": [
-    "Understood — you're looking for a cafe logo. Before I match you with someone, what's the cafe name, and should that text appear in the mark?",
-    "Got it. Will you need this for signage and cups as well, or just the logo for now?",
-    "What style feels right — minimal, modern, or warmer traditional — and are there colours you already like? Most people include source files in the agreement; worth confirming upfront.",
-    "What budget range in kyat should we plan for, and when do you need it by?"
+    "Noted — you need a cafe logo. I can help find someone; what's the cafe name, and should that text appear in the mark?",
+    "Inya Cafe — got it. Will you need this for signage and coffee cup / packaging as well, or just the logo for now?",
+    "Just the logo for now — noted. Is the rough style closer to minimal, modern, or traditional? Most people include source files in the agreement; worth confirming upfront.",
+    "Minimalist — noted. What budget range in kyat should we plan for, and when do you need it by?"
   ],
   "draftsAfterUserTurn": [
     {
@@ -40,11 +40,11 @@
       "language": "en",
       "category": "graphic-design",
       "title": "Inya Cafe logo",
-      "description": "Minimalist logo for Inya Cafe in brown and cream",
+      "description": "Minimalist logo design for Inya Cafe",
       "requirements": [
         "Business name: Inya Cafe",
-        "Style: Minimalist",
-        "Colours: brown, cream"
+        "scope: logo only",
+        "rough style: Minimalist"
       ],
       "budget_min_mmk": null,
       "budget_max_mmk": null,
@@ -57,12 +57,12 @@
       "language": "en",
       "category": "graphic-design",
       "title": "Inya Cafe logo",
-      "description": "Minimalist logo for Inya Cafe in brown and cream",
+      "description": "Minimalist logo design for Inya Cafe",
       "requirements": [
         "Business name: Inya Cafe",
-        "Style: Minimalist",
-        "Colours: brown, cream",
-        "Deliverable: vector (AI/SVG)"
+        "scope: logo only",
+        "rough style: Minimalist",
+        "Deliverable: source file (AI/SVG)"
       ],
       "budget_min_mmk": 300000,
       "budget_max_mmk": 500000,
@@ -76,12 +76,12 @@
     "language": "en",
     "category": "graphic-design",
     "title": "Inya Cafe logo",
-    "description": "Minimalist logo for Inya Cafe in brown and cream; vector files required.",
+    "description": "Minimalist logo design for Inya Cafe; source files required.",
     "requirements": [
       "Business name: Inya Cafe",
-      "Style: Minimalist",
-      "Colours: brown, cream",
-      "Deliverable: vector (AI/SVG)"
+      "scope: logo only",
+      "rough style: Minimalist",
+      "Deliverable: source file (AI/SVG)"
     ],
     "budget_min_mmk": 300000,
     "budget_max_mmk": 500000,

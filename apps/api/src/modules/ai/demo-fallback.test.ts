@@ -67,7 +67,7 @@ describe('demo AI fallback cache', () => {
       'my',
     );
     expect(q2?.complete).toBe(false);
-    expect(q2?.nextQuestion).toMatch(/ဆိုင်းဘုတ်|ခွက်|လိုဂိုတစ်ခု/);
+    expect(q2?.nextQuestion).toMatch(/signage|coffee cup|packaging|logo/i);
 
     const q3 = lookupConverseDemoFallback(
       [
@@ -75,11 +75,12 @@ describe('demo AI fallback cache', () => {
         { role: 'assistant', content: 'q1' },
         { role: 'user', content: 'Inya Cafe' },
         { role: 'assistant', content: 'q2' },
-        { role: 'user', content: 'လိုဂိုပဲ' },
+        { role: 'user', content: 'logo ပဲ' },
       ],
       'my',
     );
-    expect(q3?.nextQuestion).toMatch(/ပုံစံ|source/i);
+    expect(q3?.nextQuestion).toMatch(/style|minimal|source/i);
+    expect(q3?.nextQuestion).not.toMatch(/အရောင်|colour|color/i);
 
     const q4 = lookupConverseDemoFallback(
       [
@@ -93,7 +94,7 @@ describe('demo AI fallback cache', () => {
       ],
       'my',
     );
-    expect(q4?.nextQuestion).toMatch(/ဘတ်ဂျက်|ဘယ်တော့/);
+    expect(q4?.nextQuestion).toMatch(/budget|deadline|ဘယ်တော့/i);
 
     const done = lookupConverseDemoFallback(
       [

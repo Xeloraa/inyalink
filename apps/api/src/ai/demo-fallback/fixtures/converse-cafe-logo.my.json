@@ -4,17 +4,17 @@
   "matchInput": "ကော်ဖီဆိုင်အတွက် logo လိုချင်ပါတယ်",
   "locale": "my",
   "questions": [
-    "နားလည်ပါတယ် — ကော်ဖီဆိုင်အတွက် လိုဂိုရှာပေးချင်တာပါ။ မလုပ်ခင် ဆိုင်နာမည် ဘာလဲဆိုတာ သိချင်ပါတယ်၊ လိုဂိုထဲ ထည့်ရေးမယ့် စာသား ရှိပါသလား။",
-    "ရပါပြီ။ ဆိုင်းဘုတ်နဲ့ ခွက်တွေအတွက်ပါ လိုအပ်မှာလား၊ လောလောဆယ် လိုဂိုတစ်ခုတည်းလား။",
-    "ပုံစံက ရိုးရှင်းတာ၊ ခေတ်မီတာ၊ ဒါမှမဟုတ် ရိုးရာဘက် ပိုနီးစပ်ပါသလား။ အရောင် နှစ်သက်တာ ရှိရင်လည်း ပြောပေးပါ — အများစုက source file ကို သဘောတူချက်ထဲ ထည့်ကြပါတယ်။",
-    "ဘတ်ဂျက် ဘယ်လောက်လောက် ထားမယ်လို့ စဉ်းစားထားပါသလဲ၊ ဘယ်တော့ လိုအပ်မှာပါလဲ။"
+    "ကော်ဖီဆိုင်အတွက် logo လိုချင်တာ မှတ်ထားပါပြီ။ logo ရှာပေးနိုင်ပါတယ် — မလုပ်ခင် သင့်ဆိုင်နာမည် ဘာလဲဆိုတာ သိချင်ပါတယ်။ logo ထဲ ထည့်ရေးမယ့် စာသား ရှိပါသလား။",
+    "Inya Cafe ပေါ့ — မှတ်ထားပါပြီ။ signage နဲ့ coffee cup / packaging အတွက်ပါ လိုအပ်မှာလား၊ လောလောဆယ် logo တစ်ခုတည်းလား။",
+    "logo တစ်ခုတည်းပေါ့ — မှတ်ထားပါပြီ။ rough style က minimal၊ modern၊ ဒါမှမဟုတ် traditional ဘက် ပိုနီးစပ်ပါသလား။ အများစုက source file ကို သဘောတူချက်ထဲ ထည့်ကြပါတယ်။",
+    "Minimalist ပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ deadline ကော ဘယ်တော့ လိုအပ်မှာပါလဲ။"
   ],
   "draftsAfterUserTurn": [
     {
       "language": "my",
       "category": "graphic-design",
-      "title": "ကော်ဖီဆိုင် လိုဂို",
-      "description": "ကော်ဖီဆိုင်အတွက် logo ဒီဇိုင်း",
+      "title": "ကော်ဖီဆိုင် logo",
+      "description": "ကော်ဖီဆိုင်အတွက် logo design",
       "requirements": ["logo"],
       "budget_min_mmk": null,
       "budget_max_mmk": null,
@@ -26,8 +26,8 @@
     {
       "language": "my",
       "category": "graphic-design",
-      "title": "Inya Cafe လိုဂို",
-      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် logo ဒီဇိုင်း",
+      "title": "Inya Cafe logo",
+      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် logo design",
       "requirements": ["ဆိုင်နာမည်: Inya Cafe", "logo"],
       "budget_min_mmk": null,
       "budget_max_mmk": null,
@@ -39,12 +39,12 @@
     {
       "language": "my",
       "category": "graphic-design",
-      "title": "Inya Cafe လိုဂို",
-      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo ဒီဇိုင်း — အညိုနှင့် cream အရောင်",
+      "title": "Inya Cafe logo",
+      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo design",
       "requirements": [
         "ဆိုင်နာမည်: Inya Cafe",
-        "စတိုင်: Minimalist",
-        "အရောင်: အညို, cream"
+        "scope: logo only",
+        "rough style: Minimalist"
       ],
       "budget_min_mmk": null,
       "budget_max_mmk": null,
@@ -56,13 +56,13 @@
     {
       "language": "my",
       "category": "graphic-design",
-      "title": "Inya Cafe လိုဂို",
-      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo ဒီဇိုင်း — အညိုနှင့် cream အရောင်",
+      "title": "Inya Cafe logo",
+      "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo design",
       "requirements": [
         "ဆိုင်နာမည်: Inya Cafe",
-        "စတိုင်: Minimalist",
-        "အရောင်: အညို, cream",
-        "ဖိုင်: vector (AI/SVG)"
+        "scope: logo only",
+        "rough style: Minimalist",
+        "ဖိုင်: source file (AI/SVG)"
       ],
       "budget_min_mmk": 300000,
       "budget_max_mmk": 500000,
@@ -75,13 +75,13 @@
   "finalBrief": {
     "language": "my",
     "category": "graphic-design",
-    "title": "Inya Cafe လိုဂို",
-    "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo ဒီဇိုင်း — အညိုနှင့် cream အရောင်၊ vector ဖိုင် လိုအပ်သည်။",
+    "title": "Inya Cafe logo",
+    "description": "Inya Cafe ကော်ဖီဆိုင်အတွက် minimalist logo design — source file လိုအပ်သည်။",
     "requirements": [
       "ဆိုင်နာမည်: Inya Cafe",
-      "စတိုင်: Minimalist",
-      "အရောင်: အညို, cream",
-      "ဖိုင်: vector (AI/SVG)"
+      "scope: logo only",
+      "rough style: Minimalist",
+      "ဖိုင်: source file (AI/SVG)"
     ],
     "budget_min_mmk": 300000,
     "budget_max_mmk": 500000,

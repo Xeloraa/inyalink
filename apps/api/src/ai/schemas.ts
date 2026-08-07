@@ -24,6 +24,8 @@ export const StructureBriefModelOutputSchema = z.object({
     needs_human_review: z.boolean().nullable(),
   }),
   complete: z.boolean(),
+  /** Hand off to Guided Plan (goals, problems, don't-know). */
+  redirectTo: z.literal('roadmap').nullable(),
 });
 
 export type StructureBriefModelOutput = z.infer<
