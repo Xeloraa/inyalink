@@ -181,7 +181,7 @@ export function FloatingChat() {
       : locale;
 
   const showBriefCard = complete && path === 'quick';
-  const showComposer = !complete && !planning;
+  const composerLocked = planning || showBriefCard || briefBusy || matchBusy;
 
   useEffect(() => {
     if (
@@ -536,15 +536,11 @@ export function FloatingChat() {
         role="dialog"
         aria-label={t('chat.title')}
         aria-hidden={!open}
-        className={`fixed bottom-5 right-5 z-50 flex w-[min(400px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-xl border border-line bg-white shadow-lg transition-[opacity,transform] duration-slow ease-out motion-reduce:transition-none max-sm:right-3 max-sm:bottom-3 ${
+        className={`fixed bottom-5 right-5 z-50 flex h-[min(680px,calc(100dvh-5.5rem))] max-h-[calc(100dvh-5.5rem)] w-[min(400px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-xl border border-line bg-white shadow-lg transition-[opacity,transform] duration-slow ease-out motion-reduce:transition-none max-sm:right-3 max-sm:bottom-3 ${
           open
             ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
             : 'pointer-events-none translate-y-3 scale-[0.98] opacity-0'
         }`}
-        style={{
-          height: 'min(680px, calc(100dvh - 5.5rem))',
-          maxHeight: 'calc(100dvh - 5.5rem)',
-        }}
       >
         <header className="flex shrink-0 items-center gap-sm border-b border-line-soft px-xl py-lg">
           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-jade-50 text-jade-600">
@@ -573,7 +569,7 @@ export function FloatingChat() {
           </button>
         </header>
 
-        <div className="relative flex min-h-0 flex-1 flex-col">
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
           <ChatHistoryPanel
             open={historyOpen}
             signedIn={signedIn}
@@ -586,47 +582,51 @@ export function FloatingChat() {
 
           <div
             ref={listRef}
-            className="flex min-h-0 flex-1 flex-col justify-end gap-lg overflow-y-auto px-xl py-xl"
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-xl py-xl"
             aria-live="polite"
           >
-            {messages.length === 0 ? (
-              <ChatBubble role="assistant">{t('chat.seed')}</ChatBubble>
-            ) : null}
-            {messages.map((m, i) => (
-              <ChatBubble key={`${m.role}-${i}`} role={m.role}>
-                {m.content}
-              </ChatBubble>
-            ))}
-            {busy ? <ThinkingBubble /> : null}
-            {busy ? <RotatingProgress active /> : null}
-            {planning && roadmapSteps.length > 0 ? (
-              <RoadmapCards
-                steps={roadmapSteps}
-                disclaimer={roadmapDisclaimer}
-              />
-            ) : null}
-            {showBriefCard ? (
-              <BriefSummaryCard
-                draft={briefDraft}
-                goal={goal}
-                busy={briefBusy || matchBusy}
-                error={briefError}
-                onChange={setBriefDraft}
-                onFindMatches={(urgent) => void onFindMatches(urgent)}
-              />
-            ) : null}
-            {matchBusy && !matches ? (
-              <>
-                <ThinkingBubble />
-                <RotatingProgress active />
-              </>
-            ) : null}
-            {matches && matches.length > 0 ? (
-              <MatchAvatarRow matches={matches} />
-            ) : null}
-            {matches && matches.length === 0 && !matchBusy ? (
-              <ChatBubble role="assistant">{t('matches.waitingBody')}</ChatBubble>
-            ) : null}
+            <div className="flex min-h-full flex-col justify-end gap-lg">
+              {messages.length === 0 ? (
+                <ChatBubble role="assistant">{t('chat.seed')}</ChatBubble>
+              ) : null}
+              {messages.map((m, i) => (
+                <ChatBubble key={`${m.role}-${i}`} role={m.role}>
+                  {m.content}
+                </ChatBubble>
+              ))}
+              {busy ? <ThinkingBubble /> : null}
+              {busy ? <RotatingProgress active /> : null}
+              {planning && roadmapSteps.length > 0 ? (
+                <RoadmapCards
+                  steps={roadmapSteps}
+                  disclaimer={roadmapDisclaimer}
+                />
+              ) : null}
+              {showBriefCard ? (
+                <BriefSummaryCard
+                  draft={briefDraft}
+                  goal={goal}
+                  busy={briefBusy || matchBusy}
+                  error={briefError}
+                  onChange={setBriefDraft}
+                  onFindMatches={(urgent) => void onFindMatches(urgent)}
+                />
+              ) : null}
+              {matchBusy && !matches ? (
+                <>
+                  <ThinkingBubble />
+                  <RotatingProgress active />
+                </>
+              ) : null}
+              {matches && matches.length > 0 ? (
+                <MatchAvatarRow matches={matches} />
+              ) : null}
+              {matches && matches.length === 0 && !matchBusy ? (
+                <ChatBubble role="assistant">
+                  {t('matches.waitingBody')}
+                </ChatBubble>
+              ) : null}
+            </div>
           </div>
 
           {notice ? (
@@ -645,11 +645,10 @@ export function FloatingChat() {
             </div>
           ) : null}
 
-          {showComposer ? (
-            <form
-              onSubmit={(e) => void onSend(e)}
-              className="shrink-0 border-t border-line-soft p-lg"
-            >
+          <form
+            onSubmit={(e) => void onSend(e)}
+            className="shrink-0 border-t border-line-soft bg-white p-lg"
+          >
               <label className="sr-only" htmlFor="floating-chat-input">
                 {t('converse.placeholder')}
               </label>
@@ -660,20 +659,26 @@ export function FloatingChat() {
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
                   placeholder={t('converse.placeholder')}
-                  disabled={busy || !open || historyOpen}
+                  disabled={busy || composerLocked || !open || historyOpen}
                   tabIndex={open && !historyOpen ? 0 : -1}
                   className="tap-target font-myanmar min-w-0 flex-1 rounded-md border border-line px-md text-body-lg leading-burmese outline-none focus:border-jade-400 focus:shadow-focus disabled:opacity-50"
                 />
                 <button
                   type="submit"
-                  disabled={busy || !reply.trim() || !open || historyOpen}
+                  disabled={
+                    busy ||
+                    composerLocked ||
+                    !reply.trim() ||
+                    !open ||
+                    historyOpen
+                  }
                   tabIndex={open && !historyOpen ? 0 : -1}
                   className="tap-target shrink-0 rounded-md bg-jade-600 px-lg text-body-sm font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300"
                 >
                   {t('converse.send')}
                 </button>
               </div>
-              {active && !unrelated && !planning ? (
+              {active && !unrelated && !planning && !complete ? (
                 <div className="mt-md flex justify-end">
                   <button
                     type="button"
@@ -686,8 +691,7 @@ export function FloatingChat() {
                   </button>
                 </div>
               ) : null}
-            </form>
-          ) : null}
+          </form>
         </div>
       </div>
     </>

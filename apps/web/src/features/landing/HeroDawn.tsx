@@ -62,9 +62,11 @@ export function HeroDawn({
               className="text-hero animate-fade-up delay-1 mt-lg text-ink-900 md:mt-xl"
             >
               {t('landing.headlineBefore')}
-              <span className="block text-jade-600">
-                {t('landing.headlineAccent')}
-              </span>
+              {t('landing.headlineAccent') ? (
+                <span className="block text-jade-600">
+                  {t('landing.headlineAccent')}
+                </span>
+              ) : null}
               {t('landing.headlineAfter') ? (
                 <span className="block">{t('landing.headlineAfter')}</span>
               ) : null}
