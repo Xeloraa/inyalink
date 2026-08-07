@@ -118,6 +118,82 @@ function matchesAlias(
   return null;
 }
 
+/**
+ * Loose match for mid-script demo replies. Requires substantial overlap —
+ * "cafe vex" must not match "Inya Cafe".
+ */
+export function closelyMatchesDemoReply(
+  raw: string,
+  aliases: readonly string[],
+): string | null {
+  const normalized = normalizeDemoInput(raw).toLowerCase();
+  if (!normalized) return null;
+
+  for (const alias of aliases) {
+    const a = normalizeDemoInput(alias).toLowerCase();
+    if (!a) continue;
+    if (normalized === a) return alias;
+
+    // Alias appears inside the user reply ("Minimalist, brown…" → minimalist).
+    if (a.length >= 4 && normalized.includes(a)) return alias;
+
+    // User reply is a short form of the alias ("inya" → "inya cafe").
+    if (
+      normalized.length >= 4 &&
+      a.includes(normalized) &&
+      normalized.length / a.length >= 0.5
+    ) {
+      return alias;
+    }
+  }
+  return null;
+}
+
+/**
+ * Fixture replies assumed before serving questions[asked].
+ * Index = assistant questions already asked (same as nextQuestionIndex).
+ * asked=0 has no prior reply beyond the opening alias.
+ */
+export const DEMO_CONVERSE_REPLY_ALIASES: Readonly<
+  Record<number, readonly string[]>
+> = {
+  1: [
+    'Inya Cafe',
+    'inya cafe',
+    'Inya',
+    'အင်းယား',
+    'အင်းယား ကဖေး',
+    'အင်းယားကဖေး',
+  ],
+  2: [
+    'logo',
+    'logo ပဲ',
+    'just the logo',
+    'logo for now',
+    'လိုဂို',
+    'logo တစ်ခုတည်း',
+    'လောလောဆယ် logo',
+  ],
+  3: [
+    'minimal',
+    'minimalist',
+    'modern',
+    'traditional',
+    'ရိုးရှင်း',
+    'ခေတ်မီ',
+    'ရိုးရာ',
+  ],
+  4: [
+    '300000',
+    '500000',
+    '300000-500000',
+    '2026-09-30',
+    '300,000',
+    '၅သိန်း',
+    '၃သိန်း',
+  ],
+};
+
 /** Opening user message for converse matching (first user turn). */
 export function openingUserMessage(
   messages: Array<{ role: string; content: string }>,
@@ -209,6 +285,44 @@ export function lookupConverseDemoFallback(
       reason: 'input_not_in_aliases',
     });
     return null;
+  }
+
+  // Mid-script turns assume specific replies (e.g. cafe name = "Inya Cafe").
+  // Do not advance the canned script when the latest message doesn't match.
+  if (asked >= 1) {
+    const latest =
+      [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
+    const expected = DEMO_CONVERSE_REPLY_ALIASES[asked];
+    if (!expected) {
+      logFallback('miss', 'structure_brief', {
+        normalizedInput: opening,
+        latestUser: normalizeDemoInput(latest),
+        locale,
+        assistantQuestionsAsked: asked,
+        reason: 'no_expected_replies_for_turn',
+      });
+      return null;
+    }
+    const matchedReply = closelyMatchesDemoReply(latest, expected);
+    if (!matchedReply) {
+      logFallback('miss', 'structure_brief', {
+        normalizedInput: opening,
+        latestUser: normalizeDemoInput(latest),
+        locale,
+        assistantQuestionsAsked: asked,
+        expectedReplies: expected,
+        reason: 'latest_reply_not_close_to_fixture',
+      });
+      return null;
+    }
+    logFallback('check', 'structure_brief', {
+      normalizedInput: opening,
+      latestUser: normalizeDemoInput(latest),
+      matchedReply,
+      locale,
+      assistantQuestionsAsked: asked,
+      note: 'mid_script_reply_matched',
+    });
   }
 
   const fixture = converseByLocale[locale] ?? converseByLocale.my;

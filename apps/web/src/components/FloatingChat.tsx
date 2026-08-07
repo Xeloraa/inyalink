@@ -304,11 +304,15 @@ export function FloatingChat() {
   async function runTurn(nextMessages: ChatMessage[]) {
     setBusy(true);
     setNotice(null);
+    const replyLocale = detectResponseLocale(
+      [...nextMessages].reverse().find((m) => m.role === 'user')?.content ??
+        goal,
+    );
     try {
       const result = await converseBrief({
         messages: nextMessages,
         briefDraft: briefDraftRef.current,
-        locale,
+        locale: replyLocale,
       });
       if (result.redirectTo === 'roadmap') {
         console.log('[classify] API redirect → roadmap');
@@ -741,7 +745,7 @@ export function FloatingChat() {
               <label className="sr-only" htmlFor="floating-chat-input">
                 {t('converse.placeholder')}
               </label>
-              <div className="flex gap-sm">
+              <div className="flex flex-wrap items-stretch gap-sm">
                 <input
                   ref={inputRef}
                   id="floating-chat-input"
@@ -765,20 +769,18 @@ export function FloatingChat() {
                 >
                   {t('converse.send')}
                 </button>
-              </div>
-              {active && !unrelated && !planning && !complete ? (
-                <div className="mt-md flex justify-end">
+                {active && !unrelated && !planning && !complete ? (
                   <button
                     type="button"
                     onClick={() => void onSkip()}
                     disabled={busy || !open || historyOpen}
                     tabIndex={open && !historyOpen ? 0 : -1}
-                    className="tap-target text-body-sm text-ink-500 underline-offset-2 hover:text-jade-600 hover:underline disabled:opacity-40"
+                    className="tap-target shrink-0 rounded-md border border-line bg-white px-md text-body-sm font-medium text-ink-700 transition-colors duration-fast ease-out hover:border-jade-400 hover:bg-jade-50 hover:text-jade-800 focus-visible:shadow-focus disabled:opacity-40"
                   >
                     {t('converse.skip')}
                   </button>
-                </div>
-              ) : null}
+                ) : null}
+              </div>
           </form>
         </div>
       </div>

@@ -91,6 +91,14 @@ export async function structureBrief(
   const questionsRemaining = Math.max(0, args.maxQuestions - questionsAsked);
   const responseLocale = responseLocaleFromMessages(args.messages);
   const started = Date.now();
+  console.log('[ai] structure_brief language', {
+    responseLocale,
+    uiLocale: args.locale,
+    latestUser: [...args.messages]
+      .reverse()
+      .find((m) => m.role === 'user')
+      ?.content?.slice(0, 80),
+  });
 
   let provider;
   try {

@@ -104,7 +104,7 @@
   "converse.title": "A few questions",
   "converse.placeholder": "Type your answer…",
   "converse.send": "Send",
-  "converse.skip": "Not sure",
+  "converse.skip": "Skip this question",
   "converse.skipReply": "Not sure — skip this one.",
   "converse.progress": "{asked} / {max}",
   "converse.progressClarify": "1 / 1",

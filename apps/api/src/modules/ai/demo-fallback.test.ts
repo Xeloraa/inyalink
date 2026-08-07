@@ -86,11 +86,11 @@ describe('demo AI fallback cache', () => {
       [
         { role: 'user', content: DEMO_CONVERSE_INPUT },
         { role: 'assistant', content: 'q1' },
-        { role: 'user', content: 'a' },
+        { role: 'user', content: 'Inya Cafe' },
         { role: 'assistant', content: 'q2' },
-        { role: 'user', content: 'b' },
+        { role: 'user', content: 'logo ပဲ' },
         { role: 'assistant', content: 'q3' },
-        { role: 'user', content: 'c' },
+        { role: 'user', content: 'minimalist' },
       ],
       'my',
     );
@@ -100,11 +100,11 @@ describe('demo AI fallback cache', () => {
       [
         { role: 'user', content: DEMO_CONVERSE_INPUT },
         { role: 'assistant', content: 'q1' },
-        { role: 'user', content: 'a' },
+        { role: 'user', content: 'Inya Cafe' },
         { role: 'assistant', content: 'q2' },
-        { role: 'user', content: 'b' },
+        { role: 'user', content: 'logo ပဲ' },
         { role: 'assistant', content: 'q3' },
-        { role: 'user', content: 'c' },
+        { role: 'user', content: 'minimalist' },
         { role: 'assistant', content: 'q4' },
         { role: 'user', content: '2026-09-30' },
       ],
@@ -128,7 +128,7 @@ describe('demo AI fallback cache', () => {
       [
         { role: 'user', content: chip },
         { role: 'assistant', content: 'first question' },
-        { role: 'user', content: 'anything' },
+        { role: 'user', content: 'Inya Cafe' },
       ],
       'my',
     );
@@ -139,6 +139,30 @@ describe('demo AI fallback cache', () => {
       expect.objectContaining({
         matchInput: chip,
         nextQuestionIndex: 1,
+      }),
+    );
+    log.mockRestore();
+  });
+
+  it('does not advance the script when the latest reply is not a fixture match', () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    expect(
+      lookupConverseDemoFallback(
+        [
+          { role: 'user', content: DEMO_CONVERSE_INPUT },
+          { role: 'assistant', content: 'first question' },
+          { role: 'user', content: 'cafe vex' },
+        ],
+        'en',
+      ),
+    ).toBeNull();
+    expect(log).toHaveBeenCalledWith(
+      '[demo-only] AI fallback cache miss',
+      expect.objectContaining({
+        feature: 'structure_brief',
+        event: 'miss',
+        reason: 'latest_reply_not_close_to_fixture',
+        latestUser: 'cafe vex',
       }),
     );
     log.mockRestore();

@@ -11,7 +11,7 @@ export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 export const ConverseBriefInputSchema = z.object({
   messages: z.array(ChatMessageSchema).min(1).max(24),
   briefDraft: BriefDraftSchema.optional(),
-  /** UI language toggle — AI replies in this language regardless of input. */
+  /** UI language toggle. AI reply language follows the latest user message. */
   locale: UiLocaleSchema.default('my'),
 });
 

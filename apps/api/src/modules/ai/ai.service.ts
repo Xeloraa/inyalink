@@ -110,19 +110,42 @@ async function serveConverseFallback(
     return null;
   }
 
+  const opening = openingUserMessage(messages);
+  const latestUser = latestUserContent(messages);
+  const asked = messages.filter((m) => m.role === 'assistant').length;
+
   console.log('[demo-only] AI provider failed; checking fallback cache', {
     feature: 'structure_brief',
     providerErrorKind,
     locale,
+    opening,
+    latestUser,
+    assistantQuestionsAsked: asked,
   });
   const cached = lookupConverseDemoFallback(messages, locale);
-  if (!cached) return null;
+  if (!cached) {
+    console.log('[demo-only] AI fallback cache miss — not serving fixture', {
+      feature: 'structure_brief',
+      providerErrorKind,
+      locale,
+      opening,
+      latestUser,
+      assistantQuestionsAsked: asked,
+    });
+    return null;
+  }
 
   console.log('[demo-only] AI fallback cache firing', {
     feature: 'structure_brief',
     providerErrorKind,
+    locale,
+    opening,
+    latestUser,
+    assistantQuestionsAsked: asked,
     complete: cached.complete,
     hasNextQuestion: Boolean(cached.nextQuestion),
+    nextQuestionPreview: cached.nextQuestion?.slice(0, 80) ?? null,
+    demoOnly: true,
   });
   await logAiCall({
     feature: 'structure_brief',

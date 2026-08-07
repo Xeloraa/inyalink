@@ -127,6 +127,34 @@ describe('ai.service demo fallback', () => {
     log.mockRestore();
   });
 
+  it('does not serve Inya Cafe script when the user typed something else', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await converseBrief({
+      messages: [
+        { role: 'user', content: DEMO_CONVERSE_INPUT },
+        { role: 'assistant', content: 'ဘာနာမည်လဲ?' },
+        { role: 'user', content: 'cafe vex' },
+      ],
+      locale: 'en',
+    });
+
+    // Provider failed and cache missed — soft retry, not a canned Inya Cafe line.
+    expect(result.nextQuestion).toBeUndefined();
+    expect(result.retryable).toBe(true);
+    expect(log).toHaveBeenCalledWith(
+      '[demo-only] AI fallback cache miss — not serving fixture',
+      expect.objectContaining({
+        latestUser: 'cafe vex',
+      }),
+    );
+    log.mockRestore();
+  });
+
   it('completes the full demo converse with the provider always unavailable', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     complete.mockResolvedValue({
@@ -136,9 +164,9 @@ describe('ai.service demo fallback', () => {
 
     const replies = [
       'Inya Cafe',
+      'just the logo for now',
       'Minimalist, brown and cream',
-      '300000-500000',
-      '2026-09-30',
+      '300000-500000, deadline 2026-09-30',
     ];
 
     let messages: Array<{ role: 'user' | 'assistant'; content: string }> = [
