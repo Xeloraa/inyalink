@@ -10,19 +10,26 @@ import { useI18n } from '../lib/i18n';
 const MENU_ITEM =
   'tap-target flex w-full items-center whitespace-nowrap rounded-sm px-lg text-[13px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-100';
 
-function initialsFromName(name: string): string {
-  const parts = name
-    .replace(/·/g, ' ')
-    .split(/\s+/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-  const latin = parts.filter((p) => /[A-Za-z]/.test(p));
-  const source = latin.length > 0 ? latin : parts;
-  const letters = source
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('');
-  return letters || '?';
+/** Tabler-style user-circle — inline SVG, no new dependency. */
+function UserCircleIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      focusable={false}
+    >
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="10" r="3" />
+      <path d="M6.168 18.849A4 4 0 0 1 10 16h4a4 4 0 0 1 3.834 2.855" />
+    </svg>
+  );
 }
 
 /** Loads `/professionals/me` for the signed-in user; `null` = not a pro. */
@@ -67,8 +74,8 @@ export function isActiveProfessional(
 }
 
 /**
- * Signed-in avatar control between language toggle and the far right.
- * Photo when available; otherwise initials from display name.
+ * Signed-in avatar control — far right of the header after EN.
+ * Photo when uploaded; otherwise a person silhouette (never initials).
  */
 export function AccountMenu({
   pro,
@@ -128,7 +135,6 @@ export function AccountMenu({
 
   const activePro = isActiveProfessional(pro) ? pro : null;
   const avatarUrl = activePro?.avatarUrl ?? null;
-  const initials = initialsFromName(session.displayName);
 
   const menu =
     open && menuPos
@@ -214,12 +220,12 @@ export function AccountMenu({
         aria-controls="account-menu"
         aria-haspopup="menu"
         aria-label={t('header.accountMenu')}
-        className="tap-target inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-line bg-jade-50 text-[11px] font-semibold text-jade-800 transition-colors duration-fast ease-out hover:border-jade-400 focus-visible:shadow-focus sm:h-10 sm:w-10 sm:text-[12px]"
+        className="tap-target inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-jade-100 text-jade-600 transition-colors duration-fast ease-out hover:bg-jade-50 focus-visible:shadow-focus sm:h-10 sm:w-10"
       >
         {avatarUrl ? (
           <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
         ) : (
-          <span aria-hidden>{initials}</span>
+          <UserCircleIcon size={20} />
         )}
       </button>
       {menu}

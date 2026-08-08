@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
@@ -54,13 +54,10 @@ function LanguageToggle({
   locale,
   setLocale,
   t,
-  trailing,
 }: {
   locale: 'my' | 'en';
   setLocale: (locale: 'my' | 'en') => void;
   t: (key: string) => string;
-  /** Optional control between မြန်မာ and EN (signed-in avatar). */
-  trailing?: ReactNode;
 }) {
   return (
     <div
@@ -76,7 +73,6 @@ function LanguageToggle({
       >
         {t('header.langMy')}
       </button>
-      {trailing}
       <button
         type="button"
         className={langButtonClass(locale === 'en')}
@@ -248,21 +244,11 @@ export function Header() {
           ) : null}
 
           <div className="hidden min-[420px]:block">
-            <LanguageToggle
-              locale={locale}
-              setLocale={setLocale}
-              t={t}
-              trailing={
-                !loading && session ? <AccountMenu pro={pro} /> : null
-              }
-            />
+            <LanguageToggle locale={locale} setLocale={setLocale} t={t} />
           </div>
-          {/* Narrow screens: avatar sits after the burger; language lives in the menu. */}
-          {!loading && session ? (
-            <div className="min-[420px]:hidden">
-              <AccountMenu pro={pro} />
-            </div>
-          ) : null}
+
+          {/* Far right after EN. */}
+          {!loading && session ? <AccountMenu pro={pro} /> : null}
         </nav>
       </div>
     </header>
