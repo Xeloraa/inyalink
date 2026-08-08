@@ -40,11 +40,35 @@
   }
 }
 
-/* Burmese stacked diacritics clip below 1.8 — applies at display sizes too. */
-:lang(my) .text-hero-question,
-:lang(my) .text-hero-directive,
+/* Burmese stacked diacritics clip below 1.8 — applies at display sizes too.
+ * Burmese headlines also run longer than English, so hero type is smaller
+ * under :lang(my) to avoid 3-line wraps and overflow. */
+:lang(my) .text-hero-question {
+  font-size: 22px;
+  line-height: 1.8;
+  letter-spacing: 0;
+}
+
+:lang(my) .text-hero-directive {
+  font-size: 32px;
+  line-height: 1.8;
+  letter-spacing: 0;
+}
+
 :lang(my) .text-sect {
   line-height: 1.8;
+}
+
+@media (min-width: 768px) {
+  :lang(my) .text-hero-question {
+    font-size: 32px;
+    line-height: 1.8;
+  }
+
+  :lang(my) .text-hero-directive {
+    font-size: 48px;
+    line-height: 1.8;
+  }
 }
 
 /*
