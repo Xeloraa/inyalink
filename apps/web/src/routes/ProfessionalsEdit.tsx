@@ -38,6 +38,9 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
   const [categorySlug, setCategorySlug] = useState<CategorySlug | ''>(
     initial.category?.slug ?? '',
   );
+  const [categoryOtherText, setCategoryOtherText] = useState(
+    initial.categoryOtherText ?? '',
+  );
   const [skills, setSkills] = useState<string[]>(initial.skills);
   const [skillDraft, setSkillDraft] = useState('');
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>(initial.portfolio);
@@ -150,6 +153,7 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (!categorySlug || skills.length < 1) return;
+    if (categorySlug === 'other' && categoryOtherText.trim().length < 2) return;
     setLoading(true);
     setError(null);
     setSaved(false);
@@ -157,6 +161,8 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
       const body: ProfessionalUpdateInput = {
         displayName: displayName.trim(),
         categorySlug,
+        categoryOtherText:
+          categorySlug === 'other' ? categoryOtherText.trim() : null,
         skills,
         headlineMy: headlineMy.trim(),
         headlineEn: headlineEn.trim(),
@@ -202,7 +208,12 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
             displayName={displayName}
             onDisplayNameChange={setDisplayName}
             categorySlug={categorySlug}
-            onCategoryChange={setCategorySlug}
+            onCategoryChange={(slug) => {
+              setCategorySlug(slug);
+              if (slug !== 'other') setCategoryOtherText('');
+            }}
+            categoryOtherText={categoryOtherText}
+            onCategoryOtherTextChange={setCategoryOtherText}
             categories={categories}
           />
         </fieldset>
@@ -304,7 +315,12 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
           </Link>
           <button
             type="submit"
-            disabled={loading || !categorySlug || skills.length < 1}
+            disabled={
+              loading ||
+              !categorySlug ||
+              skills.length < 1 ||
+              (categorySlug === 'other' && categoryOtherText.trim().length < 2)
+            }
             className="tap-target rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300"
           >
             {loading ? t('common.loading') : t('edit.save')}

@@ -1,8 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { useI18n } from '../lib/i18n';
+import {
+  AccountMenu,
+  isActiveProfessional,
+  useMyProfessional,
+} from './AccountMenu';
 import { LogoMark } from './Logo';
 
 /** Header nav never mid-word wraps — body uses overflow-wrap:anywhere for Burmese. */
@@ -49,10 +54,13 @@ function LanguageToggle({
   locale,
   setLocale,
   t,
+  trailing,
 }: {
   locale: 'my' | 'en';
   setLocale: (locale: 'my' | 'en') => void;
   t: (key: string) => string;
+  /** Optional control between မြန်မာ and EN (signed-in avatar). */
+  trailing?: ReactNode;
 }) {
   return (
     <div
@@ -68,6 +76,7 @@ function LanguageToggle({
       >
         {t('header.langMy')}
       </button>
+      {trailing}
       <button
         type="button"
         className={langButtonClass(locale === 'en')}
@@ -82,7 +91,9 @@ function LanguageToggle({
 
 export function Header() {
   const { locale, setLocale, t } = useI18n();
-  const { session, loading, signOut } = useAuth();
+  const { session, loading } = useAuth();
+  const pro = useMyProfessional();
+  const showProJoin = !isActiveProfessional(pro);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -156,14 +167,16 @@ export function Header() {
             >
               {t('header.proFeed')}
             </Link>
-            <Link
-              to="/professionals/join"
-              role="menuitem"
-              className={MENU_ITEM}
-              onClick={() => setMenuOpen(false)}
-            >
-              {t('header.proJoin')}
-            </Link>
+            {showProJoin ? (
+              <Link
+                to="/professionals/join"
+                role="menuitem"
+                className={MENU_ITEM}
+                onClick={() => setMenuOpen(false)}
+              >
+                {t('header.proJoin')}
+              </Link>
+            ) : null}
             <div className="my-xs border-t border-line-soft px-sm py-xs">
               <LanguageToggle locale={locale} setLocale={setLocale} t={t} />
             </div>
@@ -176,19 +189,6 @@ export function Header() {
               >
                 {t('header.login')}
               </Link>
-            ) : null}
-            {!loading && session ? (
-              <button
-                type="button"
-                role="menuitem"
-                className={MENU_ITEM}
-                onClick={() => {
-                  setMenuOpen(false);
-                  void signOut();
-                }}
-              >
-                {t('header.signOut')}
-              </button>
             ) : null}
           </div>,
           document.body,
@@ -218,9 +218,11 @@ export function Header() {
           <Link to="/app/briefs" className={NAV_LINK}>
             {t('header.proFeed')}
           </Link>
-          <Link to="/professionals/join" className={QUIET_LINK}>
-            {t('header.proJoin')}
-          </Link>
+          {showProJoin ? (
+            <Link to="/professionals/join" className={QUIET_LINK}>
+              {t('header.proJoin')}
+            </Link>
+          ) : null}
 
           {/* Below 420px the nav links collapse into this menu; the header row never wraps. */}
           <div className="relative min-[420px]:hidden">
@@ -244,19 +246,23 @@ export function Header() {
               {t('header.login')}
             </Link>
           ) : null}
-          {!loading && session ? (
-            <button
-              type="button"
-              onClick={() => void signOut()}
-              className={NAV_LINK}
-            >
-              {t('header.signOut')}
-            </button>
-          ) : null}
 
           <div className="hidden min-[420px]:block">
-            <LanguageToggle locale={locale} setLocale={setLocale} t={t} />
+            <LanguageToggle
+              locale={locale}
+              setLocale={setLocale}
+              t={t}
+              trailing={
+                !loading && session ? <AccountMenu pro={pro} /> : null
+              }
+            />
           </div>
+          {/* Narrow screens: avatar sits after the burger; language lives in the menu. */}
+          {!loading && session ? (
+            <div className="min-[420px]:hidden">
+              <AccountMenu pro={pro} />
+            </div>
+          ) : null}
         </nav>
       </div>
     </header>

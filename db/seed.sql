@@ -4,8 +4,8 @@
 -- Safe to wipe. Do not treat as real customers or real work history.
 -- Idempotent: fixed UUIDs + ON CONFLICT DO NOTHING.
 --
--- Counts: 4 categories, 15 professional profiles, 12 client profiles,
--- 15 approved professionals, ~2–4 portfolio_items each, ~50 confirmed
+-- Counts: 11 categories, 29 professional profiles, 12 client profiles,
+-- 29 approved professionals, ~2–4 portfolio_items each, ~50 confirmed
 -- engagements with varied volume (1…10) plus declined/cancelled/disputed
 -- so reputation rates are not uniformly 100%.
 -- No identity documents or phones.
@@ -19,10 +19,17 @@
 -- ---------------------------------------------------------------- categories
 
 insert into categories (slug, name_my, name_en, sort) values
-  ('graphic-design',          'ဂရပ်ဖစ် ဒီဇိုင်း',     'Graphic Design',          0),
-  ('photography',             'ဓာတ်ပုံ',               'Photography',             1),
-  ('web-development',         'ဝက်ဘ် ဖွံ့ဖြိုးရေး',    'Web Development',         2),
-  ('social-media-marketing',  'လူမှုမီဒီယာ စျေးကွက်', 'Social Media Marketing',  3)
+  ('graphic-design',          'ဂရပ်ဖစ် ဒီဇိုင်း',           'Graphic Design',            0),
+  ('photography',             'ဓာတ်ပုံ',                     'Photography',               1),
+  ('web-development',         'ဝက်ဘ် ဖွံ့ဖြိုးရေး',          'Web Development',           2),
+  ('social-media-marketing',  'လူမှုမီဒီယာ စျေးကွက်',       'Social Media Marketing',    3),
+  ('content-writing-burmese', 'မြန်မာ အကြောင်းအရာ ရေးသားခြင်း', 'Content Writing (Burmese)', 4),
+  ('video-tiktok-content',    'ဗီဒီယို / TikTok အကြောင်းအရာ', 'Video / TikTok Content',    5),
+  ('translation',             'ဘာသာပြန်',                   'Translation',               6),
+  ('illustration',            'ပုံဆွဲ / အီလတ်စထရေးရှင်း',   'Illustration',              7),
+  ('copywriting',             'ကော်ပီရေးသားခြင်း',         'Copywriting',               8),
+  ('virtual-assistant',       'Virtual Assistant',         'Virtual Assistant',         9),
+  ('other',                   'အခြား',                     'Other',                     10)
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------- auth.users
@@ -82,6 +89,35 @@ from (
      '/images/avatars/pro14.jpg'),
     ('a0000000-0000-4000-8000-00000000000f'::uuid, 'demo+pro15@inyalink.local',
      '/images/avatars/pro15.jpg'),
+    -- professionals 16–29 (new categories; reuse local portraits)
+    ('a0000000-0000-4000-8000-000000000010'::uuid, 'demo+pro16@inyalink.local',
+     '/images/avatars/pro01.jpg'),
+    ('a0000000-0000-4000-8000-000000000011'::uuid, 'demo+pro17@inyalink.local',
+     '/images/avatars/pro02.jpg'),
+    ('a0000000-0000-4000-8000-000000000012'::uuid, 'demo+pro18@inyalink.local',
+     '/images/avatars/pro03.jpg'),
+    ('a0000000-0000-4000-8000-000000000013'::uuid, 'demo+pro19@inyalink.local',
+     '/images/avatars/pro04.jpg'),
+    ('a0000000-0000-4000-8000-000000000014'::uuid, 'demo+pro20@inyalink.local',
+     '/images/avatars/pro05.jpg'),
+    ('a0000000-0000-4000-8000-000000000015'::uuid, 'demo+pro21@inyalink.local',
+     '/images/avatars/pro06.jpg'),
+    ('a0000000-0000-4000-8000-000000000016'::uuid, 'demo+pro22@inyalink.local',
+     '/images/avatars/pro07.jpg'),
+    ('a0000000-0000-4000-8000-000000000017'::uuid, 'demo+pro23@inyalink.local',
+     '/images/avatars/pro08.jpg'),
+    ('a0000000-0000-4000-8000-000000000018'::uuid, 'demo+pro24@inyalink.local',
+     '/images/avatars/pro09.jpg'),
+    ('a0000000-0000-4000-8000-000000000019'::uuid, 'demo+pro25@inyalink.local',
+     '/images/avatars/pro10.jpg'),
+    ('a0000000-0000-4000-8000-00000000001a'::uuid, 'demo+pro26@inyalink.local',
+     '/images/avatars/pro11.jpg'),
+    ('a0000000-0000-4000-8000-00000000001b'::uuid, 'demo+pro27@inyalink.local',
+     '/images/avatars/pro12.jpg'),
+    ('a0000000-0000-4000-8000-00000000001c'::uuid, 'demo+pro28@inyalink.local',
+     '/images/avatars/pro13.jpg'),
+    ('a0000000-0000-4000-8000-00000000001d'::uuid, 'demo+pro29@inyalink.local',
+     '/images/avatars/pro14.jpg'),
     -- clients 01–12
     ('b0000000-0000-4000-8000-000000000001'::uuid, 'demo+client01@inyalink.local',
      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces&q=80'),
@@ -129,6 +165,20 @@ insert into profiles (id, role, display_name, locale) values
   ('a0000000-0000-4000-8000-00000000000d', 'professional', 'ထွန်းလင်း · Tun Lin', 'my'),
   ('a0000000-0000-4000-8000-00000000000e', 'professional', 'နှင်းဥမ္မာ · Hnin Ohmar', 'my'),
   ('a0000000-0000-4000-8000-00000000000f', 'professional', 'စိုင်းမောင် · Sai Maung', 'my'),
+  ('a0000000-0000-4000-8000-000000000010', 'professional', 'မြတ်နိုး · Myat Noe', 'my'),
+  ('a0000000-0000-4000-8000-000000000011', 'professional', 'ဇော်မင်း · Zaw Min', 'my'),
+  ('a0000000-0000-4000-8000-000000000012', 'professional', 'နန္ဒာ · Nanda', 'my'),
+  ('a0000000-0000-4000-8000-000000000013', 'professional', 'ကိုကို · Ko Ko', 'my'),
+  ('a0000000-0000-4000-8000-000000000014', 'professional', 'သဇင် · Thazin', 'my'),
+  ('a0000000-0000-4000-8000-000000000015', 'professional', 'ရန်နိုင် · Yan Naing', 'my'),
+  ('a0000000-0000-4000-8000-000000000016', 'professional', 'ခင်မျိုး · Khin Myo', 'my'),
+  ('a0000000-0000-4000-8000-000000000017', 'professional', 'အေးချမ်း · Aye Chan', 'my'),
+  ('a0000000-0000-4000-8000-000000000018', 'professional', 'မင်းခေါင် · Min Khant', 'my'),
+  ('a0000000-0000-4000-8000-000000000019', 'professional', 'စုမြတ် · Su Myat', 'my'),
+  ('a0000000-0000-4000-8000-00000000001a', 'professional', 'နေမာန် · Nay Marn', 'my'),
+  ('a0000000-0000-4000-8000-00000000001b', 'professional', 'ဖြူဇာ · Phyu Zar', 'my'),
+  ('a0000000-0000-4000-8000-00000000001c', 'professional', 'ဟိန်းထက် · Hein Thet', 'my'),
+  ('a0000000-0000-4000-8000-00000000001d', 'professional', 'ရွှေရည် · Shwe Yee', 'my'),
   -- clients
   ('b0000000-0000-4000-8000-000000000001', 'client', 'Demo Client 01', 'my'),
   ('b0000000-0000-4000-8000-000000000002', 'client', 'Demo Client 02', 'my'),
@@ -248,6 +298,110 @@ from (
 join categories c on c.slug = p.slug
 on conflict (user_id) do nothing;
 
+-- New verticals (2 each) so browse/matching are not empty after category expansion.
+insert into professionals (
+  user_id, category_id, category_other_text, headline_my, headline_en, bio_my, bio_en,
+  skills, status, reviewed_at, typical_turnaround_days, min_budget_mmk, accepting_work
+)
+select
+  p.user_id,
+  c.id,
+  p.category_other_text,
+  p.headline_my,
+  p.headline_en,
+  p.bio_my,
+  p.bio_en,
+  p.skills,
+  'approved'::pro_status,
+  now() - interval '20 days',
+  p.turnaround,
+  p.min_budget,
+  true
+from (
+  values
+    -- content-writing-burmese (2)
+    ('a0000000-0000-4000-8000-000000000010'::uuid, 'content-writing-burmese', null::text,
+     'မြန်မာ ဘလော့နှင့် ဆောင်းပါး', 'Burmese blogs and articles',
+     'လုပ်ငန်းအတွက် မြန်မာစာ အကြောင်းအရာ ရေးသားပေးသည်။',
+     'Burmese blog posts and long-form articles for small businesses.',
+     array['articles','blog','editing'], 5, 80000::bigint),
+    ('a0000000-0000-4000-8000-000000000011'::uuid, 'content-writing-burmese', null,
+     'ထုတ်ကုန်စာမျက်နှာ စာသား', 'Product page copy in Burmese',
+     'အွန်လိုင်းစတိုး ထုတ်ကုန် ဖော်ပြချက်များကို မြန်မာလို ရေးသည်။',
+     'Clear Burmese product descriptions for online shops.',
+     array['product-copy','scripts','blog'], 4, 60000::bigint),
+    -- video-tiktok-content (2)
+    ('a0000000-0000-4000-8000-000000000012'::uuid, 'video-tiktok-content', null,
+     'TikTok / Reels ရိုက်ကူးခြင်း', 'TikTok and Reels production',
+     'ဆိုင်နှင့် ထုတ်ကုန်အတွက် တိုတောင်းသော ဗီဒီယိုများ။',
+     'Short-form TikTok and Reels for shops and products.',
+     array['tiktok','reels','shooting'], 6, 120000::bigint),
+    ('a0000000-0000-4000-8000-000000000013'::uuid, 'video-tiktok-content', null,
+     'ဗီဒီယို တည်းဖြတ်ခြင်း', 'Short-form video editing',
+     'ရိုက်ပြီးသား ကလစ်များကို TikTok ပုံစံ တည်းဖြတ်သည်။',
+     'Edits raw clips into TikTok-ready posts.',
+     array['editing','captions','reels'], 4, 90000::bigint),
+    -- translation (2)
+    ('a0000000-0000-4000-8000-000000000014'::uuid, 'translation', null,
+     'မြန်မာ ↔ အင်္ဂလိပ် စာရွက်စာတမ်း', 'Myanmar ↔ English documents',
+     'လုပ်ငန်းစာနှင့် ဝက်ဘ်စာသား ဘာသာပြန်။',
+     'Business documents and website copy, Myanmar ↔ English.',
+     array['my-en','en-my','documents'], 5, 70000::bigint),
+    ('a0000000-0000-4000-8000-000000000015'::uuid, 'translation', null,
+     'စာတန်းနှင့် ဗီဒီယို စာသား', 'Subtitles and video scripts',
+     'ဗီဒီယို စာတန်းထိုးနှင့် စကားပြောစာသား ဘာသာပြန်။',
+     'Subtitles and spoken-script translation.',
+     array['subtitling','my-en','website'], 4, 65000::bigint),
+    -- illustration (2)
+    ('a0000000-0000-4000-8000-000000000016'::uuid, 'illustration', null,
+     'ဒစ်ဂျစ်တယ် ပုံဆွဲ', 'Digital illustration',
+     'ကာတွန်းနှင့် ထုတ်ကုန်အတွက် ဒစ်ဂျစ်တယ် ပုံများ။',
+     'Digital illustrations for products and campaigns.',
+     array['digital','character','editorial'], 7, 150000::bigint),
+    ('a0000000-0000-4000-8000-000000000017'::uuid, 'illustration', null,
+     'ထုပ်ပိုးမှု ပုံဆွဲ', 'Packaging illustration',
+     'အစားအသောက် ထုပ်ပိုးမှုအတွက် လက်ရေးပုံများ။',
+     'Hand-drawn style art for food packaging.',
+     array['packaging','storyboard','digital'], 8, 180000::bigint),
+    -- copywriting (2)
+    ('a0000000-0000-4000-8000-000000000018'::uuid, 'copywriting', null,
+     'ကြော်ငြာနှင့် landing စာသား', 'Ads and landing copy',
+     'မြန်မာ/အင်္ဂလိပ် ကြော်ငြာနှင့် landing page စာသား။',
+     'Burmese/English ad and landing-page copy.',
+     array['ads','landing','brand-voice'], 4, 90000::bigint),
+    ('a0000000-0000-4000-8000-000000000019'::uuid, 'copywriting', null,
+     'အီးမေးလ်နှင့် ကမ်ပိန်း စာသား', 'Email and campaign copy',
+     'ကမ်ပိန်း အီးမေးလ်နှင့် စီးရီး စာသားများ။',
+     'Email sequences and campaign copy.',
+     array['email','ads','my-en'], 5, 100000::bigint),
+    -- virtual-assistant (2)
+    ('a0000000-0000-4000-8000-00000000001a'::uuid, 'virtual-assistant', null,
+     'အချိန်ဇယားနှင့် အင်ဘောက်စ်', 'Scheduling and inbox support',
+     'ချိန်းဆိုမှုနှင့် အီးမေးလ် စီမံပေးသည်။',
+     'Calendar and inbox management for small teams.',
+     array['scheduling','inbox','research'], 3, 200000::bigint),
+    ('a0000000-0000-4000-8000-00000000001b'::uuid, 'virtual-assistant', null,
+     'ဒေတာနှင့် ဖောက်သည် စောင့်ရှောက်မှု', 'Data entry and light care',
+     'အမှာစာ မှတ်တမ်းနှင့် အခြေခံ ဖောက်သည် စောင့်ရှောက်မှု။',
+     'Order logs and light customer care.',
+     array['data-entry','customer-care','inbox'], 4, 180000::bigint),
+    -- other (2) — free-text specialty stored for ops
+    ('a0000000-0000-4000-8000-00000000001c'::uuid, 'other',
+     'Event staffing coordination for Yangon cafe openings',
+     'ပွဲ စီစဉ်မှု အကူ', 'Event staffing coordination',
+     'ဆိုင်ဖွင့်ပွဲအတွက် ဝန်ထမ်း စီစဉ်ပေးသည်။',
+     'Coordinates day-of staffing for cafe and shop openings.',
+     array['general','custom'], 6, 150000::bigint),
+    ('a0000000-0000-4000-8000-00000000001d'::uuid, 'other',
+     'Custom embroidery digitizing for uniforms',
+     'အထည်အလိပ် ဒီဂျစ်တယ်ပုံ', 'Embroidery digitizing',
+     'ယူနီဖောင်းအတွက် အထည်အလိပ် ဒီဇိုင်း ဒီဂျစ်တယ်လုပ်သည်။',
+     'Digitizes logo artwork for uniform embroidery machines.',
+     array['custom','multi-skill'], 5, 110000::bigint)
+) as p(user_id, slug, category_other_text, headline_my, headline_en, bio_my, bio_en, skills, turnaround, min_budget)
+join categories c on c.slug = p.slug
+on conflict (user_id) do nothing;
+
 -- ---------------------------------------------------------------- portfolio_items
 -- Abstract SVG gradients (no stock photos, no brand marks). Wipe demo rows on re-seed.
 
@@ -301,7 +455,42 @@ from (
     ('a0000000-0000-4000-8000-00000000000e'::uuid, '/images/portfolio/37.svg', 'Caption palette B', 1),
     ('a0000000-0000-4000-8000-00000000000f'::uuid, '/images/portfolio/38.svg', 'Campaign wash A', 0),
     ('a0000000-0000-4000-8000-00000000000f'::uuid, '/images/portfolio/39.svg', 'Campaign wash B', 1),
-    ('a0000000-0000-4000-8000-00000000000f'::uuid, '/images/portfolio/40.svg', 'Campaign wash C', 2)
+    ('a0000000-0000-4000-8000-00000000000f'::uuid, '/images/portfolio/40.svg', 'Campaign wash C', 2),
+    -- content-writing-burmese
+    ('a0000000-0000-4000-8000-000000000010'::uuid, '/images/portfolio/01.svg', 'Article sample A', 0),
+    ('a0000000-0000-4000-8000-000000000010'::uuid, '/images/portfolio/02.svg', 'Article sample B', 1),
+    ('a0000000-0000-4000-8000-000000000011'::uuid, '/images/portfolio/03.svg', 'Product copy sample', 0),
+    ('a0000000-0000-4000-8000-000000000011'::uuid, '/images/portfolio/04.svg', 'Script sample', 1),
+    -- video-tiktok-content
+    ('a0000000-0000-4000-8000-000000000012'::uuid, '/images/portfolio/05.svg', 'Reel still A', 0),
+    ('a0000000-0000-4000-8000-000000000012'::uuid, '/images/portfolio/06.svg', 'Reel still B', 1),
+    ('a0000000-0000-4000-8000-000000000013'::uuid, '/images/portfolio/07.svg', 'Edit board A', 0),
+    ('a0000000-0000-4000-8000-000000000013'::uuid, '/images/portfolio/08.svg', 'Edit board B', 1),
+    -- translation
+    ('a0000000-0000-4000-8000-000000000014'::uuid, '/images/portfolio/09.svg', 'Doc sample A', 0),
+    ('a0000000-0000-4000-8000-000000000014'::uuid, '/images/portfolio/10.svg', 'Doc sample B', 1),
+    ('a0000000-0000-4000-8000-000000000015'::uuid, '/images/portfolio/11.svg', 'Subtitle sample', 0),
+    ('a0000000-0000-4000-8000-000000000015'::uuid, '/images/portfolio/12.svg', 'Script sample', 1),
+    -- illustration
+    ('a0000000-0000-4000-8000-000000000016'::uuid, '/images/portfolio/13.svg', 'Character study A', 0),
+    ('a0000000-0000-4000-8000-000000000016'::uuid, '/images/portfolio/14.svg', 'Character study B', 1),
+    ('a0000000-0000-4000-8000-000000000017'::uuid, '/images/portfolio/15.svg', 'Pack art A', 0),
+    ('a0000000-0000-4000-8000-000000000017'::uuid, '/images/portfolio/16.svg', 'Pack art B', 1),
+    -- copywriting
+    ('a0000000-0000-4000-8000-000000000018'::uuid, '/images/portfolio/17.svg', 'Ad copy A', 0),
+    ('a0000000-0000-4000-8000-000000000018'::uuid, '/images/portfolio/18.svg', 'Ad copy B', 1),
+    ('a0000000-0000-4000-8000-000000000019'::uuid, '/images/portfolio/19.svg', 'Email series A', 0),
+    ('a0000000-0000-4000-8000-000000000019'::uuid, '/images/portfolio/20.svg', 'Email series B', 1),
+    -- virtual-assistant
+    ('a0000000-0000-4000-8000-00000000001a'::uuid, '/images/portfolio/21.svg', 'Workflow note A', 0),
+    ('a0000000-0000-4000-8000-00000000001a'::uuid, '/images/portfolio/22.svg', 'Workflow note B', 1),
+    ('a0000000-0000-4000-8000-00000000001b'::uuid, '/images/portfolio/23.svg', 'Care log A', 0),
+    ('a0000000-0000-4000-8000-00000000001b'::uuid, '/images/portfolio/24.svg', 'Care log B', 1),
+    -- other
+    ('a0000000-0000-4000-8000-00000000001c'::uuid, '/images/portfolio/25.svg', 'Event plan A', 0),
+    ('a0000000-0000-4000-8000-00000000001c'::uuid, '/images/portfolio/26.svg', 'Event plan B', 1),
+    ('a0000000-0000-4000-8000-00000000001d'::uuid, '/images/portfolio/27.svg', 'Digitize sample A', 0),
+    ('a0000000-0000-4000-8000-00000000001d'::uuid, '/images/portfolio/28.svg', 'Digitize sample B', 1)
 ) as v(professional_id, external_url, caption, sort);
 
 -- ---------------------------------------------------------------- briefs + engagements
@@ -418,5 +607,12 @@ where user_id in (
   'a0000000-0000-4000-8000-000000000001'::uuid, -- graphic-design
   'a0000000-0000-4000-8000-000000000005'::uuid, -- photography
   'a0000000-0000-4000-8000-000000000009'::uuid, -- web-development
-  'a0000000-0000-4000-8000-00000000000d'::uuid  -- social-media-marketing
+  'a0000000-0000-4000-8000-00000000000d'::uuid, -- social-media-marketing
+  'a0000000-0000-4000-8000-000000000010'::uuid, -- content-writing-burmese
+  'a0000000-0000-4000-8000-000000000012'::uuid, -- video-tiktok-content
+  'a0000000-0000-4000-8000-000000000014'::uuid, -- translation
+  'a0000000-0000-4000-8000-000000000016'::uuid, -- illustration
+  'a0000000-0000-4000-8000-000000000018'::uuid, -- copywriting
+  'a0000000-0000-4000-8000-00000000001a'::uuid, -- virtual-assistant
+  'a0000000-0000-4000-8000-00000000001c'::uuid  -- other
 );

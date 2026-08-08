@@ -31,6 +31,7 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
 
   const [displayName, setDisplayName] = useState('');
   const [categorySlug, setCategorySlug] = useState<CategorySlug | ''>('');
+  const [categoryOtherText, setCategoryOtherText] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
   const [skillDraft, setSkillDraft] = useState('');
   const [portfolioUrl, setPortfolioUrl] = useState('');
@@ -87,7 +88,13 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
   }
 
   function canContinue(): boolean {
-    if (step === 0) return Boolean(categorySlug) && displayName.trim().length >= 2;
+    if (step === 0) {
+      if (!categorySlug || displayName.trim().length < 2) return false;
+      if (categorySlug === 'other' && categoryOtherText.trim().length < 2) {
+        return false;
+      }
+      return true;
+    }
     if (step === 1) return skills.length >= 1;
     if (step === 2) return portfolio.length >= 1;
     return (
@@ -109,6 +116,9 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
       const body: ProfessionalApplyInput = {
         displayName: displayName.trim(),
         categorySlug,
+        ...(categorySlug === 'other'
+          ? { categoryOtherText: categoryOtherText.trim() }
+          : {}),
         skills,
         headlineMy: headlineMy.trim(),
         headlineEn: headlineEn.trim(),
@@ -209,7 +219,12 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
             displayName={displayName}
             onDisplayNameChange={setDisplayName}
             categorySlug={categorySlug}
-            onCategoryChange={setCategorySlug}
+            onCategoryChange={(slug) => {
+              setCategorySlug(slug);
+              if (slug !== 'other') setCategoryOtherText('');
+            }}
+            categoryOtherText={categoryOtherText}
+            onCategoryOtherTextChange={setCategoryOtherText}
             categories={categories}
           />
         ) : null}

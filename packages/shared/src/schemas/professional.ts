@@ -6,9 +6,23 @@ export const CategorySlugSchema = z.enum([
   'photography',
   'web-development',
   'social-media-marketing',
+  'content-writing-burmese',
+  'video-tiktok-content',
+  'translation',
+  'illustration',
+  'copywriting',
+  'virtual-assistant',
+  'other',
 ]);
 
 export type CategorySlug = z.infer<typeof CategorySlugSchema>;
+
+/** Free-text specialty when category slug is `other`. */
+export const CategoryOtherTextSchema = z
+  .string()
+  .trim()
+  .min(2)
+  .max(200);
 
 export const CategorySchema = z.object({
   id: z.string().uuid(),
@@ -114,6 +128,8 @@ export const ProfessionalProfileSchema = z.object({
   bioEn: z.string().max(4000).nullable(),
   location: z.string().max(80).nullable(),
   category: CategorySchema.nullable(),
+  /** Set when category slug is `other`; otherwise null. */
+  categoryOtherText: z.string().max(200).nullable(),
   skills: z.array(z.string().min(1).max(40)).max(24),
   acceptingWork: z.boolean(),
   stats: ProfessionalProfileStatsSchema,
@@ -140,6 +156,7 @@ export const ProfessionalListItemSchema = z.object({
   bioEn: z.string().max(4000).nullable(),
   location: z.string().max(80).nullable(),
   categorySlug: CategorySlugSchema.nullable(),
+  categoryOtherText: z.string().max(200).nullable(),
   skills: z.array(z.string().min(1).max(40)).max(24),
   acceptingWork: z.boolean(),
   stats: ProfessionalProfileStatsSchema,
@@ -233,19 +250,39 @@ export type ProStatus = z.infer<typeof ProStatusSchema>;
  * Professional onboarding application.
  * Never includes NRC, national ID, passport, selfie, or biometrics.
  */
-export const ProfessionalApplyInputSchema = z.object({
-  displayName: z.string().trim().min(2).max(80),
-  categorySlug: CategorySlugSchema,
-  skills: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
-  headlineMy: z.string().trim().min(4).max(120),
-  headlineEn: z.string().trim().min(4).max(120),
-  bioMy: z.string().trim().min(20).max(2000),
-  bioEn: z.string().trim().min(20).max(2000),
-  typicalTurnaroundDays: z.number().int().min(1).max(90),
-  minBudgetMmk: z.number().int().min(10_000).max(100_000_000),
-  acceptingWork: z.boolean().default(true),
-  portfolio: z.array(PortfolioUploadItemSchema).min(1).max(8),
-});
+export const ProfessionalApplyInputSchema = z
+  .object({
+    displayName: z.string().trim().min(2).max(80),
+    categorySlug: CategorySlugSchema,
+    /** Required when categorySlug is `other`. */
+    categoryOtherText: CategoryOtherTextSchema.optional(),
+    skills: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
+    headlineMy: z.string().trim().min(4).max(120),
+    headlineEn: z.string().trim().min(4).max(120),
+    bioMy: z.string().trim().min(20).max(2000),
+    bioEn: z.string().trim().min(20).max(2000),
+    typicalTurnaroundDays: z.number().int().min(1).max(90),
+    minBudgetMmk: z.number().int().min(10_000).max(100_000_000),
+    acceptingWork: z.boolean().default(true),
+    portfolio: z.array(PortfolioUploadItemSchema).min(1).max(8),
+  })
+  .superRefine((v, ctx) => {
+    if (v.categorySlug === 'other') {
+      if (!v.categoryOtherText) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['categoryOtherText'],
+          message: 'Describe what you do when category is other',
+        });
+      }
+    } else if (v.categoryOtherText !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['categoryOtherText'],
+        message: 'categoryOtherText is only allowed for other',
+      });
+    }
+  });
 
 export type ProfessionalApplyInput = z.infer<typeof ProfessionalApplyInputSchema>;
 
@@ -273,6 +310,7 @@ export const ProfessionalUpdateInputSchema = z
   .object({
     displayName: z.string().trim().min(2).max(80).optional(),
     categorySlug: CategorySlugSchema.optional(),
+    categoryOtherText: CategoryOtherTextSchema.nullable().optional(),
     skills: z.array(z.string().trim().min(1).max(40)).min(1).max(12).optional(),
     headlineMy: z.string().trim().min(4).max(120).optional(),
     headlineEn: z.string().trim().min(4).max(120).optional(),
@@ -286,6 +324,7 @@ export const ProfessionalUpdateInputSchema = z
     (v) =>
       v.displayName !== undefined ||
       v.categorySlug !== undefined ||
+      v.categoryOtherText !== undefined ||
       v.skills !== undefined ||
       v.headlineMy !== undefined ||
       v.headlineEn !== undefined ||
@@ -295,7 +334,27 @@ export const ProfessionalUpdateInputSchema = z
       v.minBudgetMmk !== undefined ||
       v.acceptingWork !== undefined,
     { message: 'At least one field is required' },
-  );
+  )
+  .superRefine((v, ctx) => {
+    if (v.categorySlug === 'other' && !v.categoryOtherText) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['categoryOtherText'],
+        message: 'Describe what you do when category is other',
+      });
+    }
+    if (
+      v.categorySlug !== undefined &&
+      v.categorySlug !== 'other' &&
+      v.categoryOtherText
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['categoryOtherText'],
+        message: 'categoryOtherText is only allowed for other',
+      });
+    }
+  });
 
 export type ProfessionalUpdateInput = z.infer<
   typeof ProfessionalUpdateInputSchema

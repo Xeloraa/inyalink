@@ -115,6 +115,7 @@ function toMe(
             nameEn: row.categoryNameEn,
           }
         : null,
+    categoryOtherText: row.categoryOtherText,
     skills: row.skills,
     acceptingWork: row.acceptingWork,
     stats: {
@@ -193,6 +194,7 @@ export async function listProfessionals(filters: {
       bioEn: row.bioEn,
       location: DEMO_LOCATIONS[row.userId] ?? 'မြန်မာ',
       categorySlug: row.categorySlug,
+      categoryOtherText: row.categoryOtherText,
       skills: row.skills,
       acceptingWork: row.acceptingWork,
       stats: {
@@ -284,6 +286,10 @@ export async function applyAsProfessional(
   const result = await repo.insertApplication({
     userId,
     categoryId: category.id,
+    categoryOtherText:
+      input.categorySlug === 'other' && input.categoryOtherText
+        ? normalizeToUnicode(input.categoryOtherText.trim())
+        : null,
     headlineMy: normalizeToUnicode(input.headlineMy.trim()),
     headlineEn: normalizeToUnicode(input.headlineEn.trim()),
     bioMy: normalizeToUnicode(input.bioMy.trim()),
@@ -332,6 +338,18 @@ export async function updateMyProfessional(
   await repo.updateProfessional({
     userId,
     categoryId,
+    categoryOtherText:
+      input.categorySlug === 'other'
+        ? input.categoryOtherText
+          ? normalizeToUnicode(input.categoryOtherText.trim())
+          : undefined
+        : input.categorySlug !== undefined
+          ? null
+          : input.categoryOtherText === undefined
+            ? undefined
+            : input.categoryOtherText === null
+              ? null
+              : normalizeToUnicode(input.categoryOtherText.trim()),
     headlineMy:
       input.headlineMy !== undefined
         ? normalizeToUnicode(input.headlineMy.trim())

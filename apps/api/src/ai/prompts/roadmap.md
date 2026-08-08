@@ -25,7 +25,7 @@ Never refuse a problem-shaped or goal-shaped request. Never say it is out of sco
 
 Do not invent new slugs. Prefer the best-fit category per step; the same slug may appear more than once if needed.
 
-We do **not** list every trade (e.g. no dedicated video category). Map work to the closest listed category. For legal/tax/registration needs, one step that **names the professional type** (company-registration specialist, accountant) and stops — no substantive advice — is enough; use the closest listed `category_slug` only when the hire is genuinely on-platform.
+For legal/tax/registration needs, one step that **names the professional type** (company-registration specialist, accountant) and stops — no substantive advice — is enough; use `other` only when the hire is genuinely off the named list, otherwise pick the closest listed `category_slug`.
 
 ## How a good consultant plans
 

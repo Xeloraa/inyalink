@@ -33,6 +33,7 @@ export type ProfessionalProfileRow = {
   categorySlug: CategorySlug | null;
   categoryNameMy: string | null;
   categoryNameEn: string | null;
+  categoryOtherText: string | null;
   completedCount: number;
   declinedCount: number;
   uniqueClients: number;
@@ -73,6 +74,7 @@ export async function listApprovedProfiles(filters: {
       category_slug: CategorySlug | null;
       category_name_my: string | null;
       category_name_en: string | null;
+      category_other_text: string | null;
       completed_count: string | number | null;
       declined_count: string | number | null;
       unique_clients: string | number | null;
@@ -97,6 +99,7 @@ export async function listApprovedProfiles(filters: {
       c.slug as category_slug,
       c.name_my as category_name_my,
       c.name_en as category_name_en,
+      p.category_other_text,
       coalesce(rep.completed_count, 0) as completed_count,
       coalesce(rep.declined_count, 0) as declined_count,
       coalesce(rep.unique_clients, 0) as unique_clients,
@@ -129,6 +132,7 @@ export async function listApprovedProfiles(filters: {
       categorySlug: row.category_slug,
       categoryNameMy: row.category_name_my,
       categoryNameEn: row.category_name_en,
+      categoryOtherText: row.category_other_text,
       completedCount: toInt(row.completed_count) ?? 0,
       declinedCount: toInt(row.declined_count) ?? 0,
       uniqueClients: toInt(row.unique_clients) ?? 0,
@@ -249,6 +253,7 @@ type ProfileSqlRow = {
   category_slug: CategorySlug | null;
   category_name_my: string | null;
   category_name_en: string | null;
+  category_other_text: string | null;
   completed_count: string | number | null;
   declined_count: string | number | null;
   unique_clients: string | number | null;
@@ -274,6 +279,7 @@ function mapProfileRow(row: ProfileSqlRow): ProfessionalProfileRow {
     categorySlug: row.category_slug,
     categoryNameMy: row.category_name_my,
     categoryNameEn: row.category_name_en,
+    categoryOtherText: row.category_other_text,
     completedCount: toInt(row.completed_count) ?? 0,
     declinedCount: toInt(row.declined_count) ?? 0,
     uniqueClients: toInt(row.unique_clients) ?? 0,
@@ -307,6 +313,7 @@ export async function getApprovedProfileById(
       c.slug as category_slug,
       c.name_my as category_name_my,
       c.name_en as category_name_en,
+      p.category_other_text,
       coalesce(rep.completed_count, 0) as completed_count,
       coalesce(rep.declined_count, 0) as declined_count,
       coalesce(rep.unique_clients, 0) as unique_clients,
@@ -348,6 +355,7 @@ export async function getProfileByUserId(
       c.slug as category_slug,
       c.name_my as category_name_my,
       c.name_en as category_name_en,
+      p.category_other_text,
       coalesce(rep.completed_count, 0) as completed_count,
       coalesce(rep.declined_count, 0) as declined_count,
       coalesce(rep.unique_clients, 0) as unique_clients,
@@ -395,6 +403,7 @@ export async function listPortfolio(
 export async function insertApplication(args: {
   userId: string;
   categoryId: string;
+  categoryOtherText: string | null;
   headlineMy: string;
   headlineEn: string;
   bioMy: string;
@@ -410,11 +419,12 @@ export async function insertApplication(args: {
 
   await sql`
     insert into professionals (
-      user_id, category_id, headline_my, headline_en, bio_my, bio_en,
+      user_id, category_id, category_other_text, headline_my, headline_en, bio_my, bio_en,
       skills, status, typical_turnaround_days, min_budget_mmk, accepting_work
     ) values (
       ${args.userId}::uuid,
       ${args.categoryId}::uuid,
+      ${args.categoryOtherText},
       ${args.headlineMy},
       ${args.headlineEn},
       ${args.bioMy},
@@ -427,6 +437,7 @@ export async function insertApplication(args: {
     )
     on conflict (user_id) do update set
       category_id = excluded.category_id,
+      category_other_text = excluded.category_other_text,
       headline_my = excluded.headline_my,
       headline_en = excluded.headline_en,
       bio_my = excluded.bio_my,
@@ -464,6 +475,8 @@ export async function insertApplication(args: {
 export async function updateProfessional(args: {
   userId: string;
   categoryId?: string;
+  /** Pass null to clear; omit to leave unchanged. */
+  categoryOtherText?: string | null;
   headlineMy?: string;
   headlineEn?: string;
   bioMy?: string;
@@ -474,9 +487,17 @@ export async function updateProfessional(args: {
   acceptingWork?: boolean;
 }): Promise<void> {
   const sql = getSql();
+  const clearOther = args.categoryOtherText === null;
+  const setOther =
+    args.categoryOtherText !== undefined && args.categoryOtherText !== null;
   await sql`
     update professionals set
       category_id = coalesce(${args.categoryId ?? null}::uuid, category_id),
+      category_other_text = case
+        when ${clearOther} then null
+        when ${setOther} then ${args.categoryOtherText ?? null}
+        else category_other_text
+      end,
       headline_my = coalesce(${args.headlineMy ?? null}, headline_my),
       headline_en = coalesce(${args.headlineEn ?? null}, headline_en),
       bio_my = coalesce(${args.bioMy ?? null}, bio_my),

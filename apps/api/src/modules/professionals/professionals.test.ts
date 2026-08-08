@@ -51,6 +51,7 @@ function makeRow(
     categorySlug: 'graphic-design',
     categoryNameMy: 'ဂရပ်ဖစ်',
     categoryNameEn: 'Graphic Design',
+    categoryOtherText: null,
     completedCount: 4,
     declinedCount: 0,
     uniqueClients: 3,

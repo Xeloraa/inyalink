@@ -68,6 +68,11 @@ create table professionals (
   min_budget_mmk        bigint check (min_budget_mmk >= 0),
   accepting_work        boolean not null default true,
   partner_tier          boolean not null default false,
+  -- Free-text when category is `other` (ops signal for unmet demand).
+  category_other_text   text check (
+    category_other_text is null
+    or length(trim(category_other_text)) between 2 and 200
+  ),
   created_at            timestamptz not null default now(),
   updated_at            timestamptz not null default now()
 );
