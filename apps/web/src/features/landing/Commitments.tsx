@@ -64,7 +64,7 @@ export function Commitments() {
 
   return (
     <FullBleed
-      className="-mb-3xl bg-[var(--jade-950)] md:-mb-4xl"
+      className="-mb-3xl bg-[var(--jade-900)] md:-mb-4xl"
       labelledBy="commit-heading"
       innerClassName="py-4xl md:py-5xl"
     >
@@ -80,13 +80,13 @@ export function Commitments() {
           {COMMITS.map((commit) => (
             <li
               key={commit.key}
-              className="flex items-start gap-md text-body-lg text-jade-50"
+              className="flex items-start gap-md text-body-lg text-[color:var(--jade-50)]"
             >
               <span
                 aria-hidden
                 className={`mt-1 shrink-0 ${
                   commit.amber
-                    ? 'text-amber-500'
+                    ? 'text-[color:var(--amber-500)]'
                     : 'text-[color:var(--jade-300)]'
                 }`}
               >
@@ -102,7 +102,7 @@ export function Commitments() {
             <span className="text-[color:var(--jade-300)]">
               <LogoMark />
             </span>
-            <span className="font-display text-body font-semibold text-jade-50">
+            <span className="font-display text-body font-semibold text-[color:var(--jade-50)]">
               {t('app.name')}
             </span>
           </span>

@@ -95,7 +95,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
 
   return (
     <FullBleed
-      className="overflow-hidden bg-[var(--jade-950)]"
+      className="overflow-hidden bg-[var(--jade-900)]"
       labelledBy="deep-heading"
       innerClassName="py-4xl md:py-5xl"
     >
@@ -117,7 +117,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
           </p>
           <h2
             id="deep-heading"
-            className="text-sect mt-md max-w-brief text-jade-50"
+            className="text-sect mt-md max-w-brief text-[color:var(--jade-50)]"
           >
             {t('landing.previewTitle')}
           </h2>
@@ -151,8 +151,8 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
                 <p
                   className={`px-lg py-md text-body-lg ${
                     message.role === 'user'
-                      ? 'max-w-[78%] rounded-[16px] rounded-br-[4px] bg-jade-600 text-white'
-                      : 'max-w-[86%] rounded-[16px] rounded-bl-[4px] border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.07)] text-jade-50'
+                      ? 'max-w-[78%] rounded-[16px] rounded-br-[4px] bg-[var(--jade-600)] text-[color:var(--white)]'
+                      : 'max-w-[86%] rounded-[16px] rounded-bl-[4px] border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.07)] text-[color:var(--jade-50)]'
                   }`}
                 >
                   {t(message.key)}
