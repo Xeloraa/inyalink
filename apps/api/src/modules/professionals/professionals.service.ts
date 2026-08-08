@@ -277,11 +277,18 @@ export async function applyAsProfessional(
 
   await repo.upsertApplicantProfile({
     userId,
-    displayName: normalizeToUnicode(input.displayName.trim()),
+    displayName: input.displayName
+      ? normalizeToUnicode(input.displayName.trim())
+      : null,
   });
 
   // DEMO_MODE auto-approves so stage demos reach the interest feed immediately.
   const status = config.demoMode ? 'approved' : 'pending';
+
+  const optionalText = (value: string | undefined): string | null => {
+    if (!value || !value.trim()) return null;
+    return normalizeToUnicode(value.trim());
+  };
 
   const result = await repo.insertApplication({
     userId,
@@ -290,16 +297,16 @@ export async function applyAsProfessional(
       input.categorySlug === 'other' && input.categoryOtherText
         ? normalizeToUnicode(input.categoryOtherText.trim())
         : null,
-    headlineMy: normalizeToUnicode(input.headlineMy.trim()),
-    headlineEn: normalizeToUnicode(input.headlineEn.trim()),
-    bioMy: normalizeToUnicode(input.bioMy.trim()),
-    bioEn: normalizeToUnicode(input.bioEn.trim()),
-    skills: input.skills.map((s) => normalizeToUnicode(s.trim())),
-    typicalTurnaroundDays: input.typicalTurnaroundDays,
-    minBudgetMmk: input.minBudgetMmk,
+    headlineMy: optionalText(input.headlineMy),
+    headlineEn: optionalText(input.headlineEn),
+    bioMy: optionalText(input.bioMy),
+    bioEn: optionalText(input.bioEn),
+    skills: (input.skills ?? []).map((s) => normalizeToUnicode(s.trim())),
+    typicalTurnaroundDays: input.typicalTurnaroundDays ?? null,
+    minBudgetMmk: input.minBudgetMmk ?? null,
     acceptingWork: input.acceptingWork,
     status,
-    portfolio: input.portfolio.map((p) => ({
+    portfolio: (input.portfolio ?? []).map((p) => ({
       externalUrl: p.externalUrl,
       caption: p.caption
         ? normalizeToUnicode(p.caption.trim())

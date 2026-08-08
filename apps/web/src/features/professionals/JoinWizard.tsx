@@ -87,43 +87,38 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
     setPortfolioCaption('');
   }
 
-  function canContinue(): boolean {
-    if (step === 0) {
-      if (!categorySlug || displayName.trim().length < 2) return false;
-      if (categorySlug === 'other' && categoryOtherText.trim().length < 2) {
-        return false;
-      }
-      return true;
+  /** Only category (and Other free-text) block the wizard. */
+  function submissionBlockers(): string[] {
+    const blockers: string[] = [];
+    if (!categorySlug) blockers.push(t('onboarding.category'));
+    if (categorySlug === 'other' && categoryOtherText.trim().length < 2) {
+      blockers.push(t('onboarding.categoryOther'));
     }
-    if (step === 1) return skills.length >= 1;
-    if (step === 2) return portfolio.length >= 1;
-    return (
-      headlineMy.trim().length >= 4 &&
-      headlineEn.trim().length >= 4 &&
-      bioMy.trim().length >= 20 &&
-      bioEn.trim().length >= 20 &&
-      turnaround >= 1 &&
-      minBudget >= 10_000
-    );
+    return blockers;
   }
+
+  const blockers = submissionBlockers();
+  const canSubmit = blockers.length === 0;
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!categorySlug || !canContinue()) return;
+    if (!categorySlug || !canSubmit) return;
     setLoading(true);
     setError(null);
     try {
       const body: ProfessionalApplyInput = {
-        displayName: displayName.trim(),
         categorySlug,
+        ...(displayName.trim().length >= 2
+          ? { displayName: displayName.trim() }
+          : {}),
         ...(categorySlug === 'other'
           ? { categoryOtherText: categoryOtherText.trim() }
           : {}),
         skills,
-        headlineMy: headlineMy.trim(),
-        headlineEn: headlineEn.trim(),
-        bioMy: bioMy.trim(),
-        bioEn: bioEn.trim(),
+        ...(headlineMy.trim() ? { headlineMy: headlineMy.trim() } : {}),
+        ...(headlineEn.trim() ? { headlineEn: headlineEn.trim() } : {}),
+        ...(bioMy.trim() ? { bioMy: bioMy.trim() } : {}),
+        ...(bioEn.trim() ? { bioEn: bioEn.trim() } : {}),
         typicalTurnaroundDays: turnaround,
         minBudgetMmk: minBudget,
         acceptingWork,
@@ -133,9 +128,15 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
       setDone(result);
       onApplied?.(result);
     } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : t('onboarding.submitError'),
-      );
+      if (err instanceof ApiError) {
+        setError(
+          err.message
+            ? `${err.code}: ${err.message}`
+            : t('onboarding.submitError'),
+        );
+      } else {
+        setError(t('onboarding.submitError'));
+      }
     } finally {
       setLoading(false);
     }
@@ -208,7 +209,10 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
         onSubmit={(e) => {
           if (step < 3) {
             e.preventDefault();
-            if (canContinue()) setStep((s) => (s + 1) as Step);
+            // Steps after category are optional — always allow Continue.
+            // Step 0 still needs a category before leaving.
+            if (step === 0 && !canSubmit) return;
+            setStep((s) => (s + 1) as Step);
             return;
           }
           void onSubmit(e);
@@ -279,6 +283,38 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
           </p>
         ) : null}
 
+        {step === 3 && blockers.length > 0 ? (
+          <div
+            className="rounded-md border border-danger/30 bg-[rgba(192,69,60,0.06)] px-md py-md"
+            role="status"
+          >
+            <p className="text-body-sm font-medium text-danger">
+              {t('onboarding.blockersTitle')}
+            </p>
+            <ul className="mt-sm list-disc space-y-xs pl-lg text-body-sm text-ink-700">
+              {blockers.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {step === 0 && blockers.length > 0 ? (
+          <div
+            className="rounded-md border border-line bg-jade-50 px-md py-md"
+            role="status"
+          >
+            <p className="text-body-sm font-medium text-ink-700">
+              {t('onboarding.blockersTitle')}
+            </p>
+            <ul className="mt-sm list-disc space-y-xs pl-lg text-body-sm text-ink-700">
+              {blockers.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         <div className="flex flex-col gap-sm pt-md sm:flex-row sm:justify-between">
           {step > 0 ? (
             <button
@@ -293,7 +329,9 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
           )}
           <button
             type="submit"
-            disabled={loading || !canContinue()}
+            disabled={
+              loading || (step === 0 ? !canSubmit : step === 3 ? !canSubmit : false)
+            }
             className="tap-target rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300 sm:ml-auto"
           >
             {loading

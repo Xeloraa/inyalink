@@ -249,22 +249,49 @@ export type ProStatus = z.infer<typeof ProStatusSchema>;
 /**
  * Professional onboarding application.
  * Never includes NRC, national ID, passport, selfie, or biometrics.
+ * Only `categorySlug` is required (plus `categoryOtherText` when slug is `other`).
  */
+const emptyToUndefined = (v: unknown): unknown =>
+  typeof v === 'string' && v.trim() === '' ? undefined : v;
+
 export const ProfessionalApplyInputSchema = z
   .object({
-    displayName: z.string().trim().min(2).max(80),
+    displayName: z.preprocess(
+      emptyToUndefined,
+      z.string().trim().min(2).max(80).optional(),
+    ),
     categorySlug: CategorySlugSchema,
     /** Required when categorySlug is `other`. */
     categoryOtherText: CategoryOtherTextSchema.optional(),
-    skills: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
-    headlineMy: z.string().trim().min(4).max(120),
-    headlineEn: z.string().trim().min(4).max(120),
-    bioMy: z.string().trim().min(20).max(2000),
-    bioEn: z.string().trim().min(20).max(2000),
-    typicalTurnaroundDays: z.number().int().min(1).max(90),
-    minBudgetMmk: z.number().int().min(10_000).max(100_000_000),
+    skills: z
+      .array(z.string().trim().min(1).max(40))
+      .max(12)
+      .optional()
+      .default([]),
+    headlineMy: z.preprocess(
+      emptyToUndefined,
+      z.string().trim().max(120).optional(),
+    ),
+    headlineEn: z.preprocess(
+      emptyToUndefined,
+      z.string().trim().max(120).optional(),
+    ),
+    bioMy: z.preprocess(
+      emptyToUndefined,
+      z.string().trim().max(2000).optional(),
+    ),
+    bioEn: z.preprocess(
+      emptyToUndefined,
+      z.string().trim().max(2000).optional(),
+    ),
+    typicalTurnaroundDays: z.number().int().min(1).max(90).optional(),
+    minBudgetMmk: z.number().int().min(10_000).max(100_000_000).optional(),
     acceptingWork: z.boolean().default(true),
-    portfolio: z.array(PortfolioUploadItemSchema).min(1).max(8),
+    portfolio: z
+      .array(PortfolioUploadItemSchema)
+      .max(8)
+      .optional()
+      .default([]),
   })
   .superRefine((v, ctx) => {
     if (v.categorySlug === 'other') {

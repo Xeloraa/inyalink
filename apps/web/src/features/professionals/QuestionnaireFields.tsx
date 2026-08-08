@@ -50,7 +50,6 @@ export function QuestionnaireFields({
           value={headlineMy}
           onChange={(e) => onHeadlineMyChange(e.target.value)}
           className={`font-myanmar ${FIELD_INPUT}`}
-          required
         />
       </div>
       <div>
@@ -65,7 +64,6 @@ export function QuestionnaireFields({
           value={headlineEn}
           onChange={(e) => onHeadlineEnChange(e.target.value)}
           className={FIELD_INPUT}
-          required
         />
       </div>
       <div>
@@ -81,7 +79,6 @@ export function QuestionnaireFields({
           value={bioMy}
           onChange={(e) => onBioMyChange(e.target.value)}
           className={`font-myanmar ${FIELD_TEXTAREA}`}
-          required
         />
       </div>
       <div>
@@ -97,7 +94,6 @@ export function QuestionnaireFields({
           value={bioEn}
           onChange={(e) => onBioEnChange(e.target.value)}
           className={FIELD_TEXTAREA}
-          required
         />
       </div>
       <label className="tap-target flex cursor-pointer items-center justify-between gap-md rounded-md border border-line bg-white px-lg text-body text-ink-700">

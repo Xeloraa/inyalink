@@ -246,6 +246,7 @@
   "onboarding.minBudget": "Minimum budget (kyat)",
   "onboarding.noIdDocs": "Do not upload NRC, passport, or any government ID. We never ask for them.",
   "onboarding.submit": "Submit for review",
+  "onboarding.blockersTitle": "Fix these before submitting:",
   "onboarding.submitError": "Could not submit. Please try again.",
   "onboarding.categoriesError": "Could not load categories.",
   "onboarding.doneTitle": "Application received",

@@ -404,13 +404,13 @@ export async function insertApplication(args: {
   userId: string;
   categoryId: string;
   categoryOtherText: string | null;
-  headlineMy: string;
-  headlineEn: string;
-  bioMy: string;
-  bioEn: string;
+  headlineMy: string | null;
+  headlineEn: string | null;
+  bioMy: string | null;
+  bioEn: string | null;
   skills: string[];
-  typicalTurnaroundDays: number;
-  minBudgetMmk: number;
+  typicalTurnaroundDays: number | null;
+  minBudgetMmk: number | null;
   acceptingWork: boolean;
   status: 'pending' | 'approved';
   portfolio: Array<{ externalUrl: string; caption?: string }>;
@@ -720,20 +720,25 @@ export async function deleteWorkLink(
 
 export async function upsertApplicantProfile(args: {
   userId: string;
-  displayName: string;
+  /** When omitted/empty, keep the existing profile name (or 'Professional'). */
+  displayName?: string | null;
 }): Promise<void> {
   const sql = getSql();
+  const name =
+    args.displayName && args.displayName.trim().length >= 2
+      ? args.displayName.trim()
+      : null;
   await sql`
     insert into profiles (id, role, display_name, locale)
     values (
       ${args.userId}::uuid,
       'professional'::user_role,
-      ${args.displayName},
+      coalesce(${name}, 'Professional'),
       'my'
     )
     on conflict (id) do update set
       role = 'professional'::user_role,
-      display_name = excluded.display_name,
+      display_name = coalesce(${name}, profiles.display_name),
       updated_at = now()
   `;
 }

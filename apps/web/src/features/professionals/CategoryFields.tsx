@@ -37,7 +37,6 @@ export function CategoryFields({
           value={displayName}
           onChange={(e) => onDisplayNameChange(e.target.value)}
           className={FIELD_INPUT}
-          required
         />
       </div>
       <fieldset>

@@ -246,6 +246,7 @@
   "onboarding.minBudget": "အနည်းဆုံး ဘတ်ဂျက် (ကျပ်)",
   "onboarding.noIdDocs": "NRC၊ နိုင်ငံကူးလက်မှတ် သို့မဟုတ် အစိုးရမှတ်ပုံတင် မတင်ရ။ ကျွန်ုပ်တို့ တောင်းဆိုမည် မဟုတ်။",
   "onboarding.submit": "စိစစ်ရန် တင်မည်",
+  "onboarding.blockersTitle": "တင်မီ ပြင်ရန်များ:",
   "onboarding.submitError": "တင်၍ မရပါ။ ထပ်ကြိုးစားပါ။",
   "onboarding.categoriesError": "အမျိုးအစားများ မရရှိနိုင်ပါ။",
   "onboarding.doneTitle": "လျှောက်လွှာ ရရှိပါပြီ",

@@ -242,6 +242,41 @@ describe('professionals.service', () => {
     expect(result.categories[0]?.slug).toBe('graphic-design');
   });
 
+  it('applies with only a category (other fields optional)', async () => {
+    vi.mocked(repo.getProfileByUserId).mockResolvedValue(null);
+    vi.mocked(repo.getCategoryBySlug).mockResolvedValue({
+      id: 'c0000000-0000-4000-8000-000000000001',
+      slug: 'graphic-design',
+      nameMy: 'ဂရပ်ဖစ်',
+      nameEn: 'Graphic Design',
+    });
+    vi.mocked(repo.upsertApplicantProfile).mockResolvedValue();
+    vi.mocked(repo.insertApplication).mockResolvedValue({
+      professionalId: 'a0000000-0000-4000-8000-000000000099',
+      status: 'approved',
+    });
+
+    const result = await service.applyAsProfessional(
+      {
+        categorySlug: 'graphic-design',
+        skills: [],
+        acceptingWork: true,
+        portfolio: [],
+      },
+      'a0000000-0000-4000-8000-000000000099',
+    );
+
+    expect(result.status).toBe('approved');
+    expect(repo.insertApplication).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'approved',
+        skills: [],
+        headlineMy: null,
+        portfolio: [],
+      }),
+    );
+  });
+
   it('auto-approves applications when DEMO_MODE is on', async () => {
     vi.mocked(repo.getProfileByUserId).mockResolvedValue(null);
     vi.mocked(repo.getCategoryBySlug).mockResolvedValue({

@@ -6,11 +6,13 @@ export function validateBody<T>(schema: ZodType<T>) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     const parsed = schema.safeParse(req.body);
     if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      const path = issue?.path?.length ? `${issue.path.join('.')}: ` : '';
       next(
         new AppError(
           400,
           'VALIDATION_ERROR',
-          parsed.error.issues[0]?.message ?? 'Invalid request body',
+          `${path}${issue?.message ?? 'Invalid request body'}`,
         ),
       );
       return;
