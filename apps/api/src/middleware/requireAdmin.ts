@@ -3,7 +3,7 @@ import { AppError } from './errors.js';
 import { getAuth, requireAuth } from './requireAuth.js';
 
 /**
- * requireAuth then 403 unless session.isAdmin.
+ * requireAuth then 403 unless session.role === 'admin'.
  * Use on the entire /admin router.
  */
 export function requireAdmin(
@@ -18,7 +18,7 @@ export function requireAdmin(
     }
     try {
       const auth = getAuth(req);
-      if (!auth.isAdmin) {
+      if (auth.role !== 'admin') {
         next(new AppError(403, 'FORBIDDEN', 'Admin access required'));
         return;
       }

@@ -55,7 +55,7 @@ export const config = {
    * Default on — including production / Railway. Not tied to NODE_ENV.
    */
   demoAiFallback: optionalBool('DEMO_AI_FALLBACK', true),
-  /** Promote matching Supabase Auth email to is_admin (case-insensitive). Empty = off. */
+  /** Promote matching Supabase Auth email to role=admin (case-insensitive). Empty = off. */
   adminEmail: (process.env['ADMIN_EMAIL'] ?? '').trim().toLowerCase(),
 } as const;
 

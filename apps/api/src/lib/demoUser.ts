@@ -18,68 +18,65 @@ const DEMO_USERS: Record<
     role: AuthSession['role'];
     displayName: string;
     locale: 'my' | 'en';
-    isAdmin: boolean;
   }
 > = {
   [DEMO_CLIENT_ID]: {
     role: 'client',
     displayName: 'Demo Client 01',
     locale: 'en',
-    isAdmin: false,
   },
   [DEMO_PRO_ID]: {
     role: 'professional',
     displayName: 'မင်းထက် · Min Thet',
     locale: 'my',
-    isAdmin: false,
   },
   [DEMO_ADMIN_ID]: {
     role: 'admin',
     displayName: 'Demo Admin',
     locale: 'en',
-    isAdmin: true,
   },
   'a0000000-0000-4000-8000-000000000002': {
     role: 'professional',
     displayName: 'သူဇာ · Su Zar',
     locale: 'my',
-    isAdmin: false,
   },
   'a0000000-0000-4000-8000-000000000003': {
     role: 'professional',
     displayName: 'နေလင်း · Nay Lin',
     locale: 'my',
-    isAdmin: false,
   },
   'a0000000-0000-4000-8000-000000000004': {
     role: 'professional',
     displayName: 'ခိုင်ဇော် · Khine Zaw',
     locale: 'my',
-    isAdmin: false,
   },
 };
 
-export const DEMO_SESSION: AuthSession = {
-  userId: DEMO_CLIENT_ID,
+function toDemoSession(
+  userId: string,
+  meta: { role: AuthSession['role']; displayName: string; locale: 'my' | 'en' },
+): AuthSession {
+  return {
+    userId,
+    role: meta.role,
+    isAdmin: meta.role === 'admin',
+    displayName: meta.displayName,
+    locale: meta.locale,
+  };
+}
+
+export const DEMO_SESSION: AuthSession = toDemoSession(DEMO_CLIENT_ID, {
   role: 'client',
-  isAdmin: false,
   displayName: 'Demo Client 01',
   locale: 'en',
-};
+});
 
 /** Resolve demo identity from optional `X-Demo-User-Id` when DEMO_MODE is on. */
 export function resolveDemoSession(req: Request): AuthSession {
   if (!config.demoMode) return DEMO_SESSION;
   const header = req.header('x-demo-user-id')?.trim();
   if (!header || !DEMO_USERS[header]) return DEMO_SESSION;
-  const meta = DEMO_USERS[header]!;
-  return {
-    userId: header,
-    role: meta.role,
-    isAdmin: meta.isAdmin,
-    displayName: meta.displayName,
-    locale: meta.locale,
-  };
+  return toDemoSession(header, DEMO_USERS[header]!);
 }
 
 /**

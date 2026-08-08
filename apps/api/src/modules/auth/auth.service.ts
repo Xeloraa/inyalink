@@ -31,7 +31,7 @@ function toSession(profile: repo.ProfileRow): AuthSession {
   return {
     userId: profile.id,
     role: profile.role,
-    isAdmin: profile.isAdmin,
+    isAdmin: profile.role === 'admin',
     displayName: profile.displayName,
     locale: profile.locale,
   };
@@ -45,12 +45,12 @@ function emailMatchesAdmin(email: string | undefined): boolean {
 /**
  * On first Google sign-in, create a profiles row with role `client`.
  * Subsequent calls return the existing profile.
- * If email matches ADMIN_EMAIL, promote to is_admin.
+ * If email matches ADMIN_EMAIL, promote to role=admin.
  */
 export async function ensureClientProfile(user: User): Promise<AuthSession> {
   const existing = await repo.findProfileById(user.id);
   if (existing) {
-    if (emailMatchesAdmin(user.email) && !existing.isAdmin) {
+    if (emailMatchesAdmin(user.email) && existing.role !== 'admin') {
       return toSession(await repo.promoteToAdmin(user.id));
     }
     return toSession(existing);

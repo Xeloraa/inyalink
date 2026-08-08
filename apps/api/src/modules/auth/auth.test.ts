@@ -34,6 +34,7 @@ describe('auth.service', () => {
   beforeEach(() => {
     vi.mocked(repo.findProfileById).mockReset();
     vi.mocked(repo.insertClientProfile).mockReset();
+    vi.mocked(repo.promoteToAdmin).mockReset();
   });
 
   it('returns an existing profile on subsequent Google sign-ins', async () => {
@@ -41,7 +42,6 @@ describe('auth.service', () => {
       id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
       displayName: 'Min Thet',
       role: 'client',
-      isAdmin: false,
       locale: 'my',
     });
 
@@ -58,7 +58,6 @@ describe('auth.service', () => {
       id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
       displayName: 'Min Thet',
       role: 'client',
-      isAdmin: false,
       locale: 'en',
     });
 
@@ -74,26 +73,27 @@ describe('auth.service', () => {
     expect(session.isAdmin).toBe(false);
   });
 
-  it('promotes matching ADMIN_EMAIL to is_admin', async () => {
+  it('derives isAdmin from role=admin', async () => {
+    vi.mocked(repo.findProfileById).mockResolvedValue({
+      id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+      displayName: 'Ops',
+      role: 'admin',
+      locale: 'en',
+    });
+
+    const session = await authService.ensureClientProfile(googleUser());
+    expect(session.role).toBe('admin');
+    expect(session.isAdmin).toBe(true);
+  });
+
+  it('does not promote when ADMIN_EMAIL is unset', async () => {
     vi.mocked(repo.findProfileById).mockResolvedValue({
       id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
       displayName: 'Ops',
       role: 'client',
-      isAdmin: false,
-      locale: 'en',
-    });
-    vi.mocked(repo.promoteToAdmin).mockResolvedValue({
-      id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
-      displayName: 'Ops',
-      role: 'admin',
-      isAdmin: true,
       locale: 'en',
     });
 
-    // config.adminEmail is empty by default — promote only when email matches.
-    // Spy by temporarily setting env is awkward; call promote path via mock email
-    // and stub config through matching empty → skip. Instead verify promote
-    // when we force emailMatches by mocking with empty adminEmail no-op.
     const session = await authService.ensureClientProfile(
       googleUser({ email: 'someone@example.com' }),
     );
