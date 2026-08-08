@@ -7,6 +7,7 @@ import type {
   VerifyOtpInput,
   VerifyOtpResponse,
 } from '@inyalink/shared';
+import { config } from '../../lib/config.js';
 import { AppError } from '../../middleware/errors.js';
 import { getSupabaseAdmin } from '../../lib/supabase.js';
 import * as repo from './auth.repo.js';
@@ -26,19 +27,33 @@ function displayNameFromUser(user: User): string {
   return 'Client';
 }
 
+function toSession(profile: repo.ProfileRow): AuthSession {
+  return {
+    userId: profile.id,
+    role: profile.role,
+    isAdmin: profile.isAdmin,
+    displayName: profile.displayName,
+    locale: profile.locale,
+  };
+}
+
+function emailMatchesAdmin(email: string | undefined): boolean {
+  if (!config.adminEmail || !email) return false;
+  return email.trim().toLowerCase() === config.adminEmail;
+}
+
 /**
  * On first Google sign-in, create a profiles row with role `client`.
  * Subsequent calls return the existing profile.
+ * If email matches ADMIN_EMAIL, promote to is_admin.
  */
 export async function ensureClientProfile(user: User): Promise<AuthSession> {
   const existing = await repo.findProfileById(user.id);
   if (existing) {
-    return {
-      userId: existing.id,
-      role: existing.role,
-      displayName: existing.displayName,
-      locale: existing.locale,
-    };
+    if (emailMatchesAdmin(user.email) && !existing.isAdmin) {
+      return toSession(await repo.promoteToAdmin(user.id));
+    }
+    return toSession(existing);
   }
 
   const created = await repo.insertClientProfile({
@@ -47,12 +62,11 @@ export async function ensureClientProfile(user: User): Promise<AuthSession> {
     locale: 'en',
   });
 
-  return {
-    userId: created.id,
-    role: created.role,
-    displayName: created.displayName,
-    locale: created.locale,
-  };
+  if (emailMatchesAdmin(user.email)) {
+    return toSession(await repo.promoteToAdmin(created.id));
+  }
+
+  return toSession(created);
 }
 
 export async function getSessionForUser(userId: string): Promise<AuthSession> {
@@ -60,12 +74,7 @@ export async function getSessionForUser(userId: string): Promise<AuthSession> {
   if (!profile) {
     throw new AppError(404, 'PROFILE_NOT_FOUND', 'Profile not found');
   }
-  return {
-    userId: profile.id,
-    role: profile.role,
-    displayName: profile.displayName,
-    locale: profile.locale,
-  };
+  return toSession(profile);
 }
 
 /**

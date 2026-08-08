@@ -4,6 +4,8 @@ import { z } from 'zod';
 export const AuthSessionSchema = z.object({
   userId: z.string().uuid(),
   role: z.enum(['client', 'professional', 'admin']),
+  /** Ops console gate — independent of product `role`. */
+  isAdmin: z.boolean(),
   displayName: z.string().min(1).max(80),
   locale: z.enum(['my', 'en']),
 });

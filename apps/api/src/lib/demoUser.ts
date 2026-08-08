@@ -10,41 +10,59 @@ import { config } from './config.js';
 
 export const DEMO_CLIENT_ID = 'b0000000-0000-4000-8000-000000000001';
 export const DEMO_PRO_ID = 'a0000000-0000-4000-8000-000000000001';
+export const DEMO_ADMIN_ID = 'c0000000-0000-4000-8000-000000000001';
 
 const DEMO_USERS: Record<
   string,
-  { role: AuthSession['role']; displayName: string; locale: 'my' | 'en' }
+  {
+    role: AuthSession['role'];
+    displayName: string;
+    locale: 'my' | 'en';
+    isAdmin: boolean;
+  }
 > = {
   [DEMO_CLIENT_ID]: {
     role: 'client',
     displayName: 'Demo Client 01',
     locale: 'en',
+    isAdmin: false,
   },
   [DEMO_PRO_ID]: {
     role: 'professional',
     displayName: 'မင်းထက် · Min Thet',
     locale: 'my',
+    isAdmin: false,
+  },
+  [DEMO_ADMIN_ID]: {
+    role: 'admin',
+    displayName: 'Demo Admin',
+    locale: 'en',
+    isAdmin: true,
   },
   'a0000000-0000-4000-8000-000000000002': {
     role: 'professional',
     displayName: 'သူဇာ · Su Zar',
     locale: 'my',
+    isAdmin: false,
   },
   'a0000000-0000-4000-8000-000000000003': {
     role: 'professional',
     displayName: 'နေလင်း · Nay Lin',
     locale: 'my',
+    isAdmin: false,
   },
   'a0000000-0000-4000-8000-000000000004': {
     role: 'professional',
     displayName: 'ခိုင်ဇော် · Khine Zaw',
     locale: 'my',
+    isAdmin: false,
   },
 };
 
 export const DEMO_SESSION: AuthSession = {
   userId: DEMO_CLIENT_ID,
   role: 'client',
+  isAdmin: false,
   displayName: 'Demo Client 01',
   locale: 'en',
 };
@@ -58,6 +76,7 @@ export function resolveDemoSession(req: Request): AuthSession {
   return {
     userId: header,
     role: meta.role,
+    isAdmin: meta.isAdmin,
     displayName: meta.displayName,
     locale: meta.locale,
   };

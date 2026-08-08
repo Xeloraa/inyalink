@@ -32,11 +32,15 @@ create type work_link_platform as enum (
 create table profiles (
   id           uuid primary key references auth.users(id) on delete cascade,
   role         user_role   not null default 'client',
+  -- Ops console gate. Distinct from product `role`; set via seed / ADMIN_EMAIL.
+  is_admin     boolean     not null default false,
   display_name text        not null check (length(display_name) between 1 and 80),
   locale       locale_code not null default 'my',
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
+
+create index profiles_is_admin_idx on profiles (id) where is_admin = true;
 
 -- ---------------------------------------------------------------- categories
 -- Seed ONE category at launch. Liquidity is local to a vertical.
@@ -73,6 +77,8 @@ create table professionals (
     category_other_text is null
     or length(trim(category_other_text)) between 2 and 200
   ),
+  -- External CV / resume URL only — never store identity documents.
+  cv_url                text check (cv_url is null or length(cv_url) between 8 and 500),
   created_at            timestamptz not null default now(),
   updated_at            timestamptz not null default now()
 );

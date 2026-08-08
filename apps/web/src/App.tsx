@@ -9,11 +9,25 @@ import ProfessionalProfile from './routes/ProfessionalProfile';
 import ProfessionalsEdit from './routes/ProfessionalsEdit';
 import ProfessionalsJoin from './routes/ProfessionalsJoin';
 import Signup from './routes/Signup';
+import AdminLayout from './routes/admin/AdminLayout';
+import AdminDashboard from './routes/admin/Dashboard';
+import AdminProfessionals from './routes/admin/Professionals';
+import AdminBriefs from './routes/admin/Briefs';
+import AdminEngagements from './routes/admin/Engagements';
+import AdminMetrics from './routes/admin/Metrics';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="professionals" element={<AdminProfessionals />} />
+          <Route path="briefs" element={<AdminBriefs />} />
+          <Route path="engagements" element={<AdminEngagements />} />
+          <Route path="metrics" element={<AdminMetrics />} />
+        </Route>
+
         <Route element={<AppShell />}>
           <Route index element={<Landing />} />
           <Route path="professionals/join" element={<ProfessionalsJoin />} />

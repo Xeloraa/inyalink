@@ -1,0 +1,184 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import type { EngagementStatus } from '@inyalink/shared';
+import {
+  fetchAdminEngagements,
+  patchAdminEngagementStatus,
+} from '../../features/admin/api';
+import { useI18n } from '../../lib/i18n';
+
+const STATUSES: Array<EngagementStatus | ''> = [
+  '',
+  'proposed',
+  'accepted',
+  'declined',
+  'in_progress',
+  'delivered',
+  'confirmed',
+  'disputed',
+  'cancelled',
+];
+
+export default function AdminEngagements() {
+  const { t } = useI18n();
+  const qc = useQueryClient();
+  const [status, setStatus] = useState<EngagementStatus | ''>('');
+  const [editId, setEditId] = useState<string | null>(null);
+  const [nextStatus, setNextStatus] = useState<EngagementStatus>('in_progress');
+  const [err, setErr] = useState<string | null>(null);
+
+  const q = useQuery({
+    queryKey: ['admin', 'engagements', status],
+    queryFn: () => fetchAdminEngagements(status || undefined),
+  });
+
+  const patch = useMutation({
+    mutationFn: () =>
+      patchAdminEngagementStatus(editId!, { status: nextStatus }),
+    onSuccess: async () => {
+      setEditId(null);
+      setErr(null);
+      await qc.invalidateQueries({ queryKey: ['admin', 'engagements'] });
+      await qc.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
+    },
+    onError: (e: Error) => setErr(e.message),
+  });
+
+  if (q.isLoading) {
+    return <p className="text-sm text-ink-500">{t('common.loading')}</p>;
+  }
+  if (q.isError || !q.data) {
+    return (
+      <p className="text-sm text-danger">
+        {t('admin.loadError')}{' '}
+        <button type="button" className="underline" onClick={() => void q.refetch()}>
+          {t('common.retry')}
+        </button>
+      </p>
+    );
+  }
+
+  return (
+    <div>
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-base font-semibold">{t('admin.eng.title')}</h1>
+        <label className="text-xs text-ink-600">
+          {t('admin.filterStatus')}{' '}
+          <select
+            className="ml-1 rounded border border-line bg-white px-1 py-0.5"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as EngagementStatus | '')}
+          >
+            {STATUSES.map((s) => (
+              <option key={s || 'all'} value={s}>
+                {s || t('admin.filterAll')}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="overflow-x-auto rounded border border-line bg-white">
+        <table className="w-full min-w-[960px] border-collapse text-left text-xs">
+          <thead className="bg-line-soft text-[11px] uppercase text-ink-500">
+            <tr>
+              <th className="px-2 py-1.5 font-medium">{t('admin.eng.colBrief')}</th>
+              <th className="px-2 py-1.5 font-medium">{t('admin.eng.colPro')}</th>
+              <th className="px-2 py-1.5 font-medium">{t('admin.eng.colClient')}</th>
+              <th className="px-2 py-1.5 font-medium">{t('admin.eng.colStatus')}</th>
+              <th className="px-2 py-1.5 font-medium">{t('admin.eng.colHours')}</th>
+              <th className="px-2 py-1.5 font-medium">{t('admin.eng.colStall')}</th>
+              <th className="px-2 py-1.5 font-medium">{t('admin.eng.colActions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {q.data.items.map((e) => (
+              <tr
+                key={e.id}
+                className={[
+                  'border-t border-line-soft align-top',
+                  e.stalled ? 'bg-amber-50' : '',
+                ].join(' ')}
+              >
+                <td className="px-2 py-1.5">
+                  <div className="max-w-[200px] [overflow-wrap:anywhere]">
+                    {e.briefTitle || e.briefId.slice(0, 8)}
+                  </div>
+                </td>
+                <td className="px-2 py-1.5">{e.professionalDisplayName}</td>
+                <td className="px-2 py-1.5">{e.clientDisplayName}</td>
+                <td className="px-2 py-1.5">{e.status}</td>
+                <td className="px-2 py-1.5 tabular-nums">{e.hoursInState}h</td>
+                <td className="px-2 py-1.5">
+                  {e.stalled ? (
+                    <span className="rounded bg-amber-100 px-1 text-amber-800">
+                      {e.stallReason === 'past_respond_by'
+                        ? t('admin.eng.stallRespondBy')
+                        : t('admin.eng.stall30d')}
+                    </span>
+                  ) : (
+                    '—'
+                  )}
+                </td>
+                <td className="px-2 py-1.5">
+                  <button
+                    type="button"
+                    className="rounded border border-line px-1.5 py-0.5 hover:bg-line-soft"
+                    onClick={() => {
+                      setEditId(e.id);
+                      setNextStatus(e.status);
+                      setErr(null);
+                    }}
+                  >
+                    {t('admin.eng.changeStatus')}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {editId ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded border border-line bg-white p-3">
+            <h3 className="text-sm font-semibold">
+              {t('admin.eng.changeStatus')}
+            </h3>
+            <select
+              className="mt-2 w-full rounded border border-line px-2 py-1 text-sm"
+              value={nextStatus}
+              onChange={(e) =>
+                setNextStatus(e.target.value as EngagementStatus)
+              }
+            >
+              {STATUSES.filter(Boolean).map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            {err ? <p className="mt-2 text-xs text-danger">{err}</p> : null}
+            <div className="mt-3 flex justify-end gap-2">
+              <button
+                type="button"
+                className="text-xs text-ink-600"
+                onClick={() => setEditId(null)}
+              >
+                {t('common.back')}
+              </button>
+              <button
+                type="button"
+                disabled={patch.isPending}
+                className="rounded bg-jade-600 px-2 py-1 text-xs text-white disabled:opacity-50"
+                onClick={() => patch.mutate()}
+              >
+                {t('common.save')}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
