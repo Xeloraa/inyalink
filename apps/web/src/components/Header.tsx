@@ -97,6 +97,19 @@ export function Header() {
     null,
   );
 
+  const mountAccountMenu = !loading && Boolean(session);
+
+  // TEMP debug — remove once avatar visibility is confirmed
+  useEffect(() => {
+    console.log('[Header avatar]', {
+      loading,
+      hasSession: Boolean(session),
+      userId: session?.userId ?? null,
+      mountAccountMenu,
+      willShowPlaceholder: loading,
+    });
+  }, [loading, session, mountAccountMenu]);
+
   useEffect(() => {
     if (!menuOpen) return;
 
@@ -247,8 +260,16 @@ export function Header() {
             <LanguageToggle locale={locale} setLocale={setLocale} t={t} />
           </div>
 
-          {/* Far right after EN. */}
-          {!loading && session ? <AccountMenu pro={pro} /> : null}
+          {/* Far right after EN. Placeholder while auth resolves so the slot is never empty. */}
+          {loading ? (
+            <div
+              aria-hidden
+              data-avatar-slot="loading"
+              className="h-9 w-9 shrink-0 rounded-full bg-jade-100 ring-1 ring-jade-600/30 sm:h-10 sm:w-10"
+            />
+          ) : mountAccountMenu ? (
+            <AccountMenu pro={pro} />
+          ) : null}
         </nav>
       </div>
     </header>

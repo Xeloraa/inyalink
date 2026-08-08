@@ -131,10 +131,36 @@ export function AccountMenu({
     };
   }, [open]);
 
-  if (!session) return null;
-
   const activePro = isActiveProfessional(pro) ? pro : null;
   const avatarUrl = activePro?.avatarUrl ?? null;
+
+  // TEMP debug — remove once avatar visibility is confirmed
+  useEffect(() => {
+    const el = buttonRef.current;
+    const rect = el?.getBoundingClientRect();
+    console.log('[AccountMenu]', {
+      hasSession: Boolean(session),
+      renderingButton: Boolean(session),
+      hasAvatarUrl: Boolean(avatarUrl),
+      buttonRect: rect
+        ? {
+            width: rect.width,
+            height: rect.height,
+            top: rect.top,
+            right: rect.right,
+            visible:
+              rect.width > 0 &&
+              rect.height > 0 &&
+              rect.bottom > 0 &&
+              rect.top < window.innerHeight &&
+              rect.right > 0 &&
+              rect.left < window.innerWidth,
+          }
+        : null,
+    });
+  }, [session, avatarUrl]);
+
+  if (!session) return null;
 
   const menu =
     open && menuPos
