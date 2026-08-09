@@ -5,6 +5,7 @@ import {
   fetchAdminEngagements,
   patchAdminEngagementStatus,
 } from '../../features/admin/api';
+import { AdminEngagementsSkeleton } from '../../features/admin/AdminSkeletons';
 import { useI18n } from '../../lib/i18n';
 
 const STATUSES: Array<EngagementStatus | ''> = [
@@ -45,7 +46,7 @@ export default function AdminEngagements() {
   });
 
   if (q.isLoading) {
-    return <p className="text-sm text-ink-500">{t('common.loading')}</p>;
+    return <AdminEngagementsSkeleton />;
   }
   if (q.isError || !q.data) {
     return (
@@ -78,6 +79,11 @@ export default function AdminEngagements() {
         </label>
       </div>
 
+      {q.data.items.length === 0 ? (
+        <p className="rounded border border-line bg-white px-3 py-4 text-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+          {t('admin.eng.empty')}
+        </p>
+      ) : (
       <div className="overflow-x-auto rounded border border-line bg-white">
         <table className="w-full min-w-[960px] border-collapse text-left text-xs">
           <thead className="bg-line-soft text-[11px] uppercase text-ink-500">
@@ -123,7 +129,7 @@ export default function AdminEngagements() {
                 <td className="px-2 py-1.5">
                   <button
                     type="button"
-                    className="rounded border border-line px-1.5 py-0.5 hover:bg-line-soft"
+                    className="tap-target inline-flex items-center rounded-md border border-line px-3 text-sm hover:bg-line-soft"
                     onClick={() => {
                       setEditId(e.id);
                       setNextStatus(e.status);
@@ -138,6 +144,7 @@ export default function AdminEngagements() {
           </tbody>
         </table>
       </div>
+      )}
 
       {editId ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -146,7 +153,7 @@ export default function AdminEngagements() {
               {t('admin.eng.changeStatus')}
             </h3>
             <select
-              className="mt-2 w-full rounded border border-line px-2 py-1 text-sm"
+              className="tap-target mt-2 w-full rounded border border-line px-3 text-sm"
               value={nextStatus}
               onChange={(e) =>
                 setNextStatus(e.target.value as EngagementStatus)
@@ -159,10 +166,10 @@ export default function AdminEngagements() {
               ))}
             </select>
             {err ? <p className="mt-2 text-xs text-danger">{err}</p> : null}
-            <div className="mt-3 flex justify-end gap-2">
+            <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                className="text-xs text-ink-600"
+                className="tap-target inline-flex items-center justify-center rounded-md px-3 text-sm text-ink-600"
                 onClick={() => setEditId(null)}
               >
                 {t('common.back')}
@@ -170,7 +177,7 @@ export default function AdminEngagements() {
               <button
                 type="button"
                 disabled={patch.isPending}
-                className="rounded bg-jade-600 px-2 py-1 text-xs text-white disabled:opacity-50"
+                className="tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-3 text-sm text-white disabled:opacity-50"
                 onClick={() => patch.mutate()}
               >
                 {t('common.save')}

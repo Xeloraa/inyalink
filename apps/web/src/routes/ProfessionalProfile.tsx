@@ -1,12 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { ProfessionalProfile } from '@inyalink/shared';
-import { formatMmk } from '@inyalink/shared';
+import {
+  completenessInputFromProfile,
+  computeProfessionalCompleteness,
+  formatMmk,
+} from '@inyalink/shared';
 import { getProfessional } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
+import {
+  useMyProfessional,
+} from '../components/AccountMenu';
 import { useChatUi } from '../components/FloatingChat';
+import { Skeleton } from '../components/Skeleton';
 import { useI18n } from '../lib/i18n';
-import { RateLimitNotice } from '../components/Notices';
+import { LoadErrorNotice } from '../components/Notices';
+import { ProfileCompleteness } from '../features/professionals/ProfileCompleteness';
 import { WorkLinksDisplay } from '../features/professionals/WorkLinksFields';
 
 function CheckIcon() {
@@ -49,9 +58,80 @@ function PinIcon() {
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-sm bg-jade-50 px-md py-md">
-      <dt className="whitespace-nowrap text-caption text-ink-500">{label}</dt>
-      <dd className="mt-xs whitespace-nowrap text-stat text-jade-600">{value}</dd>
+      <dt className="text-caption text-ink-500 [overflow-wrap:anywhere]">{label}</dt>
+      <dd className="mt-xs text-stat text-jade-600 [overflow-wrap:anywhere]">{value}</dd>
     </div>
+  );
+}
+
+function ProfessionalProfileSkeleton() {
+  return (
+    <article className="py-2xl md:py-3xl" role="status" aria-busy="true">
+      <span className="sr-only">…</span>
+      <Skeleton className="h-4 w-16" />
+
+      <header className="mt-xl flex flex-col gap-xl sm:flex-row sm:items-start">
+        <Skeleton className="h-[88px] w-[88px] shrink-0 rounded-full" />
+        <div className="min-w-0 flex-1">
+          <Skeleton className="h-7 w-48 max-w-full" />
+          <Skeleton className="mt-sm h-5 w-72 max-w-full" />
+          <Skeleton className="mt-sm h-3.5 w-32" />
+          <div className="mt-xl flex flex-col gap-sm sm:flex-row">
+            <Skeleton className="h-12 w-full rounded-md sm:w-36" />
+            <Skeleton className="h-12 w-full rounded-md sm:w-28" />
+          </div>
+        </div>
+      </header>
+
+      <div className="mt-2xl grid grid-cols-2 gap-md sm:grid-cols-3 lg:grid-cols-6">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className="min-w-0 rounded-sm bg-jade-50 px-md py-md">
+            <Skeleton className="h-3 w-12" />
+            <Skeleton className="mt-xs h-6 w-10" />
+          </div>
+        ))}
+      </div>
+
+      <section className="mt-3xl">
+        <Skeleton className="h-5 w-24" />
+        <div className="mt-lg grid gap-xl md:grid-cols-2">
+          {[0, 1].map((i) => (
+            <div
+              key={i}
+              className="rounded-lg border border-line bg-white p-lg"
+            >
+              <Skeleton className="h-3 w-14" />
+              <Skeleton className="mt-sm h-4 w-full" />
+              <Skeleton className="mt-xs h-4 w-[85%]" />
+              <Skeleton className="mt-xs h-4 w-[70%]" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-3xl">
+        <Skeleton className="h-5 w-28" />
+        <ul className="mt-lg grid grid-cols-2 gap-md sm:grid-cols-3">
+          {Array.from({ length: 3 }, (_, i) => (
+            <li
+              key={i}
+              className="overflow-hidden rounded-sm border border-line"
+            >
+              <Skeleton className="aspect-square w-full rounded-none" />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-3xl pb-3xl">
+        <Skeleton className="h-5 w-20" />
+        <div className="mt-lg flex flex-wrap gap-sm">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-6 w-16 rounded-sm" />
+          ))}
+        </div>
+      </section>
+    </article>
   );
 }
 
@@ -74,18 +154,18 @@ export default function ProfessionalProfilePage() {
   const { id = '' } = useParams();
   const { t, locale } = useI18n();
   const { setOpen } = useChatUi();
+  const myPro = useMyProfessional();
 
   const [profile, setProfile] = useState<ProfessionalProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(() => readSaved().includes(id));
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!id) return;
     let cancelled = false;
     setLoading(true);
     setError(null);
-
     void getProfessional(id)
       .then((data) => {
         if (!cancelled) {
@@ -101,11 +181,14 @@ export default function ProfessionalProfilePage() {
           setLoading(false);
         }
       });
-
     return () => {
       cancelled = true;
     };
   }, [id, t]);
+
+  useEffect(() => {
+    return load();
+  }, [load]);
 
   function toggleSave() {
     const next = readSaved();
@@ -120,19 +203,17 @@ export default function ProfessionalProfilePage() {
   }
 
   if (loading) {
-    return (
-      <p className="py-3xl text-body text-ink-500" role="status">
-        {t('common.loading')}
-      </p>
-    );
+    return <ProfessionalProfileSkeleton />;
   }
 
   if (error || !profile) {
     return (
       <div className="py-3xl">
-        <RateLimitNotice
-          notice={error ?? t('profile.loadError')}
-          onRetry={() => window.location.reload()}
+        <LoadErrorNotice
+          message={error ?? t('profile.loadError')}
+          onRetry={() => {
+            void load();
+          }}
         />
       </div>
     );
@@ -142,6 +223,11 @@ export default function ProfessionalProfilePage() {
     locale === 'en'
       ? (profile.headlineEn ?? profile.headlineMy)
       : (profile.headlineMy ?? profile.headlineEn);
+
+  const isOwner = myPro != null && myPro.id === profile.id;
+  const completeness = isOwner
+    ? computeProfessionalCompleteness(completenessInputFromProfile(profile))
+    : null;
 
   const stats = [
     {
@@ -211,7 +297,9 @@ export default function ProfessionalProfilePage() {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-sm">
-            <h1 className="text-display-sm text-ink-900">{profile.displayName}</h1>
+            <h1 className="text-display-sm text-ink-900 [overflow-wrap:anywhere]">
+              {profile.displayName}
+            </h1>
             {profile.verified ? (
               <span className="inline-flex items-center gap-xs rounded-sm bg-jade-100 px-2.5 py-1 text-caption font-medium text-jade-800">
                 <span className="text-jade-600">
@@ -222,7 +310,9 @@ export default function ProfessionalProfilePage() {
             ) : null}
           </div>
           {headline ? (
-            <p className="mt-sm text-body-lg text-ink-500">{headline}</p>
+            <p className="mt-sm text-body-lg leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+              {headline}
+            </p>
           ) : null}
           {profile.location ? (
             <p className="mt-sm flex items-center gap-xs text-caption text-ink-400">
@@ -232,13 +322,22 @@ export default function ProfessionalProfilePage() {
           ) : null}
 
           <div className="mt-xl flex flex-col gap-sm sm:flex-row">
-            <button
-              type="button"
-              onClick={onMessage}
-              className="tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800"
-            >
-              {t('profile.message')}
-            </button>
+            {isOwner ? (
+              <Link
+                to="/professionals/me/edit"
+                className="tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800"
+              >
+                {t('profile.editProfile')}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={onMessage}
+                className="tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800"
+              >
+                {t('profile.message')}
+              </button>
+            )}
             <button
               type="button"
               onClick={toggleSave}
@@ -251,11 +350,32 @@ export default function ProfessionalProfilePage() {
         </div>
       </header>
 
+      {completeness && completeness.missing.length > 0 ? (
+        <div className="mt-2xl">
+          <ProfileCompleteness
+            percent={completeness.percent}
+            missing={completeness.missing}
+            mode="profile"
+          />
+        </div>
+      ) : null}
+
       <dl className="mt-2xl grid grid-cols-2 gap-md sm:grid-cols-3 lg:grid-cols-6">
         {stats.map((s) => (
           <StatCell key={s.label} label={s.label} value={s.value} />
         ))}
       </dl>
+
+      {profile.stats.completedCount === 0 ? (
+        <section className="mt-3xl" aria-labelledby="jobs-heading">
+          <h2 id="jobs-heading" className="text-title text-ink-900">
+            {t('profile.jobs')}
+          </h2>
+          <p className="mt-lg text-body-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+            {t('profile.jobsEmpty')}
+          </p>
+        </section>
+      ) : null}
 
       <section className="mt-3xl" aria-labelledby="bio-heading">
         <h2 id="bio-heading" className="text-title text-ink-900">
@@ -265,7 +385,7 @@ export default function ProfessionalProfilePage() {
           {profile.bioMy ? (
             <div className="rounded-lg border border-line bg-white p-lg">
               <p className="text-caption font-medium text-ink-400">မြန်မာ</p>
-              <p className="font-myanmar mt-sm text-body text-ink-700">
+              <p className="font-myanmar mt-sm text-body leading-[1.8] text-ink-700 [overflow-wrap:anywhere]">
                 {profile.bioMy}
               </p>
             </div>
@@ -273,27 +393,33 @@ export default function ProfessionalProfilePage() {
           {profile.bioEn ? (
             <div className="rounded-lg border border-line bg-white p-lg">
               <p className="text-caption font-medium text-ink-400">English</p>
-              <p className="mt-sm text-body text-ink-700">{profile.bioEn}</p>
+              <p className="mt-sm text-body leading-[1.8] text-ink-700 [overflow-wrap:anywhere]">
+                {profile.bioEn}
+              </p>
             </div>
           ) : null}
         </div>
       </section>
 
-      {profile.workLinks.length > 0 ? (
-        <section className="mt-3xl" aria-labelledby="work-links-heading">
-          <h2 id="work-links-heading" className="text-title text-ink-900">
-            {t('workLinks.title')}
-          </h2>
+      <section className="mt-3xl" aria-labelledby="work-links-heading">
+        <h2 id="work-links-heading" className="text-title text-ink-900">
+          {t('workLinks.title')}
+        </h2>
+        {profile.workLinks.length > 0 ? (
           <WorkLinksDisplay links={profile.workLinks} />
-        </section>
-      ) : null}
+        ) : (
+          <p className="mt-lg text-body-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+            {t('profile.workLinksEmpty')}
+          </p>
+        )}
+      </section>
 
       <section className="mt-3xl" aria-labelledby="portfolio-heading">
         <h2 id="portfolio-heading" className="text-title text-ink-900">
           {t('profile.portfolio')}
         </h2>
         {profile.portfolio.length === 0 ? (
-          <p className="mt-lg text-body-sm text-ink-500">
+          <p className="mt-lg text-body-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
             {t('profile.portfolioEmpty')}
           </p>
         ) : (
@@ -314,7 +440,7 @@ export default function ProfessionalProfilePage() {
                   <div className="aspect-square bg-jade-100" />
                 )}
                 {item.caption ? (
-                  <p className="px-sm py-sm text-caption text-ink-500">
+                  <p className="px-sm py-sm text-caption leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
                     {item.caption}
                   </p>
                 ) : null}
@@ -328,16 +454,22 @@ export default function ProfessionalProfilePage() {
         <h2 id="skills-heading" className="text-title text-ink-900">
           {t('profile.skills')}
         </h2>
-        <ul className="mt-lg flex flex-wrap gap-sm">
-          {profile.skills.map((skill) => (
-            <li
-              key={skill}
-              className="rounded-sm border border-line bg-white px-2.5 py-1 text-caption text-ink-700"
-            >
-              {skill}
-            </li>
-          ))}
-        </ul>
+        {profile.skills.length === 0 ? (
+          <p className="mt-lg text-body-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+            {t('profile.skillsEmpty')}
+          </p>
+        ) : (
+          <ul className="mt-lg flex flex-wrap gap-sm">
+            {profile.skills.map((skill) => (
+              <li
+                key={skill}
+                className="rounded-sm border border-line bg-white px-2.5 py-1 text-caption text-ink-700 [overflow-wrap:anywhere]"
+              >
+                {skill}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </article>
   );

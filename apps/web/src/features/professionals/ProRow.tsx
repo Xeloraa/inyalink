@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { ProfessionalListItem } from '@inyalink/shared';
+import { Skeleton } from '../../components/Skeleton';
 import { useI18n } from '../../lib/i18n';
 import { CheckIcon, HeartIcon, PinIcon } from './icons';
 
@@ -31,7 +32,7 @@ function SaveButton({
         e.stopPropagation();
         onToggle();
       }}
-      className={`relative z-10 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border transition-colors duration-fast ease-out focus-visible:shadow-focus active:scale-95 motion-reduce:active:scale-100 ${
+      className={`relative z-10 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md border transition-colors duration-fast ease-out focus-visible:shadow-focus active:scale-95 motion-reduce:active:scale-100 ${
         saved
           ? 'border-jade-200 bg-jade-50 text-jade-600'
           : 'border-line bg-white text-ink-400 hover:border-jade-400 hover:text-jade-600'
@@ -272,38 +273,36 @@ export function ProRowSkeleton() {
       aria-hidden
       className="rounded-lg border border-line bg-white p-md sm:p-lg md:p-xl"
     >
-      <div className="motion-safe:animate-pulse">
-        <div className="flex gap-md sm:gap-lg">
-          <div className="h-11 w-11 shrink-0 rounded-full bg-line-soft sm:h-16 sm:w-16" />
-          <div className="min-w-0 flex-1">
-            <div className="h-4 w-40 max-w-full rounded-sm bg-line-soft" />
-            <div className="mt-xs h-3.5 w-56 max-w-full rounded-sm bg-line-soft sm:mt-sm sm:h-5 sm:w-72" />
-            <div className="mt-sm hidden h-3 w-24 rounded-sm bg-line-soft sm:block" />
-            <div className="hidden sm:block">
-              <div className="mt-md h-4 w-80 max-w-full rounded-sm bg-line-soft" />
-              <div className="mt-md flex flex-wrap gap-sm">
-                {[0, 1, 2, 3].map((i) => (
-                  <div key={i} className="h-6 w-16 rounded-full bg-line-soft" />
-                ))}
-              </div>
-              <div className="mt-md h-4 w-full max-w-[520px] rounded-sm bg-line-soft" />
-              <div className="mt-xs h-4 w-3/5 max-w-[380px] rounded-sm bg-line-soft" />
+      <div className="flex gap-md sm:gap-lg">
+        <Skeleton className="h-11 w-11 shrink-0 rounded-full sm:h-16 sm:w-16" />
+        <div className="min-w-0 flex-1">
+          <Skeleton className="h-4 w-40 max-w-full" />
+          <Skeleton className="mt-xs h-3.5 w-56 max-w-full sm:mt-sm sm:h-5 sm:w-72" />
+          <Skeleton className="mt-sm hidden h-3 w-24 sm:block" />
+          <div className="hidden sm:block">
+            <Skeleton className="mt-md h-4 w-80 max-w-full" />
+            <div className="mt-md flex flex-wrap gap-sm">
+              {[0, 1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-6 w-16 rounded-full" />
+              ))}
             </div>
-          </div>
-          <div className="h-11 w-11 shrink-0 rounded-md bg-line-soft" />
-          <div className="hidden shrink-0 items-end sm:flex">
-            <div className="h-12 w-28 rounded-md bg-line-soft" />
+            <Skeleton className="mt-md h-4 w-full max-w-[520px]" />
+            <Skeleton className="mt-xs h-4 w-3/5 max-w-[380px]" />
           </div>
         </div>
-        <div className="sm:hidden">
-          <div className="mt-xs h-3.5 w-full rounded-sm bg-line-soft" />
-          <div className="mt-xs flex gap-xs">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="h-6 w-14 rounded-full bg-line-soft" />
-            ))}
-          </div>
-          <div className="mt-xs h-3.5 w-4/5 rounded-sm bg-line-soft" />
+        <Skeleton className="h-11 w-11 shrink-0 rounded-md" />
+        <div className="hidden shrink-0 items-end sm:flex">
+          <Skeleton className="h-12 w-28 rounded-md" />
         </div>
+      </div>
+      <div className="sm:hidden">
+        <Skeleton className="mt-xs h-3.5 w-full" />
+        <div className="mt-xs flex gap-xs">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-6 w-14 rounded-full" />
+          ))}
+        </div>
+        <Skeleton className="mt-xs h-3.5 w-4/5" />
       </div>
     </div>
   );

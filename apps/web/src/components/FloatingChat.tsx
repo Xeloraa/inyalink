@@ -29,7 +29,7 @@ import {
 import { useDemoFlow } from '../lib/demoFlow';
 import { translateIn, useI18n } from '../lib/i18n';
 import { BriefSummaryCard } from '../features/chat/BriefSummaryCard';
-import { MatchAvatarRow } from '../features/chat/MatchAvatarRow';
+import { MatchAvatarRow, MatchAvatarRowSkeleton } from '../features/chat/MatchAvatarRow';
 import { RoadmapCards } from '../features/chat/RoadmapCards';
 import { ChatBubble, ThinkingBubble } from './ChatBubble';
 import { ChatHistoryPanel } from './ChatHistoryPanel';
@@ -234,6 +234,15 @@ export function FloatingChat() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open, setOpen, historyOpen]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -648,13 +657,13 @@ export function FloatingChat() {
         role="dialog"
         aria-label={t('chat.title')}
         aria-hidden={!open}
-        className={`fixed bottom-5 right-5 z-50 flex h-[min(680px,calc(100dvh-5.5rem))] max-h-[calc(100dvh-5.5rem)] w-[min(400px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-xl border border-line bg-white shadow-lg transition-[opacity,transform] duration-slow ease-out motion-reduce:transition-none max-sm:right-3 max-sm:bottom-3 ${
+        className={`fixed z-50 flex flex-col overflow-hidden border border-line bg-white shadow-lg transition-[opacity,transform] duration-slow ease-out motion-reduce:transition-none max-sm:inset-0 max-sm:h-dvh max-sm:max-h-dvh max-sm:w-full max-sm:rounded-none max-sm:border-0 sm:bottom-5 sm:right-5 sm:h-[min(680px,calc(100dvh-5.5rem))] sm:max-h-[calc(100dvh-5.5rem)] sm:w-[min(400px,calc(100vw-1.5rem))] sm:rounded-xl ${
           open
             ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
             : 'pointer-events-none translate-y-3 scale-[0.98] opacity-0'
         }`}
       >
-        <header className="flex shrink-0 items-center gap-sm border-b border-line-soft px-xl py-lg">
+        <header className="flex shrink-0 items-center gap-sm border-b border-line-soft px-xl py-lg pt-[max(0.75rem,env(safe-area-inset-top))]">
           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-jade-50 text-jade-600">
             <LogoMark size={20} />
           </span>
@@ -727,7 +736,7 @@ export function FloatingChat() {
               ) : null}
               {matchBusy && !matches ? (
                 <>
-                  <ThinkingBubble />
+                  <MatchAvatarRowSkeleton />
                   <RotatingProgress active />
                 </>
               ) : null}
@@ -751,7 +760,7 @@ export function FloatingChat() {
 
           <form
             onSubmit={(e) => void onSend(e)}
-            className="shrink-0 border-t border-line-soft bg-white p-lg"
+            className="shrink-0 border-t border-line-soft bg-white p-lg pb-[max(0.75rem,env(safe-area-inset-bottom))]"
           >
               <label className="sr-only" htmlFor="floating-chat-input">
                 {t('converse.placeholder')}

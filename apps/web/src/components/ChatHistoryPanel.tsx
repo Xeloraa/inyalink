@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { ConversationSummary } from '@inyalink/shared';
 import { fetchConversationSummaries } from '../lib/conversationStore';
 import { useI18n } from '../lib/i18n';
+import { Skeleton } from './Skeleton';
 
 type ChatHistoryPanelProps = {
   open: boolean;
@@ -61,6 +62,15 @@ export function ChatHistoryPanel({
     };
   }, [open, signedIn, refreshKey, t]);
 
+  function retry() {
+    setLoading(true);
+    setError(null);
+    void fetchConversationSummaries(signedIn)
+      .then(setItems)
+      .catch(() => setError(t('chat.historyError')))
+      .finally(() => setLoading(false));
+  }
+
   if (!open) return null;
 
   return (
@@ -94,15 +104,37 @@ export function ChatHistoryPanel({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {loading ? (
-          <p className="px-xl py-lg text-body-sm text-ink-400">
-            {t('common.loading')}
-          </p>
+          <div role="status" aria-busy="true">
+            <span className="sr-only">{t('common.loading')}</span>
+            <ul className="flex flex-col" aria-hidden>
+              {Array.from({ length: 4 }, (_, i) => (
+                <li
+                  key={i}
+                  className="border-b border-line-soft px-xl py-lg"
+                >
+                  <Skeleton className="h-4 w-3/4 max-w-[14rem]" />
+                  <Skeleton className="mt-xs h-3 w-20" />
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : null}
         {error ? (
-          <p className="px-xl py-lg text-body-sm text-danger">{error}</p>
+          <div className="px-xl py-lg" role="alert">
+            <p className="text-body-sm leading-[1.8] text-ink-700 [overflow-wrap:anywhere]">
+              {error}
+            </p>
+            <button
+              type="button"
+              onClick={retry}
+              className="tap-target mt-sm inline-flex items-center text-body-sm font-medium text-jade-600 underline focus-visible:shadow-focus"
+            >
+              {t('common.retry')}
+            </button>
+          </div>
         ) : null}
         {!loading && !error && items.length === 0 ? (
-          <p className="px-xl py-lg text-body-sm text-ink-400">
+          <p className="px-xl py-lg text-body-sm leading-[1.8] text-ink-400 [overflow-wrap:anywhere]">
             {t('chat.historyEmpty')}
           </p>
         ) : null}

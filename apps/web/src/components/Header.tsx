@@ -22,7 +22,7 @@ const MENU_ITEM =
   'tap-target flex w-full items-center whitespace-nowrap rounded-sm px-lg text-[13px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-100';
 
 function langButtonClass(active: boolean): string {
-  return `inline-flex min-h-[40px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus sm:min-h-[48px] sm:min-w-[44px] sm:px-sm sm:text-[13px] ${
+  return `inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus sm:min-h-[48px] sm:px-sm sm:text-[13px] ${
     active
       ? 'bg-jade-600 text-white hover:bg-jade-400 active:bg-jade-800'
       : 'text-ink-500 hover:bg-jade-50 hover:text-ink-900 active:bg-jade-100'
@@ -268,7 +268,7 @@ export function Header() {
             <div
               aria-hidden
               data-avatar-slot="loading"
-              className="h-9 w-9 shrink-0 rounded-full bg-jade-100 ring-1 ring-jade-600/30 sm:h-10 sm:w-10"
+              className="h-11 w-11 shrink-0 rounded-full bg-jade-100 ring-1 ring-jade-600/30 sm:h-12 sm:w-12"
             />
           ) : mountAccountMenu ? (
             <AccountMenu pro={pro} />

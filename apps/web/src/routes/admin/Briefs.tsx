@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import type { BriefStatus } from '@inyalink/shared';
 import { assignAdminBrief, fetchAdminBriefs } from '../../features/admin/api';
+import { AdminBriefsSkeleton } from '../../features/admin/AdminSkeletons';
 import { useI18n } from '../../lib/i18n';
 
 const STATUSES: Array<BriefStatus | ''> = [
@@ -41,7 +42,7 @@ export default function AdminBriefs() {
   });
 
   if (q.isLoading) {
-    return <p className="text-sm text-ink-500">{t('common.loading')}</p>;
+    return <AdminBriefsSkeleton />;
   }
   if (q.isError || !q.data) {
     return (
@@ -74,6 +75,11 @@ export default function AdminBriefs() {
         </label>
       </div>
 
+      {q.data.items.length === 0 ? (
+        <p className="rounded border border-line bg-white px-3 py-4 text-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+          {t('admin.briefs.empty')}
+        </p>
+      ) : (
       <div className="overflow-x-auto rounded border border-line bg-white">
         <table className="w-full min-w-[900px] border-collapse text-left text-xs">
           <thead className="bg-line-soft text-[11px] uppercase text-ink-500">
@@ -119,7 +125,7 @@ export default function AdminBriefs() {
                 <td className="px-2 py-1.5">
                   <button
                     type="button"
-                    className="rounded border border-line px-1.5 py-0.5 hover:bg-line-soft"
+                    className="tap-target inline-flex items-center rounded-md border border-line px-3 text-sm hover:bg-line-soft"
                     onClick={() => {
                       setAssignFor(b.id);
                       setProId('');
@@ -134,6 +140,7 @@ export default function AdminBriefs() {
           </tbody>
         </table>
       </div>
+      )}
 
       {assignFor ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -142,7 +149,7 @@ export default function AdminBriefs() {
             <label className="mt-2 block text-xs text-ink-600">
               {t('admin.briefs.proId')}
               <input
-                className="mt-1 w-full rounded border border-line px-2 py-1 font-mono text-xs"
+                className="tap-target mt-1 w-full rounded border border-line px-3 font-mono text-sm"
                 value={proId}
                 onChange={(e) => setProId(e.target.value)}
                 placeholder="uuid"
@@ -150,10 +157,10 @@ export default function AdminBriefs() {
               />
             </label>
             {err ? <p className="mt-2 text-xs text-danger">{err}</p> : null}
-            <div className="mt-3 flex justify-end gap-2">
+            <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                className="text-xs text-ink-600"
+                className="tap-target inline-flex items-center justify-center rounded-md px-3 text-sm text-ink-600"
                 onClick={() => setAssignFor(null)}
               >
                 {t('common.back')}
@@ -161,7 +168,7 @@ export default function AdminBriefs() {
               <button
                 type="button"
                 disabled={assign.isPending || proId.trim().length < 36}
-                className="rounded bg-jade-600 px-2 py-1 text-xs text-white disabled:opacity-50"
+                className="tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-3 text-sm text-white disabled:opacity-50"
                 onClick={() => assign.mutate()}
               >
                 {t('common.save')}

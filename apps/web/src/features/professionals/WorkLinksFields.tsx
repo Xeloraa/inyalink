@@ -38,7 +38,7 @@ export function WorkLinksDisplay({ links }: WorkLinksDisplayProps) {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="tap-target inline-flex items-center gap-xs rounded-sm border border-line bg-white px-2.5 py-1 text-caption text-ink-700 transition-colors duration-fast ease-out hover:border-jade-400 hover:text-jade-800 focus-visible:shadow-focus"
+            className="tap-target inline-flex items-center gap-xs rounded-sm border border-line bg-white px-md text-caption text-ink-700 transition-colors duration-fast ease-out hover:border-jade-400 hover:text-jade-800 focus-visible:shadow-focus"
           >
             <span className="text-ink-500">
               <WorkLinkIcon platform={link.platform} />
@@ -106,13 +106,13 @@ export function WorkLinksEditor({
         </div>
         <div>
           <label
-            htmlFor="workLinkUrl"
+            htmlFor="workLinks"
             className="mb-1.5 block text-caption text-ink-500"
           >
             {t('workLinks.url')}
           </label>
           <input
-            id="workLinkUrl"
+            id="workLinks"
             type="url"
             value={url}
             onChange={(e) => onUrlChange(e.target.value)}

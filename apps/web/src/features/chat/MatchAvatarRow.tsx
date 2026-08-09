@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { MatchCandidate } from '@inyalink/shared';
+import { Skeleton } from '../../components/Skeleton';
 import { useI18n } from '../../lib/i18n';
 
 function initials(name: string): string {
@@ -51,6 +52,24 @@ export function MatchAvatarRow({ matches }: MatchAvatarRowProps) {
                 {c.displayName}
               </span>
             </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Avatar circles while match ranking is in flight — pair with RotatingProgress. */
+export function MatchAvatarRowSkeleton() {
+  return (
+    <div className="w-full max-w-[86%] space-y-sm" aria-hidden>
+      <Skeleton className="h-3 w-24" />
+      <ul className="flex justify-between gap-sm">
+        {[0, 1, 2].map((i) => (
+          <li key={i} className="flex min-w-0 flex-1 flex-col items-center gap-xs px-xs py-sm">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <Skeleton className="h-3 w-14" />
+            <Skeleton className="h-3 w-10" />
           </li>
         ))}
       </ul>

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { fetchAdminDashboard } from '../../features/admin/api';
+import { AdminDashboardSkeleton } from '../../features/admin/AdminSkeletons';
 import { useI18n } from '../../lib/i18n';
 
 function pct(rate: number): string {
@@ -16,7 +17,7 @@ export default function AdminDashboard() {
   });
 
   if (q.isLoading) {
-    return <p className="text-sm text-ink-500">{t('common.loading')}</p>;
+    return <AdminDashboardSkeleton />;
   }
   if (q.isError || !q.data) {
     return (
@@ -66,9 +67,9 @@ export default function AdminDashboard() {
           <Link
             key={c.label}
             to={c.to}
-            className="rounded border border-line bg-white px-3 py-2 hover:border-jade-400"
+            className="tap-target flex min-h-[72px] flex-col justify-center rounded border border-line bg-white px-3 py-3 hover:border-jade-400"
           >
-            <div className="text-[11px] uppercase tracking-wide text-ink-500">
+            <div className="text-[11px] uppercase tracking-wide text-ink-500 [overflow-wrap:anywhere]">
               {c.label}
             </div>
             <div className="mt-1 text-xl font-semibold tabular-nums text-ink-900">

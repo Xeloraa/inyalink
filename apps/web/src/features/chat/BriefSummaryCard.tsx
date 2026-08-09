@@ -80,7 +80,7 @@ export function BriefSummaryCard({
   }
 
   const fieldClass =
-    'mt-xs w-full rounded-sm border border-line bg-paper px-sm py-xs text-body-sm leading-burmese outline-none focus:border-jade-400 focus:shadow-focus';
+    'tap-target mt-xs w-full rounded-sm border border-line bg-paper px-sm text-body-sm leading-burmese outline-none focus:border-jade-400 focus:shadow-focus';
 
   return (
     <div className="w-full max-w-[86%] rounded-md border border-line bg-white px-md py-md">

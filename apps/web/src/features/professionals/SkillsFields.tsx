@@ -44,6 +44,7 @@ export function SkillsFields({
       </div>
       <div className="flex gap-sm">
         <input
+          id="skills"
           value={skillDraft}
           onChange={(e) => onSkillDraftChange(e.target.value)}
           placeholder={t('onboarding.skillPlaceholder')}
@@ -64,7 +65,7 @@ export function SkillsFields({
               <button
                 type="button"
                 onClick={() => onToggleSkill(s)}
-                className="rounded-sm bg-jade-100 px-2.5 py-1 text-caption text-jade-800"
+                className="tap-target inline-flex items-center rounded-sm bg-jade-100 px-md text-caption text-jade-800"
               >
                 {s} ×
               </button>

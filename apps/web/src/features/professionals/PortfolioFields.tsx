@@ -32,13 +32,13 @@ export function PortfolioFields({
       <p className="text-body-sm text-ink-500">{t('onboarding.portfolioHelp')}</p>
       <div>
         <label
-          htmlFor="portfolioUrl"
+          htmlFor="portfolio"
           className="mb-1.5 block text-caption text-ink-500"
         >
           {t('onboarding.portfolioUrl')}
         </label>
         <input
-          id="portfolioUrl"
+          id="portfolio"
           type="url"
           value={portfolioUrl}
           onChange={(e) => onPortfolioUrlChange(e.target.value)}
@@ -80,7 +80,7 @@ export function PortfolioFields({
               <button
                 type="button"
                 onClick={() => onRemove(i)}
-                className="shrink-0 text-ink-400 transition-colors hover:text-danger focus-visible:shadow-focus"
+                className="tap-target shrink-0 rounded-md px-md text-ink-400 transition-colors hover:text-danger focus-visible:shadow-focus"
               >
                 {t('onboarding.remove')}
               </button>

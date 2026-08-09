@@ -315,7 +315,7 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
           </div>
         ) : null}
 
-        <div className="flex flex-col gap-sm pt-md sm:flex-row sm:justify-between">
+        <div className="sticky bottom-0 -mx-5 mt-lg flex flex-col gap-sm border-t border-line-soft bg-paper/95 px-5 py-md backdrop-blur-sm sm:static sm:mx-0 sm:mt-0 sm:flex-row sm:justify-between sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pt-md sm:backdrop-blur-none">
           {step > 0 ? (
             <button
               type="button"
@@ -325,14 +325,14 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
               {t('common.back')}
             </button>
           ) : (
-            <span />
+            <span className="hidden sm:block" />
           )}
           <button
             type="submit"
             disabled={
               loading || (step === 0 ? !canSubmit : step === 3 ? !canSubmit : false)
             }
-            className="tap-target rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300 sm:ml-auto"
+            className="tap-target w-full rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300 sm:ml-auto sm:w-auto"
           >
             {loading
               ? t('common.loading')

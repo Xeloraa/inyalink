@@ -198,6 +198,14 @@ export function AccountMenu({
                 >
                   {t('header.myBriefs')}
                 </Link>
+                <Link
+                  to="/app/engagements"
+                  role="menuitem"
+                  className={MENU_ITEM}
+                  onClick={() => setOpen(false)}
+                >
+                  {t('messages.threadsTitle')}
+                </Link>
               </>
             ) : (
               <>
@@ -208,6 +216,14 @@ export function AccountMenu({
                   onClick={() => setOpen(false)}
                 >
                   {t('header.myBriefs')}
+                </Link>
+                <Link
+                  to="/app/engagements"
+                  role="menuitem"
+                  className={MENU_ITEM}
+                  onClick={() => setOpen(false)}
+                >
+                  {t('messages.threadsTitle')}
                 </Link>
                 <Link
                   to="/professionals/join"
@@ -246,7 +262,7 @@ export function AccountMenu({
         aria-controls="account-menu"
         aria-haspopup="menu"
         aria-label={t('header.accountMenu')}
-        className="tap-target inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-jade-100 text-jade-600 transition-colors duration-fast ease-out hover:bg-jade-50 focus-visible:shadow-focus sm:h-10 sm:w-10"
+        className="tap-target inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-jade-100 text-jade-600 transition-colors duration-fast ease-out hover:bg-jade-50 focus-visible:shadow-focus sm:h-12 sm:w-12"
       >
         {avatarUrl ? (
           <img src={avatarUrl} alt="" className="h-full w-full object-cover" />

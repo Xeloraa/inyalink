@@ -10,8 +10,9 @@ import {
 import { ApiError } from '../lib/apiClient';
 import { useAuth } from '../lib/auth';
 import { useI18n } from '../lib/i18n';
-import { ProgressNotice, RateLimitNotice } from '../components/Notices';
+import { LoadErrorNotice, ProgressNotice } from '../components/Notices';
 import { EngagementInbox } from '../features/engagements/EngagementInbox';
+import { ActiveThreads } from '../features/messages/ActiveThreads';
 
 export default function ProBriefs() {
   const { t, locale } = useI18n();
@@ -115,18 +116,24 @@ export default function ProBriefs() {
 
       {loading ? <ProgressNotice messageKey="progress.matching" /> : null}
       {error ? (
-        <RateLimitNotice notice={error} onRetry={() => void reload()} />
+        <LoadErrorNotice message={error} onRetry={() => void reload()} />
       ) : null}
 
-      <EngagementInbox />
+      <EngagementInbox showEmpty={!loading && items.length === 0 && !error} />
 
-      {!loading && items.length === 0 ? (
+      <ActiveThreads />
+
+      {!loading && !error && items.length === 0 ? (
         <div className="rounded-lg border border-line bg-paper p-5 leading-[1.8]">
-          <p className="text-ink-900">{t('proFeed.emptyTitle')}</p>
-          <p className="mt-2 text-sm text-ink-500">{t('proFeed.emptyBody')}</p>
+          <p className="text-ink-900 [overflow-wrap:anywhere]">
+            {t('proFeed.emptyTitle')}
+          </p>
+          <p className="mt-2 text-sm text-ink-500 [overflow-wrap:anywhere]">
+            {t('proFeed.emptyBody')}
+          </p>
           <Link
             to="/browse"
-            className="mt-4 inline-flex text-sm text-jade-600 hover:underline"
+            className="tap-target mt-4 inline-flex items-center text-sm text-jade-600 hover:underline"
           >
             {t('header.browse')}
           </Link>
@@ -161,7 +168,7 @@ export default function ProBriefs() {
                   {item.description}
                 </p>
               ) : null}
-              <p className="mt-3 text-caption text-ink-400">
+              <p className="mt-3 text-caption leading-[1.8] text-ink-400 [overflow-wrap:anywhere]">
                 {[item.categorySlug, budget, item.deadline]
                   .filter(Boolean)
                   .join(' · ')}
@@ -172,7 +179,7 @@ export default function ProBriefs() {
                 onClick={() =>
                   void onInterest(item.briefId, item.alreadyInterested)
                 }
-                className={`tap-target mt-4 inline-flex rounded-md px-4 py-2.5 text-sm font-medium disabled:opacity-40 ${
+                className={`tap-target mt-4 inline-flex w-full items-center justify-center rounded-md px-4 text-sm font-medium sm:w-auto disabled:opacity-40 ${
                   item.alreadyInterested
                     ? 'border border-line bg-white text-ink-700'
                     : 'bg-jade-600 text-white'

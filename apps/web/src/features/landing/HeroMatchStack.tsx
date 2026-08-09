@@ -18,8 +18,8 @@ const POS_CLASS = [
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 flex-1 rounded-sm bg-jade-50 px-md py-sm">
-      <p className="whitespace-nowrap text-caption text-ink-500">{label}</p>
-      <p className="mt-xs whitespace-nowrap text-stat text-jade-600">{value}</p>
+      <p className="text-caption text-ink-500 [overflow-wrap:anywhere]">{label}</p>
+      <p className="mt-xs text-stat text-jade-600 [overflow-wrap:anywhere]">{value}</p>
     </div>
   );
 }

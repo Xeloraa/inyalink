@@ -5,6 +5,7 @@ import {
   fetchAdminPendingProfessionals,
   reviewAdminProfessional,
 } from '../../features/admin/api';
+import { AdminProfessionalsSkeleton } from '../../features/admin/AdminSkeletons';
 import { useI18n } from '../../lib/i18n';
 
 function LinkList({
@@ -149,7 +150,7 @@ export default function AdminProfessionals() {
   }, [items.length, mutation, reasonOpen, selected]);
 
   if (q.isLoading) {
-    return <p className="text-sm text-ink-500">{t('common.loading')}</p>;
+    return <AdminProfessionalsSkeleton />;
   }
   if (q.isError) {
     return (
@@ -173,7 +174,9 @@ export default function AdminProfessionals() {
       </div>
 
       {items.length === 0 ? (
-        <p className="text-sm text-ink-500">{t('admin.pro.empty')}</p>
+        <p className="rounded border border-line bg-white px-3 py-4 text-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+          {t('admin.pro.empty')}
+        </p>
       ) : (
         <div className="grid gap-2 md:grid-cols-[280px_1fr]">
           <ul className="max-h-[70vh] overflow-auto rounded border border-line bg-white">
@@ -183,12 +186,14 @@ export default function AdminProfessionals() {
                   type="button"
                   onClick={() => setIndex(i)}
                   className={[
-                    'w-full border-b border-line-soft px-2 py-2 text-left text-sm',
+                    'tap-target w-full border-b border-line-soft px-3 text-left text-sm',
                     i === index ? 'bg-jade-50' : 'hover:bg-line-soft',
                   ].join(' ')}
                 >
-                  <div className="font-medium">{item.displayName}</div>
-                  <div className="text-[11px] text-ink-500">
+                  <div className="font-medium [overflow-wrap:anywhere]">
+                    {item.displayName}
+                  </div>
+                  <div className="text-[11px] text-ink-500 [overflow-wrap:anywhere]">
                     {item.categoryNameEn}
                   </div>
                 </button>
@@ -200,11 +205,11 @@ export default function AdminProfessionals() {
             <div className="rounded border border-line bg-white p-3">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-sm font-semibold">{selected.displayName}</h2>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex w-full flex-wrap gap-2 sm:w-auto">
                   <button
                     type="button"
                     disabled={mutation.isPending}
-                    className="rounded bg-jade-600 px-2 py-1 text-xs text-white disabled:opacity-50"
+                    className="tap-target inline-flex flex-1 items-center justify-center rounded-md bg-jade-600 px-3 text-sm text-white disabled:opacity-50 sm:flex-none"
                     onClick={() =>
                       mutation.mutate({
                         id: selected.userId,
@@ -217,7 +222,7 @@ export default function AdminProfessionals() {
                   <button
                     type="button"
                     disabled={mutation.isPending}
-                    className="rounded bg-danger px-2 py-1 text-xs text-white disabled:opacity-50"
+                    className="tap-target inline-flex flex-1 items-center justify-center rounded-md bg-danger px-3 text-sm text-white disabled:opacity-50 sm:flex-none"
                     onClick={() => setReasonOpen('reject')}
                   >
                     {t('admin.pro.reject')}
@@ -225,7 +230,7 @@ export default function AdminProfessionals() {
                   <button
                     type="button"
                     disabled={mutation.isPending}
-                    className="rounded border border-line px-2 py-1 text-xs disabled:opacity-50"
+                    className="tap-target inline-flex w-full items-center justify-center rounded-md border border-line px-3 text-sm disabled:opacity-50 sm:w-auto"
                     onClick={() => setReasonOpen('request_info')}
                   >
                     {t('admin.pro.requestInfo')}
@@ -257,10 +262,10 @@ export default function AdminProfessionals() {
               placeholder={t('admin.pro.reasonPlaceholder')}
               autoFocus
             />
-            <div className="mt-2 flex justify-end gap-2">
+            <div className="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                className="rounded px-2 py-1 text-xs text-ink-600"
+                className="tap-target inline-flex items-center justify-center rounded-md px-3 text-sm text-ink-600"
                 onClick={() => {
                   setReasonOpen(null);
                   setReason('');
@@ -271,7 +276,7 @@ export default function AdminProfessionals() {
               <button
                 type="button"
                 disabled={mutation.isPending || reason.trim().length < 2}
-                className="rounded bg-ink-900 px-2 py-1 text-xs text-white disabled:opacity-50"
+                className="tap-target inline-flex items-center justify-center rounded-md bg-ink-900 px-3 text-sm text-white disabled:opacity-50"
                 onClick={() =>
                   mutation.mutate({
                     id: selected.userId,

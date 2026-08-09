@@ -37,17 +37,17 @@ export default function AdminLayout() {
   return (
     <RequireAuth>
       <AdminGate>
-        <div className="min-h-screen bg-[#f4f5f4] text-ink-900">
+        <div className="min-h-screen overflow-x-clip bg-[#f4f5f4] text-ink-900">
           <header className="border-b border-line bg-white">
-            <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-3 px-3 py-2">
+            <div className="mx-auto flex max-w-[1400px] flex-col gap-sm px-4 py-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:px-3 sm:py-2">
               <a
                 href="/"
-                className="text-xs font-semibold tracking-wide text-jade-800"
+                className="tap-target inline-flex items-center text-xs font-semibold tracking-wide text-jade-800"
               >
                 {t('admin.brand')}
               </a>
               <nav
-                className="flex flex-wrap gap-1 text-xs"
+                className="no-scrollbar -mx-1 flex gap-1 overflow-x-auto px-1 text-xs"
                 aria-label={t('admin.navLabel')}
               >
                 {NAV.map((item) => (
@@ -57,7 +57,7 @@ export default function AdminLayout() {
                     end={item.end}
                     className={({ isActive }) =>
                       [
-                        'rounded px-2 py-1',
+                        'tap-target inline-flex shrink-0 items-center whitespace-nowrap rounded-md px-3',
                         isActive
                           ? 'bg-jade-100 font-medium text-jade-900'
                           : 'text-ink-600 hover:bg-line-soft',
@@ -70,7 +70,7 @@ export default function AdminLayout() {
               </nav>
             </div>
           </header>
-          <main className="mx-auto max-w-[1400px] px-3 py-3">
+          <main className="mx-auto max-w-[1400px] px-4 py-4 sm:px-3 sm:py-3">
             <Outlet />
           </main>
         </div>

@@ -183,7 +183,11 @@
 
   .text-caption {
     font-size: 12px;
-    line-height: 1.75;
+    line-height: 1.8;
+  }
+
+  :lang(my) .text-caption {
+    line-height: 1.8;
   }
 
   .text-stat {
@@ -195,23 +199,23 @@
   }
 
   :lang(my) .text-display-xl {
-    line-height: 1.45;
+    line-height: 1.8;
   }
 
   :lang(my) .text-display-lg {
-    line-height: 1.5;
+    line-height: 1.8;
   }
 
   :lang(my) .text-display-md {
-    line-height: 1.55;
+    line-height: 1.8;
   }
 
   :lang(my) .text-display-sm {
-    line-height: 1.6;
+    line-height: 1.8;
   }
 
   :lang(my) .text-title {
-    line-height: 1.7;
+    line-height: 1.8;
   }
 
   .tap-target {
