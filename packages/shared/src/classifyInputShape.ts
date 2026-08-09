@@ -239,6 +239,16 @@ export function classifyClarifyReply(raw: string): 'goal' | 'service' {
   return 'goal';
 }
 
+/** Map Myanmar + fullwidth digits to ASCII so bare "၄" / "４" match step 4. */
+function foldDigits(text: string): string {
+  return text.replace(/[၀-၉０-９]/g, (ch) => {
+    const code = ch.charCodeAt(0);
+    if (code >= 0x1040 && code <= 0x1049) return String(code - 0x1040);
+    if (code >= 0xff10 && code <= 0xff19) return String(code - 0xff10);
+    return ch;
+  });
+}
+
 /**
  * Match a follow-up message to a roadmap step (by number, ordinal, or title).
  * Used after a plan renders so "step 2" / the step title starts a hire brief.
@@ -247,11 +257,15 @@ export function matchRoadmapStep<T extends { order: number; title: string; categ
   raw: string,
   steps: T[],
 ): T | null {
-  const text = fold(raw);
+  const text = foldDigits(fold(raw));
   if (!text || steps.length === 0) return null;
 
   const byOrder = (order: number): T | null =>
     steps.find((s) => s.order === order) ?? null;
+
+  // Bare step number: "4", "4.", "4)" — most common reply after a roadmap.
+  const bare = text.match(/^([1-6])(?:[.．。)]|၊)?$/);
+  if (bare?.[1]) return byOrder(Number(bare[1]));
 
   const digit = text.match(
     /(?:^|[^\d])(?:step|number|#|အဆင့်)?\s*([1-6])(?:[^\d]|$)/i,

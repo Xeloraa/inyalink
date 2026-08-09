@@ -118,7 +118,18 @@ describe('matchRoadmapStep', () => {
   it('matches by step number', () => {
     expect(matchRoadmapStep('step 2', steps)?.order).toBe(2);
     expect(matchRoadmapStep('1', steps)?.order).toBe(1);
+    expect(matchRoadmapStep('4', steps)).toBeNull();
     expect(matchRoadmapStep('အဆင့် 3', steps)?.order).toBe(3);
+  });
+
+  it('matches bare numbers including Myanmar digits', () => {
+    const withFour = [
+      ...steps,
+      { order: 4, title: 'Social posts', category_slug: 'social-media-marketing' },
+    ];
+    expect(matchRoadmapStep('4', withFour)?.order).toBe(4);
+    expect(matchRoadmapStep('4.', withFour)?.order).toBe(4);
+    expect(matchRoadmapStep('၄', withFour)?.order).toBe(4);
   });
 
   it('matches by ordinal or title', () => {

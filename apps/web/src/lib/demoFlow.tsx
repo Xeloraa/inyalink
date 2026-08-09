@@ -66,8 +66,11 @@ type DemoFlowValue = DemoFlowState & {
   resolveClarifyToPlan: () => void;
   /** Mid-chat handoff to roadmap (dont-know / API redirect). */
   handoffToRoadmap: () => void;
-  /** After a roadmap: hire for one step, keep transcript + plan cards. */
-  beginStepHire: (step: RoadmapStep, userText: string) => void;
+  /**
+   * After a roadmap: start a hire brief for one step's category.
+   * Keeps plan cards visible; opens a clean brief thread (no bare "4" bubble).
+   */
+  beginStepHire: (step: RoadmapStep, userText?: string) => void;
   /** Follow-up that changes the goal — new plan, same transcript. */
   continueAsPlan: (goal: string, userText: string) => void;
   /** Follow-up that starts a hire brief — same transcript. */
@@ -266,12 +269,14 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  const beginStepHire = useCallback((step: RoadmapStep, userText: string) => {
+  const beginStepHire = useCallback((step: RoadmapStep, _userText?: string) => {
+    // Use the step title as the opening — never echo a bare step number ("4")
+    // which reads as a stray bubble and confuses the converse classifier.
     setState((s) => ({
       ...s,
       path: 'quick',
       goal: step.title,
-      messages: [...s.messages, { role: 'user', content: userText }],
+      messages: [{ role: 'user', content: step.title }],
       briefDraft: {
         category: step.category_slug,
         title: step.title,

@@ -40,6 +40,28 @@ import { RateLimitNotice } from './Notices';
 
 export { ChatUiProvider, useChatUi } from './chatUi';
 
+/** Client-side backoff before surfacing a rate-limit notice (server also retries). */
+const CLIENT_RATE_LIMIT_ATTEMPTS = 3;
+const CLIENT_RATE_LIMIT_BASE_MS = 1_500;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withClientRateLimitRetries<T extends { retryable?: boolean }>(
+  run: () => Promise<T>,
+): Promise<T> {
+  let last: T | undefined;
+  for (let attempt = 0; attempt < CLIENT_RATE_LIMIT_ATTEMPTS; attempt += 1) {
+    last = await run();
+    if (!last.retryable) return last;
+    if (attempt < CLIENT_RATE_LIMIT_ATTEMPTS - 1) {
+      await sleep(CLIENT_RATE_LIMIT_BASE_MS * 2 ** attempt);
+    }
+  }
+  return last as T;
+}
+
 function XIcon() {
   return (
     <svg
@@ -277,9 +299,12 @@ export function FloatingChat() {
     setBusy(true);
     setNotice(null);
     try {
-      const result = await generateRoadmap(seedGoal, locale);
+      const result = await withClientRateLimitRetries(() =>
+        generateRoadmap(seedGoal, locale),
+      );
       if (result.retryable) {
         roadmapBootRef.current = null;
+        // Server + client already retried — wait notice only, no manual retry.
         setNotice(result.notice ?? t('rateLimit.body'));
         return;
       }
@@ -309,11 +334,13 @@ export function FloatingChat() {
         goal,
     );
     try {
-      const result = await converseBrief({
-        messages: nextMessages,
-        briefDraft: briefDraftRef.current,
-        locale: replyLocale,
-      });
+      const result = await withClientRateLimitRetries(() =>
+        converseBrief({
+          messages: nextMessages,
+          briefDraft: briefDraftRef.current,
+          locale: replyLocale,
+        }),
+      );
       if (result.redirectTo === 'roadmap') {
         console.log('[classify] API redirect → roadmap');
         goRoadmap();
@@ -321,6 +348,7 @@ export function FloatingChat() {
       }
       setBriefDraft(result.briefDraft);
       if (result.retryable) {
+        // Server + client already retried — wait notice only, no manual retry.
         setNotice(result.notice ?? t('rateLimit.body'));
         return;
       }
@@ -466,7 +494,7 @@ export function FloatingChat() {
       return;
     }
 
-    // After roadmap: pick a step → brief; new goal → new plan; hire → quick.
+    // After roadmap (most recent AI output): bare numbers / titles → hire brief.
     if (planning && roadmapSteps.length > 0) {
       setReply('');
       const step = matchRoadmapStep(text, roadmapSteps);
@@ -475,7 +503,7 @@ export function FloatingChat() {
         step: step?.order ?? null,
       });
       if (step) {
-        beginStepHire(step, text);
+        beginStepHire(step);
         return;
       }
       const shape = classifyInputShape(text);
@@ -499,15 +527,7 @@ export function FloatingChat() {
         ]);
         return;
       }
-      const prompt = translateIn(
-        detectResponseLocale(text),
-        'roadmap.pickStep',
-      );
-      setMessages([
-        ...messages,
-        { role: 'user', content: text },
-        { role: 'assistant', content: prompt },
-      ]);
+      // Don't echo the reply as a stray bubble — prompt already sits under the cards.
       return;
     }
 
@@ -519,7 +539,7 @@ export function FloatingChat() {
           ? matchRoadmapStep(text, roadmapSteps)
           : null;
       if (step) {
-        beginStepHire(step, text);
+        beginStepHire(step);
         return;
       }
       const shape = classifyInputShape(text);
@@ -724,17 +744,8 @@ export function FloatingChat() {
 
           {notice ? (
             <div className="shrink-0 px-xl pb-lg">
-              <RateLimitNotice
-                notice={notice}
-                onRetry={() => {
-                  if (planning && goal) {
-                    roadmapBootRef.current = null;
-                    void loadRoadmap(goal);
-                    return;
-                  }
-                  void runTurn(messages);
-                }}
-              />
+              {/* No Try again — transient limits already auto-retried. */}
+              <RateLimitNotice notice={notice} />
             </div>
           ) : null}
 
