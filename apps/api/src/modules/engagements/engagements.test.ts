@@ -21,6 +21,12 @@ vi.mock('../matching/matching.service.js', () => ({
   backfillAfterDecline: vi.fn(async () => undefined),
 }));
 
+vi.mock('../notifications/notifications.service.js', () => ({
+  notifyEngagementProposed: vi.fn(async () => undefined),
+  notifyEngagementAccepted: vi.fn(async () => undefined),
+  notifyEngagementDeclined: vi.fn(async () => undefined),
+}));
+
 vi.mock('@inyalink/burmese', () => ({
   normalizeToUnicode: (text: string) => text,
 }));

@@ -12,6 +12,7 @@ import {
 } from '@inyalink/shared';
 import { config } from '../../lib/config.js';
 import { AppError } from '../../middleware/errors.js';
+import * as notifications from '../notifications/notifications.service.js';
 import * as repo from './matching.repo.js';
 import type { MatchingProRow } from './matching.repo.js';
 import {
@@ -154,6 +155,10 @@ export async function resolveBriefMatching(briefId: string): Promise<void> {
     })),
   );
   await repo.markBriefRanked(briefId, fallbackUsed);
+  await notifications.notifyTop3Match({
+    briefId,
+    professionalIds: top.map((item) => item.professionalId),
+  });
 }
 
 /**
@@ -169,9 +174,10 @@ export async function backfillAfterDecline(
   if (!brief?.categoryId || !brief.rankedAt) return;
 
   const surfaced = await repo.listSurfacedCandidates(briefId);
-  const remainingIds = surfaced
-    .map((s) => s.professionalId)
-    .filter((id) => id !== declinedProfessionalId);
+  const previousIds = surfaced.map((s) => s.professionalId);
+  const remainingIds = previousIds.filter(
+    (id) => id !== declinedProfessionalId,
+  );
 
   const interestedIds = await repo.listInterestedProIds(briefId);
   const terminal = new Set(await repo.listTerminalEngagementProIds(briefId));
@@ -221,6 +227,11 @@ export async function backfillAfterDecline(
       fromInterest: item.fromInterest,
     })),
   );
+  await notifications.notifyTop3Match({
+    briefId,
+    professionalIds: top.map((item) => item.professionalId),
+    previousProfessionalIds: previousIds,
+  });
 }
 
 async function maybeEarlyClose(briefId: string): Promise<void> {

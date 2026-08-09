@@ -25,6 +25,14 @@ create type work_link_platform as enum (
   'github', 'behance', 'dribbble', 'website',
   'instagram', 'facebook', 'linkedin', 'other'
 );
+create type notification_type as enum (
+  'match_top3',
+  'engagement_proposed',
+  'engagement_accepted',
+  'engagement_declined',
+  'application_approved',
+  'application_rejected'
+);
 
 -- ---------------------------------------------------------------- profiles
 -- Extends Supabase auth.users. Phone lives in auth.users only — not duplicated.
@@ -347,6 +355,28 @@ create table audit_log (
 create index on audit_log (entity_type, entity_id, created_at desc);
 create index on audit_log (actor_id, created_at desc);
 
+-- ---------------------------------------------------------------- notifications
+-- In-app bell: type drives i18n copy; href is the deep link. Mark read on click.
+
+create table notifications (
+  id             uuid primary key default gen_random_uuid(),
+  user_id        uuid not null references profiles(id) on delete cascade,
+  type           notification_type not null,
+  href           text not null check (length(href) between 1 and 500),
+  brief_id       uuid references briefs(id) on delete set null,
+  engagement_id  uuid references engagements(id) on delete set null,
+  meta           jsonb not null default '{}'::jsonb,
+  read_at        timestamptz,
+  created_at     timestamptz not null default now()
+);
+
+create index notifications_user_created_idx
+  on notifications (user_id, created_at desc);
+
+create index notifications_user_unread_idx
+  on notifications (user_id)
+  where read_at is null;
+
 -- ---------------------------------------------------------------- RLS
 -- Defence in depth. The API uses the service role and enforces authorization
 -- in the service layer; these policies are the backstop if that is bypassed.
@@ -361,6 +391,7 @@ alter table engagements     enable row level security;
 alter table messages        enable row level security;
 alter table ai_conversations enable row level security;
 alter table ai_conversation_messages enable row level security;
+alter table notifications enable row level security;
 
 create policy own_profile on profiles
   for all using (id = auth.uid());
@@ -424,6 +455,9 @@ create policy own_ai_conversation_messages on ai_conversation_messages
     where c.id = ai_conversation_messages.conversation_id
       and c.user_id = auth.uid()
   ));
+
+create policy own_notifications on notifications
+  for all using (user_id = auth.uid());
 
 -- ---------------------------------------------------------------- updated_at
 

@@ -13,6 +13,7 @@ import {
 } from '@inyalink/shared';
 import { AppError } from '../../middleware/errors.js';
 import { backfillAfterDecline } from '../matching/matching.service.js';
+import * as notifications from '../notifications/notifications.service.js';
 import * as repo from './engagements.repo.js';
 
 const EXPIRED_REASON = 'No response within 24 hours';
@@ -43,6 +44,11 @@ function toEngagement(row: repo.EngagementRow): Engagement {
 async function softDeclineExpired(row: repo.EngagementRow): Promise<void> {
   const updated = await repo.markDeclined(row.id, EXPIRED_REASON);
   if (!updated) return;
+  await notifications.notifyEngagementDeclined({
+    briefId: row.briefId,
+    engagementId: row.id,
+    professionalId: row.professionalId,
+  });
   await backfillAfterDecline(row.briefId, row.professionalId);
 }
 
@@ -110,6 +116,12 @@ export async function createEngagement(
     professionalId: input.professionalId,
     matchReason: rankReason,
     respondBy,
+  });
+
+  await notifications.notifyEngagementProposed({
+    professionalId: row.professionalId,
+    briefId: row.briefId,
+    engagementId: row.id,
   });
 
   return toEngagement(row);
@@ -189,6 +201,11 @@ export async function acceptEngagement(
     throw new AppError(409, 'NOT_PROPOSED', 'Engagement is not awaiting response');
   }
   await repo.markBriefMatched(updated.briefId);
+  await notifications.notifyEngagementAccepted({
+    briefId: updated.briefId,
+    engagementId: updated.id,
+    professionalId: updated.professionalId,
+  });
   return toEngagement(updated);
 }
 
@@ -220,6 +237,11 @@ export async function declineEngagement(
     throw new AppError(409, 'NOT_PROPOSED', 'Engagement is not awaiting response');
   }
 
+  await notifications.notifyEngagementDeclined({
+    briefId: updated.briefId,
+    engagementId: updated.id,
+    professionalId: updated.professionalId,
+  });
   await backfillAfterDecline(updated.briefId, updated.professionalId);
   return toEngagement(updated);
 }

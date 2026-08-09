@@ -178,6 +178,22 @@ export {
   type AdminSurfacedProfessional,
 } from './schemas/admin.js';
 export {
+  MarkNotificationReadResponseSchema,
+  NotificationIdParamsSchema,
+  NotificationListResponseSchema,
+  NotificationMetaSchema,
+  NotificationSchema,
+  NotificationTypeSchema,
+  NotificationUnreadCountResponseSchema,
+  type MarkNotificationReadResponse,
+  type Notification,
+  type NotificationIdParams,
+  type NotificationListResponse,
+  type NotificationMeta,
+  type NotificationType,
+  type NotificationUnreadCountResponse,
+} from './schemas/notifications.js';
+export {
   CategoriesResponseSchema,
   CategorySchema,
   CategorySlugSchema,

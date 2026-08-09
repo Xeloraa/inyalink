@@ -42,6 +42,10 @@ vi.mock('./matching.repo.js', () => ({
   })),
 }));
 
+vi.mock('../notifications/notifications.service.js', () => ({
+  notifyTop3Match: vi.fn(async () => undefined),
+}));
+
 import * as repo from './matching.repo.js';
 import { getCandidateExplanation } from './matching.explain.js';
 import {

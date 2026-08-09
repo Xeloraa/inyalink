@@ -19,6 +19,9 @@ import type {
   MatchExplanationResponse,
   MatchingCandidatesResponse,
   MatchingFeedResponse,
+  Notification,
+  NotificationListResponse,
+  NotificationUnreadCountResponse,
   PortfolioItem,
   PortfolioUploadItem,
   ProfessionalApplyInput,
@@ -41,7 +44,8 @@ export function converseBrief(body: ConverseBriefInput) {
   return apiFetch<ConverseBriefResponse>('/api/v1/ai/brief/converse', {
     method: 'POST',
     body: JSON.stringify(body),
-    timeoutMs: 45_000,
+    // Room for provider 429 backoff retries inside one request.
+    timeoutMs: 60_000,
   });
 }
 
@@ -131,6 +135,23 @@ export function withdrawInterest(briefId: string) {
 
 export function getEngagementInbox() {
   return apiFetch<EngagementInboxResponse>('/api/v1/engagements/inbox');
+}
+
+export function listNotifications() {
+  return apiFetch<NotificationListResponse>('/api/v1/notifications');
+}
+
+export function getNotificationUnreadCount() {
+  return apiFetch<NotificationUnreadCountResponse>(
+    '/api/v1/notifications/unread-count',
+  );
+}
+
+export function markNotificationRead(id: string) {
+  return apiFetch<Notification>(
+    `/api/v1/notifications/${encodeURIComponent(id)}/read`,
+    { method: 'POST' },
+  );
 }
 
 export function listEngagementsForBrief(briefId: string) {

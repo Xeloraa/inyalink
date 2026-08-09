@@ -26,6 +26,7 @@ import {
   type EngagementStatus,
 } from '@inyalink/shared';
 import { AppError } from '../../middleware/errors.js';
+import * as notifications from '../notifications/notifications.service.js';
 import * as repo from './admin.repo.js';
 
 function rate(numerator: number, denominator: number): number {
@@ -183,6 +184,13 @@ export async function reviewProfessional(
     metadata: { status: updated.status, reason: reviewNote },
   });
 
+  if (input.action === 'approve' || input.action === 'reject') {
+    await notifications.notifyApplicationReviewed({
+      professionalId,
+      approved: input.action === 'approve',
+    });
+  }
+
   return AdminReviewProfessionalResponseSchema.parse(updated);
 }
 
@@ -266,6 +274,12 @@ export async function assignBrief(
   });
 
   await repo.markBriefMatched(briefId);
+
+  await notifications.notifyEngagementProposed({
+    professionalId: input.professionalId,
+    briefId,
+    engagementId: engagement.id,
+  });
 
   await repo.insertAuditLog({
     actorId,

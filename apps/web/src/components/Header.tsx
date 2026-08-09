@@ -9,6 +9,7 @@ import {
   useMyProfessional,
 } from './AccountMenu';
 import { LogoMark } from './Logo';
+import { NotificationBell } from '../features/notifications/NotificationBell';
 
 /** Header nav never mid-word wraps — body uses overflow-wrap:anywhere for Burmese. */
 const NAV_LINK =
@@ -259,6 +260,8 @@ export function Header() {
           <div className="hidden min-[420px]:block">
             <LanguageToggle locale={locale} setLocale={setLocale} t={t} />
           </div>
+
+          {mountAccountMenu ? <NotificationBell /> : null}
 
           {/* Far right after EN. Placeholder while auth resolves so the slot is never empty. */}
           {loading ? (

@@ -25,6 +25,11 @@ vi.mock('./admin.repo.js', () => ({
   opsMetricsCounts: vi.fn(),
 }));
 
+vi.mock('../notifications/notifications.service.js', () => ({
+  notifyApplicationReviewed: vi.fn(async () => undefined),
+  notifyEngagementProposed: vi.fn(async () => undefined),
+}));
+
 import * as repo from './admin.repo.js';
 import {
   _test,

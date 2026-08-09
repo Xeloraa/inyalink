@@ -10,6 +10,7 @@ import { briefsRouter } from './modules/briefs/briefs.routes.js';
 import { conversationsRouter } from './modules/conversations/conversations.routes.js';
 import { matchingRouter } from './modules/matching/matching.routes.js';
 import { engagementsRouter } from './modules/engagements/engagements.routes.js';
+import { notificationsRouter } from './modules/notifications/notifications.routes.js';
 import { professionalsRouter } from './modules/professionals/professionals.routes.js';
 
 const app = express();
@@ -64,6 +65,7 @@ app.use('/api/v1/briefs', briefsRouter);
 app.use('/api/v1/conversations', conversationsRouter);
 app.use('/api/v1/matching', matchingRouter);
 app.use('/api/v1/engagements', engagementsRouter);
+app.use('/api/v1/notifications', notificationsRouter);
 app.use('/api/v1/professionals', professionalsRouter);
 app.use('/api/v1/admin', adminRouter);
 
