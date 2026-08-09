@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchAdminMetrics } from '../../features/admin/api';
+import { AdminMetricsSkeleton } from '../../features/admin/AdminSkeletons';
 import { useI18n } from '../../lib/i18n';
 
 function pct(rate: number): string {
@@ -15,7 +16,7 @@ export default function AdminMetrics() {
   });
 
   if (q.isLoading) {
-    return <p className="text-sm text-ink-500">{t('common.loading')}</p>;
+    return <AdminMetricsSkeleton />;
   }
   if (q.isError || !q.data) {
     return (

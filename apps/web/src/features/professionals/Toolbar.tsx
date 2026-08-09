@@ -1,4 +1,5 @@
 import type { ProfessionalsSort } from '@inyalink/shared';
+import { Skeleton } from '../../components/Skeleton';
 import { useI18n } from '../../lib/i18n';
 import { SearchIcon, SlidersIcon } from './icons';
 
@@ -13,12 +14,7 @@ function ResultCount({ count }: { count: number | null }) {
   const { t } = useI18n();
 
   if (count === null) {
-    return (
-      <span
-        aria-hidden
-        className="inline-block h-4 w-32 rounded-sm bg-line-soft motion-safe:animate-pulse"
-      />
-    );
+    return <Skeleton className="inline-block h-4 w-32" />;
   }
 
   const template = t(count === 1 ? 'browse.resultsOne' : 'browse.resultsMany');
