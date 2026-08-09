@@ -2,6 +2,7 @@
   "demoOnly": true,
   "note": "DEMO ONLY — full cafe-logo converse script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
   "matchInput": "ကော်ဖီဆိုင်အတွက် logo လိုချင်ပါတယ်",
+  "aliases": ["ကော်ဖီဆိုင် လိုဂို လိုချင်ပါတယ်"],
   "locale": "my",
   "questions": [
     "ကော်ဖီဆိုင်အတွက် logo လိုချင်တာ မှတ်ထားပါပြီ။ logo ရှာပေးနိုင်ပါတယ် — မလုပ်ခင် သင့်ဆိုင်နာမည် ဘာလဲဆိုတာ သိချင်ပါတယ်။ logo ထဲ ထည့်ရေးမယ့် စာသား ရှိပါသလား။",

@@ -2,6 +2,7 @@
   "demoOnly": true,
   "note": "DEMO ONLY — pre-recorded from a successful Groq generateRoadmap run. Served when the live provider rate-limits or errors. Do not treat as live model output.",
   "matchInput": "ကော်ဖီဆိုင် ဖွင့်ချင်ပါတယ်",
+  "aliases": ["ကော်ဖီဆိုင် ဖွင့်ချင်ပါတယ်။ ဘာတွေ လိုအပ်မလဲ?"],
   "locale": "my",
   "language": "my",
   "disclaimer": "ဤလမ်းညွှန်သည် စီမံကိန်းနှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာဖြစ်ပြီး ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ် မဟုတ်ပါ။ လိုအပ်ပါက သက်ဆိုင်ရာ လိုင်စင်ရ ပညာရှင်ကို ငှားရမ်းပါ။",

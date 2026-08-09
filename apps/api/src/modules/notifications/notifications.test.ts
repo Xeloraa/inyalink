@@ -49,7 +49,10 @@ describe('notifications.service', () => {
   it('hrefFor maps each type to a screen', () => {
     expect(service.hrefFor('match_top3')).toBe('/app/briefs');
     expect(service.hrefFor('engagement_proposed')).toBe('/app/briefs');
-    expect(service.hrefFor('engagement_accepted', { briefId: BRIEF_ID })).toBe(
+    expect(
+      service.hrefFor('engagement_accepted', { engagementId: ENG_ID }),
+    ).toBe(`/app/engagements/${ENG_ID}`);
+    expect(service.hrefFor('engagement_declined', { briefId: BRIEF_ID })).toBe(
       `/?briefId=${BRIEF_ID}`,
     );
     expect(service.hrefFor('application_approved')).toBe(
@@ -119,7 +122,7 @@ describe('notifications.service', () => {
       row({
         userId: CLIENT_ID,
         type: 'engagement_accepted',
-        href: `/?briefId=${BRIEF_ID}`,
+        href: `/app/engagements/${ENG_ID}`,
         engagementId: ENG_ID,
         meta: { briefTitle: 'Cafe logo', professionalName: 'Aye' },
       }),

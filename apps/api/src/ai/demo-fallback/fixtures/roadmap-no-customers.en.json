@@ -1,0 +1,54 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq generateRoadmap. Served when the live provider rate-limits or errors.",
+  "kind": "roadmap",
+  "matchInput": "my shop isn't getting customers",
+  "aliases": [
+    "not getting customers"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a graphic designer for branding and signage",
+      "why": "A clear visual identity helps attract walk‑in customers and makes your shop recognizable. Professional logo and signage ensure consistency across physical and digital touchpoints.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 300000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for product and store images",
+      "why": "High‑quality photos showcase your offerings and can be used in ads, social posts, and online listings, which are essential for drawing interest.",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a social media marketer to run targeted campaigns",
+      "why": "Strategic social‑media ads and regular posting reach local audiences, driving foot traffic and awareness. A specialist can set up targeting and manage budgets efficiently.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 300000
+    },
+    {
+      "order": 4,
+      "title": "Hire a content writer for engaging copy",
+      "why": "Compelling captions, promos, and blog snippets keep your audience interested and improve ad performance. Consistent, persuasive language reinforces your brand message.",
+      "category_slug": "content-writing",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 5,
+      "title": "Hire a web developer to create a simple website or landing page",
+      "why": "An online presence lets potential customers find store details, hours, and promotions, supporting offline visits. A basic site also boosts credibility.",
+      "category_slug": "web-development",
+      "est_min_mmk": 300000,
+      "est_max_mmk": 800000
+    }
+  ]
+}

@@ -5,8 +5,12 @@ import {
 } from './structured.js';
 
 const DEFAULT_TIMEOUT_MS = 20_000;
-const DEFAULT_RATE_LIMIT_BACKOFF_MS = 2_000;
-const MAX_RATE_LIMIT_BACKOFF_MS = 15_000;
+const DEFAULT_RATE_LIMIT_BACKOFF_MS = 1_500;
+const MAX_RATE_LIMIT_BACKOFF_MS = 4_000;
+/** Initial attempt + this many 429 retries with backoff. */
+const MAX_RATE_LIMIT_RETRIES = 2;
+/** Cap total sleep so client timeouts (45–60s) still have room for fetches. */
+const MAX_TOTAL_RATE_LIMIT_SLEEP_MS = 8_000;
 
 export class RateLimitExhaustedError extends Error {
   constructor(message = 'The AI service is busy. Please try again shortly.') {
@@ -21,7 +25,7 @@ export type OpenAICompatibleConfig = {
   baseUrl: string;
   model: string;
   timeoutMs?: number;
-  /** When true, HTTP 429 waits once (Retry-After / body hint) then retries. */
+  /** When true, HTTP 429 waits (Retry-After / body hint) then retries. */
   retryRateLimit?: boolean;
 };
 
@@ -35,13 +39,10 @@ type ChatCompletionResponse = {
   };
 };
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export function parseRateLimitBackoffMs(
   response: Response,
   body: string,
+  attempt = 0,
 ): number {
   const header = response.headers.get('retry-after');
   if (header) {
@@ -57,7 +58,35 @@ export function parseRateLimitBackoffMs(
       return Math.min(Math.ceil(seconds * 1000), MAX_RATE_LIMIT_BACKOFF_MS);
     }
   }
-  return DEFAULT_RATE_LIMIT_BACKOFF_MS;
+  // Exponential-ish default: 1.5s, 3s, …
+  const exp = DEFAULT_RATE_LIMIT_BACKOFF_MS * 2 ** attempt;
+  return Math.min(exp, MAX_RATE_LIMIT_BACKOFF_MS);
+}
+
+/** Pull nearly-valid JSON out of Groq's json_validate_failed error body. */
+export function salvageFailedGeneration(body: string): string | null {
+  try {
+    const parsed = JSON.parse(body) as {
+      error?: { failed_generation?: unknown; code?: string };
+    };
+    const failed = parsed.error?.failed_generation;
+    if (typeof failed === 'string') {
+      const trimmed = failed.trim();
+      if (trimmed.startsWith('{') && trimmed.endsWith('}')) return trimmed;
+      // Truncated failed_generation — try to close if it looks like JSON object start.
+      if (trimmed.startsWith('{')) {
+        const end = trimmed.lastIndexOf('}');
+        if (end > 0) return trimmed.slice(0, end + 1);
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function createOpenAICompatibleProvider(
@@ -122,11 +151,26 @@ export function createOpenAICompatibleProvider(
               }
             };
 
-            let response = await fetchOnce();
             const retry429 = args.retryRateLimit ?? cfg.retryRateLimit;
-            if (response.status === 429 && retry429) {
+            let response = await fetchOnce();
+            let sleptMs = 0;
+            let attempt = 0;
+
+            while (
+              response.status === 429 &&
+              retry429 &&
+              attempt < MAX_RATE_LIMIT_RETRIES &&
+              sleptMs < MAX_TOTAL_RATE_LIMIT_SLEEP_MS
+            ) {
               const body = await response.text();
-              await sleep(parseRateLimitBackoffMs(response, body));
+              const wait = Math.min(
+                parseRateLimitBackoffMs(response, body, attempt),
+                MAX_TOTAL_RATE_LIMIT_SLEEP_MS - sleptMs,
+              );
+              if (wait <= 0) break;
+              await sleep(wait);
+              sleptMs += wait;
+              attempt += 1;
               response = await fetchOnce();
             }
 
@@ -136,6 +180,15 @@ export function createOpenAICompatibleProvider(
 
             if (!response.ok) {
               const body = await response.text();
+              // Groq may return usable JSON in failed_generation despite HTTP 400
+              // (e.g. null vs string in their json_schema check). Prefer that over failing.
+              const salvaged = salvageFailedGeneration(body);
+              if (salvaged) {
+                return {
+                  content: salvaged,
+                  usage: { tokensIn: 0, tokensOut: 0 },
+                };
+              }
               throw new Error(
                 `${cfg.name} HTTP ${response.status}: ${body.slice(0, 500)}`,
               );

@@ -3,16 +3,17 @@
  * (or any provider) rate-limits or errors.
  *
  * Converse: match on the conversation's *opening* user message (aliases
- * include landing chips). On any failed turn, serve the next question in
- * the cached sequence by how many assistant questions were already asked.
- * After the last question is answered, return finalBrief with complete=true.
+ * include landing chips and common demo prompts). On any failed turn —
+ * opening or mid-conversation — serve the next question in the cached
+ * sequence by how many assistant questions were already asked. After the
+ * last question is answered, return finalBrief with complete=true.
  *
  * Roadmap: exact-match goal aliases → static steps.
  *
  * Never treat these as live model output. Remove or gate behind a flag
  * before production.
  */
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { normalizeToUnicode } from '@inyalink/burmese';
@@ -31,20 +32,11 @@ const fixturesDir = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 export const DEMO_ROADMAP_INPUT = 'ကော်ဖီဆိုင် ဖွင့်ချင်ပါတယ်';
 export const DEMO_CONVERSE_INPUT = 'ကော်ဖီဆိုင်အတွက် logo လိုချင်ပါတယ်';
 
-/** Landing chip texts that should also hit the same fixtures. */
-export const DEMO_ROADMAP_ALIASES = [
-  DEMO_ROADMAP_INPUT,
-  'ကော်ဖီဆိုင် ဖွင့်ချင်ပါတယ်။ ဘာတွေ လိုအပ်မလဲ?',
-] as const;
-
-export const DEMO_CONVERSE_ALIASES = [
-  DEMO_CONVERSE_INPUT,
-  'ကော်ဖီဆိုင် လိုဂို လိုချင်ပါတယ်',
-] as const;
-
 type RoadmapFixture = {
   demoOnly: true;
+  kind?: 'roadmap';
   matchInput: string;
+  aliases?: string[];
   language: 'my' | 'en';
   disclaimer: string;
   steps: GenerateRoadmapResponse['steps'];
@@ -52,7 +44,10 @@ type RoadmapFixture = {
 
 type ConverseFixture = {
   demoOnly: true;
+  kind?: 'converse';
   matchInput: string;
+  aliases?: string[];
+  locale: 'my' | 'en';
   /** Ordered clarifying questions. Index = assistant questions already asked. */
   questions: string[];
   /** Progressive draft after each user turn (same length as questions). */
@@ -61,20 +56,86 @@ type ConverseFixture = {
   finalBrief: Record<string, unknown>;
 };
 
+type LoadedConverse = ConverseFixture & { file: string };
+type LoadedRoadmap = RoadmapFixture & { file: string };
+
 function loadJson<T>(name: string): T {
   const raw = readFileSync(join(fixturesDir, name), 'utf8');
   return JSON.parse(raw) as T;
 }
 
-const roadmapByLocale: Record<UiLocale, RoadmapFixture> = {
-  my: loadJson('roadmap-cafe-open.my.json'),
-  en: loadJson('roadmap-cafe-open.en.json'),
-};
+function isConverseFixture(raw: unknown): raw is ConverseFixture {
+  if (!raw || typeof raw !== 'object') return false;
+  const o = raw as Record<string, unknown>;
+  return (
+    o['demoOnly'] === true &&
+    typeof o['matchInput'] === 'string' &&
+    Array.isArray(o['questions']) &&
+    Array.isArray(o['draftsAfterUserTurn']) &&
+    o['finalBrief'] !== undefined
+  );
+}
 
-const converseByLocale: Record<UiLocale, ConverseFixture> = {
-  my: loadJson('converse-cafe-logo.my.json'),
-  en: loadJson('converse-cafe-logo.en.json'),
-};
+function isRoadmapFixture(raw: unknown): raw is RoadmapFixture {
+  if (!raw || typeof raw !== 'object') return false;
+  const o = raw as Record<string, unknown>;
+  return (
+    o['demoOnly'] === true &&
+    typeof o['matchInput'] === 'string' &&
+    Array.isArray(o['steps']) &&
+    typeof o['disclaimer'] === 'string' &&
+    !Array.isArray(o['questions'])
+  );
+}
+
+function loadAllFixtures(): {
+  converse: LoadedConverse[];
+  roadmap: LoadedRoadmap[];
+} {
+  const files = readdirSync(fixturesDir).filter((f) => f.endsWith('.json'));
+  const converse: LoadedConverse[] = [];
+  const roadmap: LoadedRoadmap[] = [];
+
+  for (const file of files) {
+    const raw: unknown = loadJson(file);
+    if (file.startsWith('converse-') || isConverseFixture(raw)) {
+      if (!isConverseFixture(raw)) {
+        throw new Error(`Invalid converse fixture: ${file}`);
+      }
+      converse.push({ ...raw, file });
+      continue;
+    }
+    if (file.startsWith('roadmap-') || isRoadmapFixture(raw)) {
+      if (!isRoadmapFixture(raw)) {
+        throw new Error(`Invalid roadmap fixture: ${file}`);
+      }
+      roadmap.push({ ...raw, file });
+    }
+  }
+
+  return { converse, roadmap };
+}
+
+const { converse: converseFixtures, roadmap: roadmapFixtures } =
+  loadAllFixtures();
+
+/** All converse openings + aliases (for tests / isDemo checks). */
+export const DEMO_CONVERSE_ALIASES: readonly string[] = Object.freeze(
+  Array.from(
+    new Set(
+      converseFixtures.flatMap((f) => [f.matchInput, ...(f.aliases ?? [])]),
+    ),
+  ),
+);
+
+/** All roadmap goals + aliases. */
+export const DEMO_ROADMAP_ALIASES: readonly string[] = Object.freeze(
+  Array.from(
+    new Set(
+      roadmapFixtures.flatMap((f) => [f.matchInput, ...(f.aliases ?? [])]),
+    ),
+  ),
+);
 
 export function normalizeDemoInput(text: string): string {
   return normalizeToUnicode(text)
@@ -108,91 +169,57 @@ function logFallback(
   console.log(prefix, { feature, event, ...detail });
 }
 
-function matchesAlias(
-  normalized: string,
-  aliases: readonly string[],
-): string | null {
-  for (const alias of aliases) {
-    if (normalized === normalizeDemoInput(alias)) return alias;
-  }
-  return null;
+function fixtureAliases(fixture: {
+  matchInput: string;
+  aliases?: string[];
+}): string[] {
+  return [fixture.matchInput, ...(fixture.aliases ?? [])];
 }
 
-/**
- * Loose match for mid-script demo replies. Requires substantial overlap —
- * "cafe vex" must not match "Inya Cafe".
- */
-export function closelyMatchesDemoReply(
-  raw: string,
-  aliases: readonly string[],
-): string | null {
-  const normalized = normalizeDemoInput(raw).toLowerCase();
-  if (!normalized) return null;
+function findConverseFixture(
+  normalizedOpening: string,
+  locale: UiLocale,
+): LoadedConverse | null {
+  const localeMatches = converseFixtures.filter((f) => f.locale === locale);
+  const pool =
+    localeMatches.length > 0 ? localeMatches : converseFixtures.filter((f) => f.locale === 'my');
 
-  for (const alias of aliases) {
-    const a = normalizeDemoInput(alias).toLowerCase();
-    if (!a) continue;
-    if (normalized === a) return alias;
+  for (const fixture of pool) {
+    for (const alias of fixtureAliases(fixture)) {
+      if (normalizedOpening === normalizeDemoInput(alias)) return fixture;
+    }
+  }
 
-    // Alias appears inside the user reply ("Minimalist, brown…" → minimalist).
-    if (a.length >= 4 && normalized.includes(a)) return alias;
-
-    // User reply is a short form of the alias ("inya" → "inya cafe").
-    if (
-      normalized.length >= 4 &&
-      a.includes(normalized) &&
-      normalized.length / a.length >= 0.5
-    ) {
-      return alias;
+  // Cross-locale: same opening text may only exist in the other locale file.
+  for (const fixture of converseFixtures) {
+    for (const alias of fixtureAliases(fixture)) {
+      if (normalizedOpening === normalizeDemoInput(alias)) return fixture;
     }
   }
   return null;
 }
 
-/**
- * Fixture replies assumed before serving questions[asked].
- * Index = assistant questions already asked (same as nextQuestionIndex).
- * asked=0 has no prior reply beyond the opening alias.
- */
-export const DEMO_CONVERSE_REPLY_ALIASES: Readonly<
-  Record<number, readonly string[]>
-> = {
-  1: [
-    'Inya Cafe',
-    'inya cafe',
-    'Inya',
-    'အင်းယား',
-    'အင်းယား ကဖေး',
-    'အင်းယားကဖေး',
-  ],
-  2: [
-    'logo',
-    'logo ပဲ',
-    'just the logo',
-    'logo for now',
-    'လိုဂို',
-    'logo တစ်ခုတည်း',
-    'လောလောဆယ် logo',
-  ],
-  3: [
-    'minimal',
-    'minimalist',
-    'modern',
-    'traditional',
-    'ရိုးရှင်း',
-    'ခေတ်မီ',
-    'ရိုးရာ',
-  ],
-  4: [
-    '300000',
-    '500000',
-    '300000-500000',
-    '2026-09-30',
-    '300,000',
-    '၅သိန်း',
-    '၃သိန်း',
-  ],
-};
+function findRoadmapFixture(
+  normalizedGoal: string,
+  locale: UiLocale,
+): LoadedRoadmap | null {
+  const localeMatches = roadmapFixtures.filter((f) => f.language === locale);
+  const pool =
+    localeMatches.length > 0 ? localeMatches : roadmapFixtures.filter((f) => f.language === 'my');
+
+  for (const fixture of pool) {
+    for (const alias of fixtureAliases(fixture)) {
+      if (normalizedGoal === normalizeDemoInput(alias)) return fixture;
+    }
+  }
+
+  for (const fixture of roadmapFixtures) {
+    for (const alias of fixtureAliases(fixture)) {
+      if (normalizedGoal === normalizeDemoInput(alias)) return fixture;
+    }
+  }
+  return null;
+}
 
 /** Opening user message for converse matching (first user turn). */
 export function openingUserMessage(
@@ -217,11 +244,11 @@ export function lookupRoadmapDemoFallback(
   logFallback('check', 'roadmap', {
     normalizedInput: normalized,
     locale,
-    aliases: DEMO_ROADMAP_ALIASES,
+    fixtureCount: roadmapFixtures.length,
   });
 
-  const matchedAlias = matchesAlias(normalized, DEMO_ROADMAP_ALIASES);
-  if (!matchedAlias) {
+  const fixture = findRoadmapFixture(normalized, locale);
+  if (!fixture) {
     logFallback('miss', 'roadmap', {
       normalizedInput: normalized,
       locale,
@@ -230,14 +257,14 @@ export function lookupRoadmapDemoFallback(
     return null;
   }
 
-  const fixture = roadmapByLocale[locale] ?? roadmapByLocale.my;
   const parsed = GenerateRoadmapResponseSchema.parse({
     language: fixture.language,
     steps: fixture.steps,
     disclaimer: fixture.disclaimer,
   });
   logFallback('hit', 'roadmap', {
-    matchInput: matchedAlias,
+    matchInput: fixture.matchInput,
+    file: fixture.file,
     normalizedInput: normalized,
     locale,
     demoOnly: true,
@@ -249,6 +276,9 @@ export function lookupRoadmapDemoFallback(
  * Serve the next cached converse turn for a seeded opening.
  * Index = assistant questions already in `messages` (0 on first call).
  * When that index is past the question list, return finalBrief + complete.
+ *
+ * Follow-up turns match on opening only — free-form mid-script replies still
+ * advance the canned sequence so rate limits mid-conversation never stall.
  */
 export function lookupConverseDemoFallback(
   messages: Array<{ role: string; content: string }>,
@@ -263,7 +293,7 @@ export function lookupConverseDemoFallback(
     locale,
     assistantQuestionsAsked: asked,
     userMessageCount: userCount,
-    aliases: DEMO_CONVERSE_ALIASES,
+    fixtureCount: converseFixtures.length,
   });
 
   if (!opening) {
@@ -275,8 +305,8 @@ export function lookupConverseDemoFallback(
     return null;
   }
 
-  const matchedAlias = matchesAlias(opening, DEMO_CONVERSE_ALIASES);
-  if (!matchedAlias) {
+  const fixture = findConverseFixture(opening, locale);
+  if (!fixture) {
     logFallback('miss', 'structure_brief', {
       normalizedInput: opening,
       locale,
@@ -287,45 +317,6 @@ export function lookupConverseDemoFallback(
     return null;
   }
 
-  // Mid-script turns assume specific replies (e.g. cafe name = "Inya Cafe").
-  // Do not advance the canned script when the latest message doesn't match.
-  if (asked >= 1) {
-    const latest =
-      [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
-    const expected = DEMO_CONVERSE_REPLY_ALIASES[asked];
-    if (!expected) {
-      logFallback('miss', 'structure_brief', {
-        normalizedInput: opening,
-        latestUser: normalizeDemoInput(latest),
-        locale,
-        assistantQuestionsAsked: asked,
-        reason: 'no_expected_replies_for_turn',
-      });
-      return null;
-    }
-    const matchedReply = closelyMatchesDemoReply(latest, expected);
-    if (!matchedReply) {
-      logFallback('miss', 'structure_brief', {
-        normalizedInput: opening,
-        latestUser: normalizeDemoInput(latest),
-        locale,
-        assistantQuestionsAsked: asked,
-        expectedReplies: expected,
-        reason: 'latest_reply_not_close_to_fixture',
-      });
-      return null;
-    }
-    logFallback('check', 'structure_brief', {
-      normalizedInput: opening,
-      latestUser: normalizeDemoInput(latest),
-      matchedReply,
-      locale,
-      assistantQuestionsAsked: asked,
-      note: 'mid_script_reply_matched',
-    });
-  }
-
-  const fixture = converseByLocale[locale] ?? converseByLocale.my;
   const questions = fixture.questions;
   if (!Array.isArray(questions) || questions.length === 0) {
     logFallback('miss', 'structure_brief', {
@@ -348,12 +339,13 @@ export function lookupConverseDemoFallback(
       complete: false,
       briefDraft: {
         ...omitNulls(draftSource),
-        language: locale,
+        language: fixture.locale,
       },
     });
 
     logFallback('hit', 'structure_brief', {
-      matchInput: matchedAlias,
+      matchInput: fixture.matchInput,
+      file: fixture.file,
       normalizedInput: opening,
       locale,
       assistantQuestionsAsked: asked,
@@ -370,12 +362,13 @@ export function lookupConverseDemoFallback(
     complete: true,
     briefDraft: {
       ...omitNulls(fixture.finalBrief),
-      language: locale,
+      language: fixture.locale,
     },
   });
 
   logFallback('hit', 'structure_brief', {
-    matchInput: matchedAlias,
+    matchInput: fixture.matchInput,
+    file: fixture.file,
     normalizedInput: opening,
     locale,
     assistantQuestionsAsked: asked,
@@ -391,10 +384,24 @@ export function isDemoConverseOpening(
   messages: Array<{ role: string; content: string }>,
 ): boolean {
   const opening = openingUserMessage(messages);
-  return opening !== null && matchesAlias(opening, DEMO_CONVERSE_ALIASES) !== null;
+  if (!opening) return false;
+  return findConverseFixture(opening, 'my') !== null;
 }
 
 /** True when the goal matches a seeded demo roadmap prompt. */
 export function isDemoRoadmapGoal(goal: string): boolean {
-  return matchesAlias(normalizeDemoInput(goal), DEMO_ROADMAP_ALIASES) !== null;
+  return findRoadmapFixture(normalizeDemoInput(goal), 'my') !== null;
+}
+
+/** Fixture inventory size (for tests / generator checks). */
+export function demoFixtureCounts(): {
+  converse: number;
+  roadmap: number;
+  total: number;
+} {
+  return {
+    converse: converseFixtures.length,
+    roadmap: roadmapFixtures.length,
+    total: converseFixtures.length + roadmapFixtures.length,
+  };
 }

@@ -4,12 +4,14 @@ import {
   GenerateRoadmapInputSchema,
 } from '@inyalink/shared';
 import { validateBody } from '../../middleware/validate.js';
+import { aiRateLimit } from '../../middleware/rateLimit.js';
 import { attachSession, getAuth } from '../../middleware/requireAuth.js';
 import * as aiService from './ai.service.js';
 
 export const aiRouter = Router();
 
 aiRouter.use(attachSession);
+aiRouter.use(aiRateLimit);
 
 aiRouter.post(
   '/brief/converse',

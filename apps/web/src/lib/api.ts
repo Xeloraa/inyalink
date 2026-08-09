@@ -37,6 +37,10 @@ import type {
   UpsertConversationInput,
   WorkLink,
   WorkLinkCreateInput,
+  Message,
+  MessageThreadListResponse,
+  MessageThreadResponse,
+  SendMessageInput,
 } from '@inyalink/shared';
 import { apiFetch } from './apiClient';
 
@@ -177,6 +181,29 @@ export function acceptEngagement(id: string) {
 export function declineEngagement(id: string, body: DeclineEngagementInput) {
   return apiFetch<Engagement>(
     `/api/v1/engagements/${encodeURIComponent(id)}/decline`,
+    {
+      method: 'POST',
+      body: JSON.stringify(body),
+    },
+  );
+}
+
+export function listMessageThreads() {
+  return apiFetch<MessageThreadListResponse>('/api/v1/engagements/threads');
+}
+
+export function getEngagementMessages(engagementId: string) {
+  return apiFetch<MessageThreadResponse>(
+    `/api/v1/engagements/${encodeURIComponent(engagementId)}/messages`,
+  );
+}
+
+export function sendEngagementMessage(
+  engagementId: string,
+  body: SendMessageInput,
+) {
+  return apiFetch<Message>(
+    `/api/v1/engagements/${encodeURIComponent(engagementId)}/messages`,
     {
       method: 'POST',
       body: JSON.stringify(body),

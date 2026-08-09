@@ -110,7 +110,7 @@ describe('ai.service demo fallback', () => {
 
     const result = await converseBrief({
       messages: [
-        { role: 'user', content: DEMO_CONVERSE_ALIASES[1]! },
+        { role: 'user', content: DEMO_CONVERSE_ALIASES.find((a) => a.includes('လိုဂို'))! },
         { role: 'assistant', content: 'first question from earlier turn' },
         { role: 'user', content: 'Inya Cafe' },
       ],
@@ -127,7 +127,7 @@ describe('ai.service demo fallback', () => {
     log.mockRestore();
   });
 
-  it('does not serve Inya Cafe script when the user typed something else', async () => {
+  it('serves fixture mid-conversation even when the reply is free-form', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     complete.mockResolvedValue({
       ok: false,
@@ -143,13 +143,12 @@ describe('ai.service demo fallback', () => {
       locale: 'en',
     });
 
-    // Provider failed and cache missed — soft retry, not a canned Inya Cafe line.
-    expect(result.nextQuestion).toBeUndefined();
-    expect(result.retryable).toBe(true);
+    expect(result.retryable).toBeUndefined();
+    expect(result.nextQuestion).toBeTruthy();
     expect(log).toHaveBeenCalledWith(
-      '[demo-only] AI fallback cache miss — not serving fixture',
+      '[demo-only] AI fallback cache firing',
       expect.objectContaining({
-        latestUser: 'cafe vex',
+        feature: 'structure_brief',
       }),
     );
     log.mockRestore();

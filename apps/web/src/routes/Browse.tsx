@@ -163,7 +163,7 @@ export default function Browse() {
                 role="alert"
                 className="rounded-lg border border-line bg-white px-lg py-xl"
               >
-                <p className="text-body-sm text-ink-700">
+                <p className="text-body-sm leading-[1.8] text-ink-700 [overflow-wrap:anywhere]">
                   {prosQuery.error instanceof ApiError
                     ? prosQuery.error.message
                     : t('browse.loadError')}
@@ -178,10 +178,10 @@ export default function Browse() {
               </div>
             ) : pros && pros.length === 0 ? (
               <div className="rounded-lg border border-line bg-white px-lg py-3xl text-center">
-                <p className="font-display text-title text-ink-900">
+                <p className="font-display text-title text-ink-900 [overflow-wrap:anywhere]">
                   {t('browse.emptyTitle')}
                 </p>
-                <p className="mx-auto mt-sm max-w-[46ch] text-body-sm text-ink-500">
+                <p className="mx-auto mt-sm max-w-[46ch] text-body-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
                   {t('browse.emptyBody')}
                 </p>
                 <button

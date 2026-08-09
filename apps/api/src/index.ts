@@ -2,7 +2,9 @@ import express from 'express';
 import { HealthResponseSchema } from '@inyalink/shared';
 import { config } from './lib/config.js';
 import { isOriginAllowed, parseCorsOrigins } from './lib/cors.js';
+import { startRetentionScheduler } from './lib/retention.js';
 import { errorMiddleware } from './middleware/errors.js';
+import { messageSendRateLimit } from './middleware/rateLimit.js';
 import { adminRouter } from './modules/admin/admin.routes.js';
 import { aiRouter } from './modules/ai/ai.routes.js';
 import { authRouter } from './modules/auth/auth.routes.js';
@@ -64,6 +66,15 @@ app.use('/api/v1/ai', aiRouter);
 app.use('/api/v1/briefs', briefsRouter);
 app.use('/api/v1/conversations', conversationsRouter);
 app.use('/api/v1/matching', matchingRouter);
+/**
+ * Message-send rate limit lives here so it applies as soon as a messages
+ * route is mounted under /engagements (path-based, independent of router).
+ */
+app.post(
+  '/api/v1/engagements/:id/messages',
+  messageSendRateLimit,
+  (_req, _res, next) => next(),
+);
 app.use('/api/v1/engagements', engagementsRouter);
 app.use('/api/v1/notifications', notificationsRouter);
 app.use('/api/v1/professionals', professionalsRouter);
@@ -73,4 +84,5 @@ app.use(errorMiddleware);
 
 app.listen(config.port, () => {
   console.log(`api listening on :${config.port}`);
+  startRetentionScheduler();
 });

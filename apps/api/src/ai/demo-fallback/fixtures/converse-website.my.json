@@ -1,0 +1,53 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "ဆိုင်အတွက် website လိုချင်ပါတယ်",
+  "aliases": [
+    "ဝက်ဘ်ဆိုက် လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "website အတွက် သင့်ဆိုင်အမည်က ဘာလဲ။",
+    "website မှာ ဘယ်စာမျက်နှာတွေ လိုချင်ပါသလဲ၊ online ordering လိုအပ်ပါသလား။ အထူးလိုအပ်ချက်များရှိရင် ပြောပါ။",
+    "website မှာ ဘယ်စာမျက်နှာတွေ လိုချင်ပါသလဲ၊ online ordering လိုအပ်ပါသလား။ အပြင် budget အကန့်အသတ်ကို ဘယ်လောက်ထားမလဲ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "web-development",
+      "ai_confidence": 1
+    },
+    {
+      "language": "my",
+      "category": "web-development",
+      "ai_confidence": 1,
+      "title": "Inya Cafe website",
+      "description": "Website development for Inya Cafe"
+    },
+    {
+      "language": "my",
+      "category": "web-development",
+      "ai_confidence": 1,
+      "title": "Inya Cafe website",
+      "description": "Website development for Inya Cafe",
+      "requirements": [
+        "Minimalist design"
+      ]
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "web-development",
+    "ai_confidence": 1,
+    "title": "Inya Cafe website",
+    "description": "Website development for Inya Cafe",
+    "requirements": [
+      "Minimalist design"
+    ],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-09-30",
+    "needs_human_review": true
+  }
+}

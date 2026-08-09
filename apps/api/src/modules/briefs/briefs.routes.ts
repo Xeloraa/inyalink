@@ -7,6 +7,7 @@ import {
 } from '@inyalink/shared';
 import { validateBody } from '../../middleware/validate.js';
 import { AppError } from '../../middleware/errors.js';
+import { briefCreateRateLimit } from '../../middleware/rateLimit.js';
 import { attachSession, getAuth } from '../../middleware/requireAuth.js';
 import * as briefsService from './briefs.service.js';
 
@@ -14,15 +15,20 @@ export const briefsRouter = Router();
 
 briefsRouter.use(attachSession);
 
-briefsRouter.post('/', validateBody(CreateBriefInputSchema), async (req, res, next) => {
-  try {
-    const body = CreateBriefInputSchema.parse(req.body);
-    const brief = await briefsService.createBrief(body, getAuth(req).userId);
-    res.status(201).json(brief);
-  } catch (err) {
-    next(err);
-  }
-});
+briefsRouter.post(
+  '/',
+  briefCreateRateLimit,
+  validateBody(CreateBriefInputSchema),
+  async (req, res, next) => {
+    try {
+      const body = CreateBriefInputSchema.parse(req.body);
+      const brief = await briefsService.createBrief(body, getAuth(req).userId);
+      res.status(201).json(brief);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 briefsRouter.post(
   '/:id/submit',

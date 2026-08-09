@@ -25,7 +25,7 @@ export const StructureBriefModelOutputSchema = z.object({
   }),
   complete: z.boolean(),
   /** Hand off to Guided Plan (goals, problems, don't-know). */
-  redirectTo: z.literal('roadmap').nullable(),
+  redirectTo: z.union([z.literal('roadmap'), z.null()]),
 });
 
 export type StructureBriefModelOutput = z.infer<

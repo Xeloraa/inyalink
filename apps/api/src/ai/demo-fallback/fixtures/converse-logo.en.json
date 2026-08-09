@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "I need a logo for my cafe",
+  "aliases": [
+    "I want a logo for my coffee shop"
+  ],
+  "locale": "en",
+  "questions": [
+    "What is the name of your cafe and do you need just a logo or also signage or packaging?",
+    "Got it, the cafe is named Inya Cafe. Do you need only the logo, or also signage or packaging designs?",
+    "What overall style are you envisioning for the logo—minimal, modern, traditional, or another direction?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Cafe logo design",
+      "description": "Logo design for a cafe",
+      "requirements": [],
+      "ai_confidence": 1,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Cafe logo design",
+      "description": "Logo design for Inya Cafe",
+      "requirements": [],
+      "ai_confidence": 1,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Cafe logo design",
+      "description": "Logo design for Inya Cafe",
+      "requirements": [],
+      "ai_confidence": 1,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "graphic-design",
+    "title": "Inya Cafe logo",
+    "description": "Logo design for Inya Cafe, minimalist style",
+    "requirements": [
+      "Minimalist style"
+    ],
+    "ai_confidence": 1,
+    "needs_human_review": true
+  }
+}

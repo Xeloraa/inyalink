@@ -54,6 +54,11 @@ export function hrefFor(
     case 'engagement_proposed':
       return '/app/briefs';
     case 'engagement_accepted':
+      return refs.engagementId
+        ? `/app/engagements/${encodeURIComponent(refs.engagementId)}`
+        : refs.briefId
+          ? `/?briefId=${encodeURIComponent(refs.briefId)}`
+          : '/';
     case 'engagement_declined':
       return refs.briefId
         ? `/?briefId=${encodeURIComponent(refs.briefId)}`

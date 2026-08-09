@@ -1,0 +1,54 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq generateRoadmap. Served when the live provider rate-limits or errors.",
+  "kind": "roadmap",
+  "matchInput": "I don't know where to start",
+  "aliases": [
+    "where should I start"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Brand Identity Design",
+      "why": "A clear brand identity gives your business a recognizable look and voice, which is essential before creating any visual or digital assets. Skipping this often leads to inconsistent design later.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 350000
+    },
+    {
+      "order": 2,
+      "title": "Professional Photography",
+      "why": "Professional photos showcase your products or space and are needed for the website and marketing materials. Good imagery reduces the need for costly re‑shoots.",
+      "category_slug": "photography",
+      "est_min_mmk": 130000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Website Development",
+      "why": "A simple website provides an online hub where customers can learn about you and contact you. Building it after the brand and photos ensures the site reflects your visual identity.",
+      "category_slug": "web-development",
+      "est_min_mmk": 350000,
+      "est_max_mmk": 750000
+    },
+    {
+      "order": 4,
+      "title": "Content Writing for Web & Marketing",
+      "why": "Well‑written copy communicates your value proposition and supports SEO on the new site. It also supplies material for social posts and brochures.",
+      "category_slug": "content-writing",
+      "est_min_mmk": 90000,
+      "est_max_mmk": 180000
+    },
+    {
+      "order": 5,
+      "title": "Social Media Marketing Setup",
+      "why": "Targeted social‑media marketing drives awareness and traffic to your website, helping you start building a customer base. Early campaigns can be adjusted as you gather data.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 250000
+    }
+  ]
+}

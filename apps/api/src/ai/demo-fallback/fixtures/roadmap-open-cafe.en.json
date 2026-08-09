@@ -1,0 +1,54 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq generateRoadmap. Served when the live provider rate-limits or errors.",
+  "kind": "roadmap",
+  "matchInput": "I want to open a cafe",
+  "aliases": [
+    "I want to open a coffee shop"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a graphic designer for cafe brand identity",
+      "why": "A clear logo and visual style help customers recognize your cafe and guide later design work. Establishing brand assets first avoids re‑work when signage or marketing materials are created.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 500000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for interior and menu shots",
+      "why": "High‑quality photos showcase the ambience and food on your website and social channels. Capturing the space early ensures you have assets for launch marketing.",
+      "category_slug": "photography",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a web developer for a simple cafe website",
+      "why": "A website provides your menu, location, and contact info, and integrates the photos and brand you have created. Launching the site before opening helps customers find you and builds anticipation.",
+      "category_slug": "web-development",
+      "est_min_mmk": 300000,
+      "est_max_mmk": 700000
+    },
+    {
+      "order": 4,
+      "title": "Hire a social media marketer to launch and manage your cafe’s online presence",
+      "why": "Consistent posting on platforms like Facebook and Instagram drives foot traffic and keeps your audience engaged. Starting social campaigns alongside the website maximizes reach at opening.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 200000,
+      "est_max_mmk": 350000
+    },
+    {
+      "order": 5,
+      "title": "Engage a company‑registration specialist (or accountant) for legal setup",
+      "why": "Proper registration and bookkeeping are required to operate legally and manage finances. Securing this expertise early prevents compliance issues later.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 200000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import type {
   Category,
@@ -9,6 +9,7 @@ import type {
   WorkLink,
   WorkLinkPlatform,
 } from '@inyalink/shared';
+import { computeProfessionalCompleteness } from '@inyalink/shared';
 import {
   addMyPortfolioItem,
   addMyWorkLink,
@@ -23,6 +24,10 @@ import { useI18n } from '../lib/i18n';
 import { RequireAuth } from '../components/RequireAuth';
 import { CategoryFields } from '../features/professionals/CategoryFields';
 import { PortfolioFields } from '../features/professionals/PortfolioFields';
+import {
+  ProfileCompleteness,
+  focusCompletenessAnchor,
+} from '../features/professionals/ProfileCompleteness';
 import { QuestionnaireFields } from '../features/professionals/QuestionnaireFields';
 import { SkillsFields } from '../features/professionals/SkillsFields';
 import { WorkLinksEditor } from '../features/professionals/WorkLinksFields';
@@ -76,6 +81,34 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
       cancelled = true;
     };
   }, [t]);
+
+  useEffect(() => {
+    const focusFromHash = () => {
+      const anchor = window.location.hash.replace(/^#/, '');
+      if (!anchor) return;
+      // Wait a tick so field ids are in the DOM after first paint.
+      window.requestAnimationFrame(() => focusCompletenessAnchor(anchor));
+    };
+    focusFromHash();
+    window.addEventListener('hashchange', focusFromHash);
+    return () => window.removeEventListener('hashchange', focusFromHash);
+  }, []);
+
+  const completeness = computeProfessionalCompleteness({
+    displayName,
+    categorySlug: categorySlug || null,
+    categoryOtherText,
+    skills,
+    portfolioCount: portfolio.length,
+    workLinksCount: workLinks.length,
+    headlineMy,
+    headlineEn,
+    bioMy,
+    bioEn,
+    acceptingWork,
+    typicalTurnaroundDays: turnaround,
+    minBudgetMmk: minBudget,
+  });
 
   function toggleSkill(skill: string) {
     setSkills((prev) =>
@@ -198,6 +231,12 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
         <h1 className="mt-sm text-display-sm text-ink-900">{t('edit.title')}</h1>
         <p className="mt-sm text-body text-ink-500">{t('edit.subhead')}</p>
       </div>
+
+      <ProfileCompleteness
+        percent={completeness.percent}
+        missing={completeness.missing}
+        mode="edit"
+      />
 
       <form className="space-y-2xl" onSubmit={(e) => void onSubmit(e)}>
         <fieldset className="space-y-lg">
@@ -335,25 +374,29 @@ function EditLoader() {
   const { t } = useI18n();
   const [profile, setProfile] = useState<ProfessionalMe | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
+  const load = useCallback(() => {
+    setLoading(true);
+    setError(null);
     void getMyProfessional()
       .then((me) => {
-        if (!cancelled) setProfile(me);
+        setProfile(me);
+        setLoading(false);
       })
       .catch((err) => {
-        if (cancelled) return;
         if (err instanceof ApiError && err.status === 404) {
           setError('missing');
         } else {
           setError(err instanceof ApiError ? err.message : t('edit.loadError'));
         }
+        setLoading(false);
       });
-    return () => {
-      cancelled = true;
-    };
   }, [t]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (error === 'missing') {
     return <Navigate to="/professionals/join" replace />;
@@ -361,13 +404,27 @@ function EditLoader() {
 
   if (error) {
     return (
-      <p className="py-3xl text-center text-body text-danger" role="alert">
-        {error}
-      </p>
+      <div className="py-3xl">
+        <p
+          className="text-center text-body leading-[1.8] text-ink-700 [overflow-wrap:anywhere]"
+          role="alert"
+        >
+          {error}
+        </p>
+        <div className="mt-md flex justify-center">
+          <button
+            type="button"
+            onClick={load}
+            className="tap-target rounded-md bg-jade-600 px-lg text-body-sm font-medium text-white"
+          >
+            {t('common.retry')}
+          </button>
+        </div>
+      </div>
     );
   }
 
-  if (!profile) {
+  if (loading || !profile) {
     return (
       <p className="py-3xl text-center text-body text-ink-500" role="status">
         {t('common.loading')}

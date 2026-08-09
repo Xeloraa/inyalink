@@ -2,6 +2,7 @@
   "demoOnly": true,
   "note": "DEMO ONLY — English UI-locale variant of the cafe-open roadmap fixture. Served when the live provider rate-limits or errors.",
   "matchInput": "ကော်ဖီဆိုင် ဖွင့်ချင်ပါတယ်",
+  "aliases": ["ကော်ဖီဆိုင် ဖွင့်ချင်ပါတယ်။ ဘာတွေ လိုအပ်မလဲ?"],
   "locale": "en",
   "language": "en",
   "disclaimer": "This roadmap is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",

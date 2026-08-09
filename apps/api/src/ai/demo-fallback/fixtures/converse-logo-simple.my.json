@@ -1,0 +1,63 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "logo လိုချင်ပါတယ်",
+  "aliases": [
+    "လိုဂို လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "logo လိုချင်တာကို မှတ်ထားပါတယ်။ သင့်လုပ်ငန်းအမည်က ဘာလဲ။",
+    "logo တစ်ခုတည်း လိုချင်ပါသလား၊ signage နဲ့ coffee cup အတွက်လည်း လိုအပ်ပါသလား။",
+    "Inya Cafe အတွက် logo တစ်ခုတည်း လိုချင်တာကို မှတ်ထားပါတယ်။ စတိုင်အနေနဲ့ minimal, modern, traditional တို့ထဲက ဘယ်လိုပုံစံကို စိတ်ဝင်စားပါသလဲ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Logo Design",
+      "description": "logo",
+      "requirements": [],
+      "reference_links": [],
+      "ai_confidence": 0.9,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Logo Design",
+      "description": "Inya Cafe အတွက် logo",
+      "requirements": [],
+      "reference_links": [],
+      "ai_confidence": 0.9,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Logo Design",
+      "description": "Inya Cafe အတွက် logo",
+      "requirements": [
+        "logo only"
+      ],
+      "reference_links": [],
+      "ai_confidence": 0.9,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "graphic-design",
+    "title": "Logo Design",
+    "description": "Inya Cafe အတွက် logo",
+    "requirements": [
+      "logo only",
+      "minimalist style",
+      "color palette: gray and cream"
+    ],
+    "reference_links": [],
+    "ai_confidence": 0.9,
+    "needs_human_review": true
+  }
+}

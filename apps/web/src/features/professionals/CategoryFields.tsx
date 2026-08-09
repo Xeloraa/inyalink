@@ -39,7 +39,7 @@ export function CategoryFields({
           className={FIELD_INPUT}
         />
       </div>
-      <fieldset>
+      <fieldset id="category">
         <legend className="mb-md text-caption text-ink-500">
           {t('onboarding.category')}
         </legend>

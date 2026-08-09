@@ -5,6 +5,8 @@ import Browse from './routes/Browse';
 import Landing from './routes/Landing';
 import Login from './routes/Login';
 import ProBriefs from './routes/ProBriefs';
+import EngagementMessages from './routes/EngagementMessages';
+import EngagementThreads from './routes/EngagementThreads';
 import ProfessionalProfile from './routes/ProfessionalProfile';
 import ProfessionalsEdit from './routes/ProfessionalsEdit';
 import ProfessionalsJoin from './routes/ProfessionalsJoin';
@@ -37,6 +39,11 @@ export default function App() {
           <Route path="browse" element={<Browse />} />
           <Route path="app" element={<Navigate to="/app/briefs" replace />} />
           <Route path="app/briefs" element={<ProBriefs />} />
+          <Route path="app/engagements" element={<EngagementThreads />} />
+          <Route
+            path="app/engagements/:id"
+            element={<EngagementMessages />}
+          />
           <Route
             path="profile/create"
             element={<Navigate to="/professionals/join" replace />}

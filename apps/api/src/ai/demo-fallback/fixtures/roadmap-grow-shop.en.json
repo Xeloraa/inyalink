@@ -1,0 +1,54 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq generateRoadmap. Served when the live provider rate-limits or errors.",
+  "kind": "roadmap",
+  "matchInput": "I want to grow my shop",
+  "aliases": [
+    "how do I grow my business"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a graphic designer for brand identity",
+      "why": "A strong visual brand helps your shop stand out and builds customer trust. Consistent logos, signage and collateral make marketing more effective. Skipping this early can lead to costly re‑branding later.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for product and interior shots",
+      "why": "High‑quality photos showcase your merchandise and store ambience, encouraging online and offline visits. Good images are essential for social posts, ads and any e‑commerce presence. Poor visuals often reduce engagement.",
+      "category_slug": "photography",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a web developer to build a shop website",
+      "why": "A website gives your shop a 24/7 sales channel and improves discoverability on search engines. It also centralises contact info, promotions and online ordering if needed. Starting with a solid site avoids later technical debt.",
+      "category_slug": "web-development",
+      "est_min_mmk": 300000,
+      "est_max_mmk": 700000
+    },
+    {
+      "order": 4,
+      "title": "Hire a content writer for website copy and blog posts",
+      "why": "Clear, persuasive copy turns visitors into customers and supports SEO. Regular blog or news updates keep your audience engaged and improve search rankings. Good writing reduces bounce rates and increases conversion.",
+      "category_slug": "content-writing",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 180000
+    },
+    {
+      "order": 5,
+      "title": "Hire a social media marketer for campaign setup and management",
+      "why": "Targeted social campaigns drive foot traffic and repeat visits, especially for local shops. A specialist can create ad creatives, schedule posts and analyse performance to optimise spend. Early strategy prevents wasted ad budget.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    }
+  ]
+}

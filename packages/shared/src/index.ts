@@ -194,6 +194,23 @@ export {
   type NotificationUnreadCountResponse,
 } from './schemas/notifications.js';
 export {
+  EngagementMessagesParamsSchema,
+  MESSAGE_BODY_MAX,
+  MessageSchema,
+  MessageThreadBriefSchema,
+  MessageThreadListResponseSchema,
+  MessageThreadResponseSchema,
+  MessageThreadSummarySchema,
+  SendMessageInputSchema,
+  type EngagementMessagesParams,
+  type Message,
+  type MessageThreadBrief,
+  type MessageThreadListResponse,
+  type MessageThreadResponse,
+  type MessageThreadSummary,
+  type SendMessageInput,
+} from './schemas/messages.js';
+export {
   CategoriesResponseSchema,
   CategorySchema,
   CategorySlugSchema,
@@ -244,3 +261,14 @@ export {
   type WorkLinkIdParams,
   type WorkLinkPlatform,
 } from './schemas/professional.js';
+export {
+  PROFESSIONAL_COMPLETENESS_ANCHORS,
+  PROFESSIONAL_COMPLETENESS_FIELDS,
+  PROFESSIONAL_COMPLETENESS_WEIGHTS,
+  completenessInputFromProfile,
+  computeProfessionalCompleteness,
+  type ProfessionalCompleteness,
+  type ProfessionalCompletenessFieldKey,
+  type ProfessionalCompletenessInput,
+  type ProfessionalCompletenessMissingItem,
+} from './professionalCompleteness.js';

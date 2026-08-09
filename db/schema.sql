@@ -297,7 +297,9 @@ select cron.schedule(
 -- A VIEW, not a table. No sync job, no drift, no stale cache.
 -- Make it materialized only if it measurably slows down. It won't.
 
-create view professional_reputation as
+create view professional_reputation
+with (security_invoker = true)
+as
 select
   p.user_id as professional_id,
   count(*) filter (where e.status = 'confirmed')            as completed_count,
@@ -392,6 +394,20 @@ alter table messages        enable row level security;
 alter table ai_conversations enable row level security;
 alter table ai_conversation_messages enable row level security;
 alter table notifications enable row level security;
+alter table categories      enable row level security;
+alter table ai_calls        enable row level security;
+alter table audit_log       enable row level security;
+
+-- Owned by the API migrate runner; documented here so RLS stays in sync.
+create table if not exists schema_migrations (
+  filename   text primary key,
+  applied_at timestamptz not null default now()
+);
+alter table schema_migrations enable row level security;
+-- No policies on audit_log / ai_calls / schema_migrations: deny anon/authenticated.
+
+create policy categories_active_public on categories
+  for select using (is_active = true);
 
 create policy own_profile on profiles
   for all using (id = auth.uid());

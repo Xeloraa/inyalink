@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { EngagementInboxItem } from '@inyalink/shared';
 import { formatMmk } from '@inyalink/shared';
 import {
@@ -8,6 +9,7 @@ import {
 } from '../../lib/api';
 import { ApiError } from '../../lib/apiClient';
 import { useI18n } from '../../lib/i18n';
+import { LoadErrorNotice } from '../../components/Notices';
 
 function secondsUntil(respondBy: string | null): number | null {
   if (!respondBy) return null;
@@ -29,10 +31,16 @@ function formatCountdown(seconds: number | null): string {
 
 type EngagementInboxProps = {
   onChanged?: () => void;
+  /** When true, show an invitation empty state instead of hiding the section. */
+  showEmpty?: boolean;
 };
 
-export function EngagementInbox({ onChanged }: EngagementInboxProps) {
+export function EngagementInbox({
+  onChanged,
+  showEmpty = false,
+}: EngagementInboxProps) {
   const { t, locale } = useI18n();
+  const navigate = useNavigate();
   const [items, setItems] = useState<EngagementInboxItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -71,8 +79,8 @@ export function EngagementInbox({ onChanged }: EngagementInboxProps) {
     setError(null);
     try {
       await acceptEngagement(id);
-      await reload();
       onChanged?.();
+      navigate(`/app/engagements/${id}`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('inbox.actionError'));
     } finally {
@@ -98,20 +106,46 @@ export function EngagementInbox({ onChanged }: EngagementInboxProps) {
     }
   }
 
-  if (loading && items.length === 0) return null;
-  if (!loading && items.length === 0 && !error) return null;
+  if (loading && items.length === 0 && !error) {
+    return (
+      <p className="text-body-sm leading-[1.8] text-ink-500" role="status">
+        {t('common.loading')}
+      </p>
+    );
+  }
+
+  if (!loading && items.length === 0 && !error && !showEmpty) {
+    return null;
+  }
+
+  if (error && items.length === 0) {
+    return (
+      <LoadErrorNotice message={error} onRetry={() => void reload()} />
+    );
+  }
+
+  if (!loading && items.length === 0 && showEmpty) {
+    return (
+      <section className="rounded-lg border border-line bg-paper px-lg py-lg leading-[1.8]">
+        <h2 className="text-title text-ink-900">{t('inbox.emptyTitle')}</h2>
+        <p className="mt-sm text-body-sm text-ink-500 [overflow-wrap:anywhere]">
+          {t('inbox.emptyBody')}
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="space-y-4 rounded-lg border border-jade-200 bg-jade-50 p-5">
       <div>
         <h2 className="text-title text-jade-900">{t('inbox.title')}</h2>
-        <p className="mt-1 text-body-sm text-jade-800">{t('inbox.subhead')}</p>
+        <p className="mt-1 text-body-sm leading-[1.8] text-jade-800">
+          {t('inbox.subhead')}
+        </p>
       </div>
 
       {error ? (
-        <p className="text-body-sm text-danger" role="alert">
-          {error}
-        </p>
+        <LoadErrorNotice message={error} onRetry={() => void reload()} />
       ) : null}
 
       <ul className="space-y-4">

@@ -2,6 +2,7 @@
   "demoOnly": true,
   "note": "DEMO ONLY — English UI-locale full cafe-logo converse script. Matched on opening input; any failed turn serves the next question, then finalBrief.",
   "matchInput": "ကော်ဖီဆိုင်အတွက် logo လိုချင်ပါတယ်",
+  "aliases": ["ကော်ဖီဆိုင် လိုဂို လိုချင်ပါတယ်"],
   "locale": "en",
   "questions": [
     "Noted — you need a cafe logo. I can help find someone; what's the cafe name, and should that text appear in the mark?",

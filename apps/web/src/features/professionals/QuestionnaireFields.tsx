@@ -96,7 +96,10 @@ export function QuestionnaireFields({
           className={FIELD_TEXTAREA}
         />
       </div>
-      <label className="tap-target flex cursor-pointer items-center justify-between gap-md rounded-md border border-line bg-white px-lg text-body text-ink-700">
+      <label
+        id="acceptingWork"
+        className="tap-target flex cursor-pointer items-center justify-between gap-md rounded-md border border-line bg-white px-lg text-body text-ink-700 [overflow-wrap:anywhere] [line-height:1.8]"
+      >
         <span>{t('onboarding.acceptingWork')}</span>
         <input
           type="checkbox"

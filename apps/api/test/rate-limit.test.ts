@@ -13,15 +13,22 @@ describe('parseRateLimitBackoffMs', () => {
     expect(parseRateLimitBackoffMs(res, '')).toBe(3000);
   });
 
-  it('parses Groq body hint and caps at 15s', () => {
+  it('parses Groq body hint and caps at 4s', () => {
     const res = new Response('');
     expect(
       parseRateLimitBackoffMs(
         res,
         'Please try again in 8.317499999s. Need more tokens?',
       ),
-    ).toBe(8318);
-    expect(parseRateLimitBackoffMs(res, 'try again in 30s')).toBe(15_000);
+    ).toBe(4_000);
+    expect(parseRateLimitBackoffMs(res, 'try again in 30s')).toBe(4_000);
+  });
+
+  it('uses exponential default by attempt', () => {
+    const res = new Response('');
+    expect(parseRateLimitBackoffMs(res, '', 0)).toBe(1_500);
+    expect(parseRateLimitBackoffMs(res, '', 1)).toBe(3_000);
+    expect(parseRateLimitBackoffMs(res, '', 2)).toBe(4_000);
   });
 });
 
@@ -31,24 +38,21 @@ describe('rate limit handling', () => {
     vi.useRealTimers();
   });
 
-  it('retries once on 429 then returns AI_RATE_LIMIT', async () => {
+  it('retries multiple times on 429 then returns AI_RATE_LIMIT', async () => {
     vi.useFakeTimers();
+    const limited = () =>
+      new Response(
+        JSON.stringify({
+          error: { message: 'Please try again in 1s.' },
+        }),
+        { status: 429, headers: { 'retry-after': '1' } },
+      );
+
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            error: { message: 'Please try again in 1s.' },
-          }),
-          { status: 429, headers: { 'retry-after': '1' } },
-        ),
-      )
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({ error: { message: 'still limited' } }),
-          { status: 429 },
-        ),
-      );
+      .mockResolvedValueOnce(limited())
+      .mockResolvedValueOnce(limited())
+      .mockResolvedValueOnce(limited());
 
     vi.stubGlobal('fetch', fetchMock);
 
@@ -66,10 +70,10 @@ describe('rate limit handling', () => {
       schema: z.object({ status: z.literal('ok') }),
     });
 
-    await vi.advanceTimersByTimeAsync(1000);
+    await vi.advanceTimersByTimeAsync(10_000);
     const result = await pending;
 
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(result).toEqual({
       ok: false,
       error: {

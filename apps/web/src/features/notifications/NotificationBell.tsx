@@ -157,15 +157,24 @@ export function NotificationBell() {
               </p>
             </div>
             {listQuery.isLoading ? (
-              <p className="px-md py-lg text-[13px] text-ink-500">
+              <p className="px-md py-lg text-[13px] leading-[1.8] text-ink-500">
                 {t('common.loading')}
               </p>
             ) : listQuery.isError ? (
-              <p className="px-md py-lg text-[13px] text-danger" role="alert">
-                {t('notifications.loadError')}
-              </p>
+              <div className="px-md py-lg" role="alert">
+                <p className="text-[13px] leading-[1.8] text-ink-700 [overflow-wrap:anywhere]">
+                  {t('notifications.loadError')}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => void listQuery.refetch()}
+                  className="mt-sm text-[13px] font-medium text-jade-600 underline focus-visible:shadow-focus"
+                >
+                  {t('common.retry')}
+                </button>
+              </div>
             ) : items.length === 0 ? (
-              <p className="px-md py-lg text-[13px] text-ink-500">
+              <p className="px-md py-lg text-[13px] leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
                 {t('notifications.empty')}
               </p>
             ) : (
