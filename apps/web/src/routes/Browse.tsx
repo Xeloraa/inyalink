@@ -1,7 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ProfessionalListItem, ProfessionalsSort } from '@inyalink/shared';
+import {
+  formatMmk,
+  type ProfessionalListItem,
+  type ProfessionalsSort,
+} from '@inyalink/shared';
 import {
   getCategories,
   getProfessionalSkills,
@@ -22,18 +26,35 @@ import {
 import { ClearFiltersButton, FilterRail } from '../features/professionals/FilterRail';
 import { FilterSheet } from '../features/professionals/FilterSheet';
 import { Toolbar } from '../features/professionals/Toolbar';
-import { ArrowRightIcon } from '../features/professionals/icons';
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  HeartIcon,
+} from '../features/professionals/icons';
+import { useSavedPros } from '../features/professionals/savedPros';
 import { useDebouncedValue } from '../features/professionals/useDebouncedValue';
 
 const SKELETON_ROWS = 4;
-const SKILL_CHIPS = 5;
 
-/** Find talent row — full-width list, not a card grid. */
+function replyValue(medianMins: number | null): string {
+  if (medianMins === null) return '—';
+  if (medianMins < 60) return `${Math.round(medianMins)}m`;
+  return `${Math.round(medianMins / 60)}h`;
+}
+
+/**
+ * Find talent row — matches InyaLink.dc.html browse article:
+ * avatar · identity/skills · metrics · save + Message + View profile.
+ */
 function TalentRow({
   pro,
+  saved,
+  onToggleSave,
   onMessage,
 }: {
   pro: ProfessionalListItem;
+  saved: boolean;
+  onToggleSave: () => void;
   onMessage: () => void;
 }) {
   const { t, locale } = useI18n();
@@ -42,73 +63,129 @@ function TalentRow({
     locale === 'en'
       ? (pro.headlineEn ?? pro.headlineMy)
       : (pro.headlineMy ?? pro.headlineEn);
-  const skills = pro.skills.slice(0, SKILL_CHIPS);
-  const overflow = pro.skills.length - skills.length;
+  const budget =
+    pro.stats.minBudgetMmk === null
+      ? null
+      : formatMmk(pro.stats.minBudgetMmk, locale);
+  const metrics = [
+    { value: String(pro.stats.completedCount), label: t('browse.metricJobs') },
+    {
+      value: String(pro.stats.uniqueClients),
+      label: t('browse.metricClients'),
+    },
+    {
+      value:
+        pro.stats.completionRatePct === null
+          ? '—'
+          : `${Math.round(pro.stats.completionRatePct)}%`,
+      label: t('browse.metricRate'),
+    },
+    {
+      value: replyValue(pro.stats.medianResponseMins),
+      label: t('browse.metricReply'),
+    },
+  ];
 
   return (
-    <article className="flex flex-col gap-md px-md py-lg transition-colors duration-fast ease-out hover:bg-[#F7F9F7] sm:flex-row sm:items-center sm:gap-lg sm:px-lg">
+    <article className="flex flex-wrap items-center gap-4 rounded-[18px] bg-white px-[18px] py-4 shadow-[0_1px_2px_rgba(16,22,19,0.04),0_8px_26px_rgba(16,22,19,0.05)]">
       {pro.avatarUrl ? (
         <img
           src={pro.avatarUrl}
           alt=""
-          width={48}
-          height={48}
+          width={64}
+          height={64}
           loading="lazy"
-          className="h-12 w-12 shrink-0 rounded-full object-cover"
+          className="h-16 w-16 shrink-0 rounded-full object-cover"
         />
       ) : (
         <div
           aria-hidden
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-jade-100 font-display text-body text-jade-800"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-jade-100 font-display text-[15.5px] font-semibold text-jade-800"
         >
           {pro.displayName.slice(0, 1)}
         </div>
       )}
 
-      <div className="min-w-0 flex-1">
-        <p className="text-body font-semibold leading-burmese text-ink-900 [overflow-wrap:anywhere]">
-          {pro.displayName}
-        </p>
+      <div className="min-w-0 flex-[1_1_220px]">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[15.5px] font-semibold leading-burmese text-ink-900 [overflow-wrap:anywhere]">
+            {pro.displayName}
+          </span>
+          {pro.verified ? (
+            <span className="inline-flex shrink-0 text-jade-600">
+              <CheckIcon size={15} />
+              <span className="sr-only">{t('landing.verified')}</span>
+            </span>
+          ) : null}
+        </div>
         {headline ? (
-          <p className="mt-0.5 text-body-sm leading-burmese text-jade-600 [overflow-wrap:anywhere]">
+          <p className="font-myanmar text-[13px] leading-burmese text-jade-600 [overflow-wrap:anywhere]">
             {headline}
           </p>
         ) : null}
-        {pro.location ? (
-          <p className="mt-0.5 text-caption leading-burmese text-ink-400 [overflow-wrap:anywhere]">
-            {pro.location}
+        {pro.location || budget ? (
+          <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11.5px] leading-burmese text-ink-400 [overflow-wrap:anywhere]">
+            {pro.location ? <span>{pro.location}</span> : null}
+            {pro.location && budget ? <span aria-hidden>·</span> : null}
+            {budget ? (
+              <span>
+                {t('profile.statBudget')} {budget}
+              </span>
+            ) : null}
           </p>
         ) : null}
-        {skills.length > 0 ? (
-          <ul className="mt-sm flex flex-wrap gap-sm">
-            {skills.map((skill) => (
+        {pro.skills.length > 0 ? (
+          <ul className="mt-2 flex flex-wrap gap-1.5">
+            {pro.skills.map((skill) => (
               <li
                 key={skill}
-                className="rounded-full bg-line-soft px-sm py-0.5 text-caption leading-burmese text-ink-700 [overflow-wrap:anywhere]"
+                className="rounded-full bg-line-soft px-2.5 py-[3px] text-[11px] leading-burmese text-ink-700 [overflow-wrap:anywhere]"
               >
                 {skill}
               </li>
             ))}
-            {overflow > 0 ? (
-              <li className="rounded-full bg-line-soft px-sm py-0.5 text-caption text-ink-500">
-                +{overflow}
-              </li>
-            ) : null}
           </ul>
         ) : null}
       </div>
 
-      <div className="flex w-full shrink-0 flex-col gap-sm sm:w-auto sm:flex-row sm:items-center">
+      <div className="flex min-w-0 flex-[1_1_260px] flex-wrap gap-x-[22px] gap-y-1.5">
+        {metrics.map((metric) => (
+          <span
+            key={metric.label}
+            className="text-[12.5px] leading-burmese [overflow-wrap:anywhere]"
+          >
+            <b className="font-display text-[15px] font-semibold text-ink-900">
+              {metric.value}
+            </b>{' '}
+            <span className="text-ink-500">{metric.label}</span>
+          </span>
+        ))}
+      </div>
+
+      <div className="ml-auto flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          aria-pressed={saved}
+          aria-label={saved ? t('profile.saved') : t('profile.save')}
+          onClick={onToggleSave}
+          className={`inline-flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[12px] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
+            saved
+              ? 'bg-jade-50 text-jade-600'
+              : 'bg-[#F4F6F4] text-ink-300 hover:text-jade-600'
+          }`}
+        >
+          <HeartIcon filled={saved} size={19} />
+        </button>
         <button
           type="button"
           onClick={onMessage}
-          className="tap-target inline-flex min-h-[44px] w-full items-center justify-center rounded-md bg-jade-600 px-lg text-body-sm font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 sm:w-auto"
+          className="inline-flex h-[42px] min-h-[44px] items-center justify-center whitespace-nowrap rounded-full bg-[#F4F6F4] px-[18px] text-[13px] font-semibold text-ink-900 transition-colors duration-fast ease-out hover:bg-line-soft focus-visible:shadow-focus sm:min-h-0"
         >
           {t('profile.message')}
         </button>
         <Link
           to={profilePath}
-          className="tap-target inline-flex min-h-[44px] w-full items-center justify-center rounded-md border border-line bg-white px-lg text-body-sm font-medium text-ink-900 no-underline transition-colors duration-fast ease-out hover:border-jade-400 hover:bg-jade-50 focus-visible:shadow-focus active:bg-jade-100 sm:w-auto"
+          className="inline-flex h-[42px] min-h-[44px] items-center justify-center whitespace-nowrap rounded-full bg-jade-600 px-5 text-[13px] font-semibold text-white no-underline transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 sm:min-h-0"
         >
           {t('browse.viewProfile')}
         </Link>
@@ -119,21 +196,30 @@ function TalentRow({
 
 function TalentRowSkeleton() {
   return (
-    <div aria-hidden className="flex flex-col gap-md px-md py-lg sm:flex-row sm:items-center sm:gap-lg sm:px-lg">
-      <Skeleton className="h-12 w-12 shrink-0 rounded-full" />
-      <div className="min-w-0 flex-1">
+    <div
+      aria-hidden
+      className="flex flex-wrap items-center gap-4 rounded-[18px] bg-white px-[18px] py-4 shadow-[0_1px_2px_rgba(16,22,19,0.04),0_8px_26px_rgba(16,22,19,0.05)]"
+    >
+      <Skeleton className="h-16 w-16 shrink-0 rounded-full" />
+      <div className="min-w-0 flex-[1_1_220px]">
         <Skeleton className="h-4 w-40 max-w-full" />
-        <Skeleton className="mt-xs h-3.5 w-56 max-w-full" />
-        <Skeleton className="mt-xs h-3 w-24" />
-        <div className="mt-sm flex flex-wrap gap-sm">
+        <Skeleton className="mt-1 h-3.5 w-56 max-w-full" />
+        <Skeleton className="mt-1 h-3 w-36" />
+        <div className="mt-2 flex flex-wrap gap-1.5">
           {[0, 1, 2].map((i) => (
             <Skeleton key={i} className="h-6 w-16 rounded-full" />
           ))}
         </div>
       </div>
-      <div className="flex w-full flex-col gap-sm sm:w-auto sm:flex-row">
-        <Skeleton className="h-11 w-full rounded-md sm:w-28" />
-        <Skeleton className="h-11 w-full rounded-md sm:w-28" />
+      <div className="flex min-w-0 flex-[1_1_260px] flex-wrap gap-x-[22px] gap-y-1.5">
+        {[0, 1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-4 w-16" />
+        ))}
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <Skeleton className="h-[38px] w-[38px] rounded-[12px]" />
+        <Skeleton className="h-[42px] w-[88px] rounded-full" />
+        <Skeleton className="h-[42px] w-[110px] rounded-full" />
       </div>
     </div>
   );
@@ -147,6 +233,7 @@ function TalentRowSkeleton() {
 export default function Browse() {
   const { t } = useI18n();
   const { setOpen } = useChatUi();
+  const { saved, toggleSaved } = useSavedPros();
 
   const [filters, setFilters] = useState<BrowseFilters>(DEFAULT_FILTERS);
   const [search, setSearch] = useState('');
@@ -263,10 +350,7 @@ export default function Browse() {
 
           <div className="mt-lg">
             {prosQuery.isPending ? (
-              <div
-                className="divide-y divide-line border-y border-line"
-                role="status"
-              >
+              <div className="flex flex-col gap-[10px]" role="status">
                 <span className="sr-only">{t('common.loading')}</span>
                 {Array.from({ length: SKELETON_ROWS }, (_, i) => (
                   <TalentRowSkeleton key={i} />
@@ -308,7 +392,7 @@ export default function Browse() {
               </div>
             ) : (
               <ul
-                className={`divide-y divide-line border-y border-line transition-opacity duration-base ease-out ${
+                className={`flex flex-col gap-[10px] transition-opacity duration-base ease-out ${
                   prosQuery.isPlaceholderData ? 'opacity-60' : ''
                 }`}
               >
@@ -316,6 +400,8 @@ export default function Browse() {
                   <li key={pro.id}>
                     <TalentRow
                       pro={pro}
+                      saved={saved.has(pro.id)}
+                      onToggleSave={() => toggleSaved(pro.id)}
                       onMessage={() => setOpen(true)}
                     />
                   </li>
