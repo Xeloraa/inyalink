@@ -44,7 +44,7 @@ export function HeroDawn({
         <Ripples
           size={560}
           rings={6}
-          strokeClassName="stroke-[color:var(--jade-300)]"
+          strokeClassName="stroke-jade-300"
           className="animate-ripple"
         />
       </div>

@@ -56,22 +56,21 @@ const COMMITS = [
  * AppShell's main padding so the dark water runs to the page edge.
  *
  * Deliberately static: promises are the page's trust anchor, so they carry
- * no scroll-reveal — full opacity, always. Colors use var(--...) arbitrary
- * classes so they render even under a Tailwind process with a stale config.
+ * no scroll-reveal — full opacity, always.
  */
 export function Commitments() {
   const { t } = useI18n();
 
   return (
     <FullBleed
-      className="-mb-3xl bg-[var(--jade-900)] md:-mb-4xl"
+      className="-mb-3xl bg-jade-900 md:-mb-4xl"
       labelledBy="commit-heading"
       innerClassName="py-4xl md:py-5xl"
     >
       <div>
         <h2
           id="commit-heading"
-          className="text-caption font-medium tracking-[0.08em] text-[color:var(--jade-300)]"
+          className="text-caption font-medium tracking-[0.08em] text-jade-300"
         >
           {t('landing.commitTitle')}
         </h2>
@@ -80,14 +79,14 @@ export function Commitments() {
           {COMMITS.map((commit) => (
             <li
               key={commit.key}
-              className="flex items-start gap-md text-body-lg leading-burmese text-[color:var(--jade-50)]"
+              className="flex items-start gap-md text-body-lg leading-burmese text-jade-50"
             >
               <span
                 aria-hidden
                 className={`mt-1 shrink-0 ${
                   commit.amber
-                    ? 'text-[color:var(--amber-500)]'
-                    : 'text-[color:var(--jade-300)]'
+                    ? 'text-amber-500'
+                    : 'text-jade-300'
                 }`}
               >
                 {commit.icon}
@@ -99,10 +98,10 @@ export function Commitments() {
 
         <div className="mt-3xl border-t border-[rgba(255,255,255,0.10)] pt-xl">
           <span className="inline-flex items-center gap-sm">
-            <span className="text-[color:var(--jade-300)]">
+            <span className="text-jade-300">
               <LogoMark />
             </span>
-            <span className="font-display text-body font-semibold text-[color:var(--jade-50)]">
+            <span className="font-display text-body font-semibold text-jade-50">
               {t('app.name')}
             </span>
           </span>

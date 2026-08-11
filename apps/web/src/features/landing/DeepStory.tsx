@@ -95,7 +95,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
 
   return (
     <FullBleed
-      className="overflow-hidden bg-[var(--jade-950)]"
+      className="overflow-hidden bg-jade-950"
       labelledBy="deep-heading"
       innerClassName="py-4xl md:py-5xl"
     >
@@ -112,12 +112,12 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
       </div>
       <div className="relative">
         <div>
-          <p className="text-caption font-medium tracking-[0.08em] text-[color:var(--jade-300)]">
+          <p className="text-caption font-medium tracking-[0.08em] text-jade-300">
             {t('landing.previewLabel')}
           </p>
           <h2
             id="deep-heading"
-            className="text-sect mt-md max-w-brief text-[color:var(--jade-50)]"
+            className="text-sect mt-md max-w-brief text-jade-50"
           >
             {t('landing.previewTitle')}
           </h2>
@@ -151,8 +151,8 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
                 <p
                   className={`px-lg py-md text-body-lg leading-burmese ${
                     message.role === 'user'
-                      ? 'max-w-[78%] rounded-[16px] rounded-br-[4px] bg-[var(--jade-600)] text-[color:var(--white)]'
-                      : 'max-w-[86%] rounded-[16px] rounded-bl-[4px] border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.07)] text-[color:var(--jade-50)]'
+                      ? 'max-w-[78%] rounded-[16px] rounded-br-[4px] bg-jade-600 text-white'
+                      : 'max-w-[86%] rounded-[16px] rounded-bl-[4px] border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.07)] text-jade-50'
                   }`}
                 >
                   {t(message.key)}
@@ -171,7 +171,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
                 {[0, 1, 2].map((dot) => (
                   <span
                     key={dot}
-                    className="animate-dot h-1.5 w-1.5 rounded-full bg-[var(--jade-300)]"
+                    className="animate-dot h-1.5 w-1.5 rounded-full bg-jade-300"
                     style={{ animationDelay: `${dot * 300}ms` }}
                   />
                 ))}
@@ -189,7 +189,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
           <button
             type="button"
             onClick={onStart}
-            className="reveal tap-target mt-2xl inline-flex items-center gap-sm text-body-sm leading-burmese text-[color:var(--jade-300)] underline underline-offset-4 transition-colors duration-fast ease-out hover:text-jade-100 focus-visible:rounded-sm focus-visible:shadow-[0_0_0_3px_color-mix(in_srgb,var(--jade-300)_35%,transparent)]"
+            className="reveal tap-target mt-2xl inline-flex items-center gap-sm text-body-sm leading-burmese text-jade-300 underline underline-offset-4 transition-colors duration-fast ease-out hover:text-jade-100 focus-visible:rounded-sm focus-visible:shadow-[0_0_0_3px_color-mix(in_srgb,var(--jade-300)_35%,transparent)]"
             style={{ transitionDelay: '850ms' }}
           >
             {t('landing.deepStart')}

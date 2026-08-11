@@ -11,10 +11,6 @@ export default {
           175: 'var(--jade-175)',
           200: 'var(--jade-200)',
           225: 'var(--jade-225)',
-          // 300/950 were added for the landing's dark-water sections. A
-          // long-running dev server can hold a stale copy of this config,
-          // so landing components reference them as bg-[var(--jade-950)]
-          // style arbitrary values rather than these tokens.
           300: 'var(--jade-300)',
           400: 'var(--jade-400)',
           bright: 'var(--jade-bright)',
