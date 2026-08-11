@@ -1,0 +1,45 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "how much for a website",
+  "aliases": [
+    "website price"
+  ],
+  "locale": "en",
+  "questions": [
+    "Website projects typically start around 250,000 kyat and can go up to 800,000 kyat or more, depending on scope. I can help you scope the job if you’d like more detail.",
+    "Got it, the main deliverable is a website. Could you share the business name and which core pages you’d like, such as Home, About, and Contact?",
+    "Which core pages do you need for the Inya Cafe website, such as Home, About, Menu, or Contact?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en",
+      "category": "web-development",
+      "title": "Website Development",
+      "description": "Develop a business website",
+      "ai_confidence": 1
+    },
+    {
+      "language": "en",
+      "category": "web-development",
+      "title": "Website Development",
+      "description": "Develop a business website for Inya Cafe",
+      "ai_confidence": 1
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "web-development",
+    "title": "Website Development",
+    "description": "Develop a business website for Inya Cafe",
+    "ai_confidence": 1,
+    "requirements": [
+      "Editable source files"
+    ],
+    "needs_human_review": true
+  }
+}

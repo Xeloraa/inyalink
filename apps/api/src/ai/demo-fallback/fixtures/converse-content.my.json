@@ -1,0 +1,49 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "content writing လိုချင်ပါတယ်",
+  "aliases": [
+    "ကော်ပီ ရေးပေးချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "Burmese content writing လိုချင်တာကို မှတ်ထားပါတယ်။ အကြောင်းအရာနှင့် ပုံစံ (article, product page, script စသည်) ကို ပြောပေးနိုင်မလား။",
+    "Minimalist ပုံစံကို မှတ်ထားပါပြီ။ အကြောင်းအရာနှင့် ဘယ်ပုံစံ (article, product page, script) လိုချင်သလဲ ပြောပေးနိုင်မလား။",
+    "အကြောင်းအရာ (topic) နဲ့ ဘယ်ပုံစံ (article, product page, script) လိုချင်သလဲ။ အရေအတွက် (word count) သတ်မှတ်ချက်ရှိရင် ပြောပါ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "content-writing-burmese",
+      "ai_confidence": 1
+    },
+    {
+      "language": "my",
+      "category": "content-writing-burmese",
+      "ai_confidence": 1,
+      "title": "Burmese content writing",
+      "description": "Minimalist ပုံစံ",
+      "requirements": []
+    },
+    {
+      "language": "my",
+      "category": "content-writing-burmese",
+      "ai_confidence": 1,
+      "title": "Burmese content writing",
+      "description": "Minimalist ပုံစံ",
+      "requirements": []
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "content-writing-burmese",
+    "ai_confidence": 1,
+    "title": "Burmese content writing",
+    "description": "Minimalist ပုံစံ",
+    "requirements": [],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-09-30"
+  }
+}

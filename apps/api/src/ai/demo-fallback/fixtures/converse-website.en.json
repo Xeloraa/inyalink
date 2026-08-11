@@ -1,0 +1,60 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "I need a website for my shop",
+  "aliases": [
+    "I want a website"
+  ],
+  "locale": "en",
+  "questions": [
+    "Sure, I can help with the website. Could you tell me the name of your shop?",
+    "Got it, the shop is named Inya Cafe. Could you let me know roughly which pages you’d like (e.g., Home, Menu, About, Contact) and whether you need online ordering or e‑commerce functionality?",
+    "Editable source files noted. Could you let me know your budget range for the website?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "web-development",
+      "title": "Website for shop",
+      "ai_confidence": 1
+    },
+    {
+      "language": "en",
+      "category": "web-development",
+      "title": "Website for Inya Cafe",
+      "ai_confidence": 1,
+      "description": "Create a business website for Inya Cafe",
+      "requirements": [],
+      "reference_links": [],
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "web-development",
+      "title": "Website for Inya Cafe",
+      "ai_confidence": 1,
+      "description": "Create a business website for Inya Cafe",
+      "requirements": [
+        "Editable source files"
+      ],
+      "reference_links": [],
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "web-development",
+    "title": "Website for Inya Cafe",
+    "ai_confidence": 1,
+    "description": "Create a business website for Inya Cafe",
+    "requirements": [
+      "Editable source files"
+    ],
+    "reference_links": [],
+    "needs_human_review": false,
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-09-30"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "I need a content writer",
+  "aliases": [
+    "looking for a content writer"
+  ],
+  "locale": "en",
+  "questions": [
+    "Got it, you need Burmese content writing. Could you tell me the type of content (article, product page, script, etc.) and the topic you have in mind?",
+    "I’ve noted that you’d like the deliverables in editable source files. Could you let me know the specific type of content you need—such as an article, product page, or script—and the topic you’d like it to cover?",
+    "I’ve noted the requirement for editable source files. Could you tell me the specific type of content you need—article, product page, script, etc.—and the topic you’d like it to cover?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "content-writing-burmese",
+      "ai_confidence": 1
+    },
+    {
+      "language": "en",
+      "category": "content-writing-burmese",
+      "ai_confidence": 1,
+      "requirements": [
+        "Editable source files please."
+      ]
+    },
+    {
+      "language": "en",
+      "category": "content-writing-burmese",
+      "ai_confidence": 1,
+      "requirements": [
+        "Editable source files please."
+      ]
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "content-writing-burmese",
+    "ai_confidence": 1,
+    "requirements": [
+      "Editable source files please."
+    ],
+    "needs_human_review": true
+  }
+}

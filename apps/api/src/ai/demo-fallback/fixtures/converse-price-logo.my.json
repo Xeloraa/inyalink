@@ -1,0 +1,48 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "logo က ဘယ်လောက်ကျမလဲ",
+  "aliases": [
+    "လိုဂို ဈေးနှုန်း ဘယ်လောက်လဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "logo အတွက် အကျဉ်းချုပ် အကန့်အသတ်က 80,000 ကနေ 500,000 ကျပ် အထိ ဖြစ်နိုင်ပါတယ်၊ အလုပ်အကျယ်အဝန်းပေါ် မူတည်ပါတယ်။ အကယ်၍ အကျဉ်းချုပ်ကို တစ်ခါတည်း စီစဉ်ချင်ရင် ကူညီပေးနိုင်ပါတယ်။",
+    "logo တစ်ခုတည်းပဲ လိုချင်တာကို မှတ်ထားပါတယ်။ လုပ်ငန်းအမည်ကို ပြောပြနိုင်မလား။",
+    "Inya Cafe အတွက် logo တစ်ခုတည်း လိုချင်တာကို မှတ်ထားပါတယ်။ စတိုင်အနေနဲ့ minimal, modern, traditional တို့ထဲက ဘယ်လိုပုံစံကို အကြိုက်ရှိပါသလဲ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Logo Design",
+      "ai_confidence": 1
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Logo Design",
+      "ai_confidence": 1,
+      "description": "Logo design for Inya Cafe",
+      "requirements": [
+        "single logo"
+      ]
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "graphic-design",
+    "title": "Logo Design",
+    "ai_confidence": 1,
+    "description": "Logo design for Inya Cafe with minimalist style.",
+    "requirements": [
+      "single logo",
+      "minimalist style"
+    ],
+    "needs_human_review": true
+  }
+}

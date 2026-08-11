@@ -1,0 +1,52 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "I need photography for my shop",
+  "aliases": [
+    "I want product photography"
+  ],
+  "locale": "en",
+  "questions": [
+    "Could you tell me what you’d like photographed (for example shop interior, exterior, products) and roughly how many shots you need?",
+    "Got it, you’re looking for a primary photo of your shop. Could you tell me the name of your shop and the budget you have in mind for this photography?",
+    "Could you let me know the name of your shop?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "photography",
+      "ai_confidence": 1
+    },
+    {
+      "language": "en",
+      "category": "photography",
+      "ai_confidence": 1,
+      "title": "Shop photography",
+      "description": "Main photography deliverable for shop interior/exterior",
+      "requirements": []
+    },
+    {
+      "language": "en",
+      "category": "photography",
+      "ai_confidence": 1,
+      "title": "Shop photography",
+      "description": "Main photography deliverable for shop interior/exterior",
+      "requirements": [],
+      "budget_min_mmk": 300000,
+      "budget_max_mmk": 500000,
+      "deadline": "2026-09-30"
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "photography",
+    "ai_confidence": 1,
+    "title": "Shop photography",
+    "description": "Main photography deliverable for Inya Cafe shop interior/exterior",
+    "requirements": [],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-09-30"
+  }
+}

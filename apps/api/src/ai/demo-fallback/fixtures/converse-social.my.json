@@ -1,0 +1,62 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "Facebook Instagram စီမံပေးချင်ပါတယ်",
+  "aliases": [
+    "social media လုပ်ပေးချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "Facebook နှင့် Instagram စီမံပေးချင်တာကို မှတ်ထားပါတယ်။ ပို့စ် အကြိမ်ရေ၊ လစဉ် ဆက်လက်လုပ်ဆောင်မလား၊ တစ်ခါတည်း လုပ်ချင်တာလား ဆိုတာ ပြောပေးပါ။",
+    "အလုပ်အတွက် သတ်မှတ်ထားတဲ့ budget ဘယ်လောက်လဲ။ အနည်းဆုံးနှင့် အများဆုံး အကန့်အသတ်ကို ပြောပါ။",
+    "Minimalist ပုံစံကို မှတ်ထားပါတယ်။ အလုပ်အတွက် budget အနည်းဆုံးနှင့် အများဆုံး ဘယ်လောက်ထည့်နိုင်မလဲ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Facebook Instagram စီမံခန့်ခွဲမှု",
+      "ai_confidence": 1
+    },
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Facebook Instagram စီမံခန့်ခွဲမှု",
+      "ai_confidence": 1,
+      "description": "Facebook နှင့် Instagram အတွက် တစ်ခါတည်း deliverable တစ်ခု",
+      "requirements": [
+        "platforms: Facebook, Instagram",
+        "deliverable: single campaign"
+      ]
+    },
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Facebook Instagram စီမံခန့်ခွဲမှု",
+      "ai_confidence": 1,
+      "description": "Facebook နှင့် Instagram အတွက် တစ်ခါတည်း deliverable တစ်ခု, Minimalist ပုံစံ",
+      "requirements": [
+        "platforms: Facebook, Instagram",
+        "deliverable: single campaign",
+        "style: Minimalist"
+      ]
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "social-media-marketing",
+    "title": "Facebook Instagram စီမံခန့်ခွဲမှု",
+    "ai_confidence": 1,
+    "description": "Facebook နှင့် Instagram အတွက် တစ်ခါတည်း deliverable တစ်ခု, Minimalist ပုံစံ",
+    "requirements": [
+      "platforms: Facebook, Instagram",
+      "deliverable: single campaign",
+      "style: Minimalist"
+    ],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-09-30",
+    "needs_human_review": true
+  }
+}

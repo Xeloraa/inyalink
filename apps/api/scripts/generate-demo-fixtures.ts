@@ -319,7 +319,7 @@ async function withTurnRetries<T>(
   label: string,
   run: () => Promise<T>,
 ): Promise<T> {
-  const maxAttempts = 10;
+  const maxAttempts = 12;
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     try {
       return await run();
@@ -330,7 +330,7 @@ async function withTurnRetries<T>(
           msg,
         );
       if (!retryable || attempt >= maxAttempts - 1) throw err;
-      const waitMs = Math.min(240_000, 60_000 * (attempt + 1));
+      const waitMs = Math.min(300_000, 75_000 * (attempt + 1));
       console.log(
         `${label}: transient (${msg.slice(0, 80)}); waiting ${waitMs / 1000}s then retrying turn…`,
       );
@@ -338,6 +338,33 @@ async function withTurnRetries<T>(
     }
   }
   throw new Error(`${label}: exhausted turn retries`);
+}
+
+function writeConverseFixture(
+  file: string,
+  spec: ConverseSpec,
+  questions: string[],
+  draftsAfterUserTurn: Record<string, unknown>[],
+  finalBrief: Record<string, unknown>,
+): void {
+  const progressive = draftsAfterUserTurn.slice(
+    0,
+    Math.max(questions.length, 1),
+  );
+  const payload = {
+    demoOnly: true as const,
+    note: `DEMO ONLY — recorded from live ${config.aiProvider || 'provider'} structureBrief. Served when the live provider rate-limits or errors.`,
+    kind: 'converse' as const,
+    matchInput: spec.matchInput,
+    aliases: spec.aliases ?? [],
+    locale: spec.locale,
+    questions,
+    draftsAfterUserTurn: progressive,
+    finalBrief,
+  };
+  mkdirSync(fixturesDir, { recursive: true });
+  writeFileSync(file, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  console.log('wrote', file, `(${questions.length} questions)`);
 }
 
 async function generateConverse(spec: ConverseSpec): Promise<void> {
@@ -359,79 +386,73 @@ async function generateConverse(spec: ConverseSpec): Promise<void> {
   let finalBrief: Record<string, unknown> | null = null;
   let safety = 0;
 
-  while (safety < 8) {
-    safety += 1;
-    const turnLabel = `${spec.slug}.${spec.locale}#${safety}`;
-    const result = await withTurnRetries(turnLabel, async () => {
-      const raw = await structureBrief({
-        messages,
-        briefDraft,
-        locale: spec.locale,
-        maxQuestions: Math.min(3, config.aiMaxTurns),
-        model,
-        log: noopLog,
-        retryRateLimit: true,
+  try {
+    while (safety < 8) {
+      safety += 1;
+      const turnLabel = `${spec.slug}.${spec.locale}#${safety}`;
+      const result = await withTurnRetries(turnLabel, async () => {
+        const raw = await structureBrief({
+          messages,
+          briefDraft,
+          locale: spec.locale,
+          maxQuestions: Math.min(3, config.aiMaxTurns),
+          model,
+          log: noopLog,
+          retryRateLimit: true,
+        });
+        if (raw.providerFailed || raw.retryable) {
+          throw new Error(
+            `provider failed (${raw.providerErrorKind ?? 'retryable'})`,
+          );
+        }
+        return raw;
       });
-      if (raw.providerFailed || raw.retryable) {
-        throw new Error(
-          `provider failed (${raw.providerErrorKind ?? 'retryable'})`,
-        );
+
+      briefDraft = result.briefDraft;
+      draftsAfterUserTurn.push({ ...result.briefDraft });
+
+      if (result.complete) {
+        finalBrief = { ...result.briefDraft };
+        break;
       }
-      return raw;
-    });
 
-    briefDraft = result.briefDraft;
-    draftsAfterUserTurn.push({ ...result.briefDraft });
+      if (!result.nextQuestion) {
+        console.log(
+          `warn: no nextQuestion for ${spec.slug}.${spec.locale}; salvaging draft`,
+        );
+        finalBrief = { ...(briefDraft ?? {}) };
+        break;
+      }
 
-    if (result.complete) {
-      finalBrief = { ...result.briefDraft };
-      break;
+      questions.push(result.nextQuestion);
+      console.log('Q:', result.nextQuestion.slice(0, 100));
+      const answer = replyTo(result.nextQuestion, safety, spec.locale);
+      console.log('A:', answer);
+      messages.push({ role: 'assistant', content: result.nextQuestion });
+      messages.push({ role: 'user', content: answer });
+      await sleep(45_000);
     }
-
-    if (!result.nextQuestion) {
-      // Provider returned incomplete without a question — salvage current draft.
-      console.log(
-        `warn: no nextQuestion for ${spec.slug}.${spec.locale}; salvaging draft`,
-      );
-      finalBrief = { ...(briefDraft ?? {}) };
-      break;
-    }
-
-    questions.push(result.nextQuestion);
-    console.log('Q:', result.nextQuestion.slice(0, 100));
-    const answer = replyTo(result.nextQuestion, safety, spec.locale);
-    console.log('A:', answer);
-    messages.push({ role: 'assistant', content: result.nextQuestion });
-    messages.push({ role: 'user', content: answer });
-    // Pace for Groq free-tier TPM / RPM.
-    await sleep(35_000);
+  } catch (err) {
+    // Keep genuine partial scripts if we already recorded ≥1 question.
+    if (questions.length === 0 || draftsAfterUserTurn.length === 0) throw err;
+    console.log(
+      `warn: ${spec.slug}.${spec.locale} interrupted; writing partial fixture (${questions.length} Q)`,
+    );
+    finalBrief = { ...(briefDraft ?? draftsAfterUserTurn.at(-1) ?? {}) };
   }
 
   if (!finalBrief) {
     finalBrief = { ...(briefDraft ?? {}) };
   }
 
-  const progressive = draftsAfterUserTurn.slice(
-    0,
-    Math.max(questions.length, 1),
-  );
-
-  const payload = {
-    demoOnly: true as const,
-    note: `DEMO ONLY — recorded from live ${config.aiProvider || 'provider'} structureBrief. Served when the live provider rate-limits or errors.`,
-    kind: 'converse' as const,
-    matchInput: spec.matchInput,
-    aliases: spec.aliases ?? [],
-    locale: spec.locale,
+  writeConverseFixture(
+    file,
+    spec,
     questions,
-    draftsAfterUserTurn: progressive,
+    draftsAfterUserTurn,
     finalBrief,
-  };
-
-  mkdirSync(fixturesDir, { recursive: true });
-  writeFileSync(file, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-  console.log('wrote', file, `(${questions.length} questions)`);
-  await sleep(45_000);
+  );
+  await sleep(60_000);
 }
 
 async function recordRoadmap(spec: RoadmapSpec): Promise<void> {

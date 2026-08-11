@@ -1,0 +1,56 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "ဆိုင်အတွက် ဓာတ်ပုံ ရိုက်ပေးချင်ပါတယ်",
+  "aliases": [
+    "photography လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "ဆိုင်အတွက် ဘယ်အမျိုးအစား ဓာတ်ပုံ လိုချင်ပါသလဲ၊ ဥပမာ ထုတ်ကုန်၊ အစာ၊ အတွင်းပိုင်း၊ အခမ်းအနား စသည်။ လိုအပ်တဲ့ ဓာတ်ပုံ အရေအတွက်နှင့် ရိုက်မည့်ရက်ကို ခန့်မှန်းပေးနိုင်မလား။",
+    "ဓာတ်ပုံအမျိုးအစား (ထုတ်ကုန်၊ အစာ၊ အတွင်းပိုင်း၊ အခမ်းအနား) နှင့် လိုအပ်တဲ့ အရေအတွက်ကို ခန့်မှန်းပေးနိုင်မလား။",
+    "Minimalist ပုံစံကို မှတ်ထားပါတယ်။ ဓာတ်ပုံအမျိုးအစား (ထုတ်ကုန်၊ အစာ၊ အတွင်းပိုင်း၊ အခမ်းအနား) နှင့် လိုအပ်တဲ့ အရေအတွက်ကို ခန့်မှန်းပေးနိုင်မလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "photography",
+      "ai_confidence": 0.9,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "photography",
+      "ai_confidence": 0.9,
+      "needs_human_review": false,
+      "deadline": "2026-09-30"
+    },
+    {
+      "language": "my",
+      "category": "photography",
+      "ai_confidence": 0.9,
+      "needs_human_review": false,
+      "deadline": "2026-09-30",
+      "title": "ဆိုင်အတွက် ဓာတ်ပုံ ရိုက်ခြင်း",
+      "description": "Minimalist ပုံစံဖြင့် ဆိုင်အတွက် ဓာတ်ပုံများ",
+      "requirements": [
+        "Minimalist style"
+      ]
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "photography",
+    "ai_confidence": 0.9,
+    "needs_human_review": true,
+    "deadline": "2026-09-30",
+    "title": "ဆိုင်အတွက် ဓာတ်ပုံ ရိုက်ခြင်း",
+    "description": "Minimalist ပုံစံဖြင့် ဆိုင်အတွက် ဓာတ်ပုံများ",
+    "requirements": [
+      "Minimalist style"
+    ],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000
+  }
+}

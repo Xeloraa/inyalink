@@ -1,0 +1,49 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "I need social media management",
+  "aliases": [
+    "I want Facebook and Instagram management"
+  ],
+  "locale": "en",
+  "questions": [
+    "Which platforms (for example Facebook or Instagram) do you want to manage, and how often would you like posts to be published? Also let me know if you prefer an ongoing monthly arrangement or a one‑off campaign.",
+    "Understood, you’d like the core deliverable first. Could you share the budget range you have in mind for the social media management?",
+    "Got the budget 300,000‑500,000 MMK and deadline 2026‑09‑30. Which platforms (for example Facebook or Instagram) do you want to manage, how often should posts go live, and is this an ongoing monthly service or a one‑off campaign?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "social-media-marketing",
+      "title": "Social Media Management",
+      "ai_confidence": 1
+    },
+    {
+      "language": "en",
+      "category": "social-media-marketing",
+      "title": "Social Media Management",
+      "ai_confidence": 1
+    },
+    {
+      "language": "en",
+      "category": "social-media-marketing",
+      "title": "Social Media Management",
+      "ai_confidence": 1,
+      "budget_min_mmk": 300000,
+      "budget_max_mmk": 500000,
+      "deadline": "2026-09-30"
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "social-media-marketing",
+    "title": "Social Media Management",
+    "ai_confidence": 1,
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-09-30",
+    "description": "Social media management for Facebook and Instagram.",
+    "requirements": []
+  }
+}

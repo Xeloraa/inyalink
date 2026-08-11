@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "how much does a logo cost",
+  "aliases": [
+    "how much for a logo"
+  ],
+  "locale": "en",
+  "questions": [
+    "A logo typically costs roughly 80,000–500,000 kyat, depending on the scope and details. Let me know if you’d like to scope the job so we can draft a brief.",
+    "A logo typically costs roughly 80,000–500,000 kyat, depending on the scope. Will you need just the logo file, or also assets like signage or packaging?",
+    "A logo typically costs roughly 80,000–500,000 kyat, depending on the scope. Since you only need the main logo file, that range applies. Let me know if you’d like to scope the job further so we can draft a brief."
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "ai_confidence": 1
+    },
+    {
+      "language": "en",
+      "ai_confidence": 1,
+      "category": "graphic-design",
+      "title": "Logo design",
+      "description": "Logo design deliverable",
+      "requirements": []
+    },
+    {
+      "language": "en",
+      "ai_confidence": 1,
+      "category": "graphic-design",
+      "title": "Logo design",
+      "description": "Logo design deliverable",
+      "requirements": []
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "ai_confidence": 1,
+    "category": "graphic-design",
+    "title": "Logo design",
+    "description": "Logo design deliverable",
+    "requirements": [],
+    "needs_human_review": true
+  }
+}
