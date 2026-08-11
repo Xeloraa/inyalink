@@ -11,3 +11,10 @@ coverage/
 Thumbs.db
 .vite/
 *.local
+.tmp-verify/
+.verify-chrome/
+apps/web/.verify-chrome/
+apps/web/.cdp-*.cjs
+apps/web/.cdp-*.mjs
+apps/web/.verify-*.mjs
+apps/web/.verify-*.png

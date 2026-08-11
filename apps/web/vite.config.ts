@@ -16,6 +16,12 @@ export default defineConfig({
   server: {
     host: '127.0.0.1',
     port: 5173,
+    strictPort: true,
+    watch: {
+      // Chrome user-data / temp dirs under apps/web will EBUSY-crash Vite's
+      // watcher on Windows if they are ever created inside the project.
+      ignored: ['**/.verify-chrome/**', '**/.tmp-verify/**', '**/profile*/**/*.tmp'],
+    },
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:3001',
