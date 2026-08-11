@@ -36,15 +36,9 @@ import { useDebouncedValue } from '../features/professionals/useDebouncedValue';
 
 const SKELETON_ROWS = 4;
 
-function replyValue(medianMins: number | null): string {
-  if (medianMins === null) return '—';
-  if (medianMins < 60) return `${Math.round(medianMins)}m`;
-  return `${Math.round(medianMins / 60)}h`;
-}
-
 /**
- * Find talent row — matches InyaLink.dc.html browse article:
- * avatar · identity/skills · metrics · save + Message + View profile.
+ * Find talent row — full-width flat row per design handoff:
+ * avatar · identity/skills · Message (primary) + View profile.
  */
 function TalentRow({
   pro,
@@ -67,27 +61,9 @@ function TalentRow({
     pro.stats.minBudgetMmk === null
       ? null
       : formatMmk(pro.stats.minBudgetMmk, locale);
-  const metrics = [
-    { value: String(pro.stats.completedCount), label: t('browse.metricJobs') },
-    {
-      value: String(pro.stats.uniqueClients),
-      label: t('browse.metricClients'),
-    },
-    {
-      value:
-        pro.stats.completionRatePct === null
-          ? '—'
-          : `${Math.round(pro.stats.completionRatePct)}%`,
-      label: t('browse.metricRate'),
-    },
-    {
-      value: replyValue(pro.stats.medianResponseMins),
-      label: t('browse.metricReply'),
-    },
-  ];
 
   return (
-    <article className="flex flex-wrap items-center gap-4 rounded-[18px] bg-white px-[18px] py-4 shadow-[0_1px_2px_rgba(16,22,19,0.04),0_8px_26px_rgba(16,22,19,0.05)]">
+    <article className="flex flex-wrap items-center gap-4 border-b border-line px-[18px] py-4 transition-colors duration-fast ease-out hover:bg-hover">
       {pro.avatarUrl ? (
         <img
           src={pro.avatarUrl}
@@ -100,7 +76,7 @@ function TalentRow({
       ) : (
         <div
           aria-hidden
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-jade-100 font-display text-[15.5px] font-semibold text-jade-800"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-jade-100 font-display text-[15.5px] font-semibold text-jade-600"
         >
           {pro.displayName.slice(0, 1)}
         </div>
@@ -148,30 +124,16 @@ function TalentRow({
         ) : null}
       </div>
 
-      <div className="flex min-w-0 flex-[1_1_260px] flex-wrap gap-x-[22px] gap-y-1.5">
-        {metrics.map((metric) => (
-          <span
-            key={metric.label}
-            className="text-[12.5px] leading-burmese [overflow-wrap:anywhere]"
-          >
-            <b className="font-display text-[15px] font-semibold text-ink-900">
-              {metric.value}
-            </b>{' '}
-            <span className="text-ink-500">{metric.label}</span>
-          </span>
-        ))}
-      </div>
-
-      <div className="ml-auto flex flex-wrap items-center gap-2">
+      <div className="ml-auto flex w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
         <button
           type="button"
           aria-pressed={saved}
           aria-label={saved ? t('profile.saved') : t('profile.save')}
           onClick={onToggleSave}
-          className={`inline-flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[12px] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
+          className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md transition-colors duration-fast ease-out focus-visible:shadow-focus ${
             saved
               ? 'bg-jade-50 text-jade-600'
-              : 'bg-[#F4F6F4] text-ink-300 hover:text-jade-600'
+              : 'bg-page text-ink-300 hover:text-jade-600'
           }`}
         >
           <HeartIcon filled={saved} size={19} />
@@ -179,13 +141,13 @@ function TalentRow({
         <button
           type="button"
           onClick={onMessage}
-          className="inline-flex h-[42px] min-h-[44px] items-center justify-center whitespace-nowrap rounded-full bg-[#F4F6F4] px-[18px] text-[13px] font-semibold text-ink-900 transition-colors duration-fast ease-out hover:bg-line-soft focus-visible:shadow-focus sm:min-h-0"
+          className="inline-flex h-11 min-h-[44px] flex-1 items-center justify-center whitespace-nowrap rounded-full bg-jade-600 px-[18px] text-[13px] font-semibold text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 sm:min-h-0 sm:flex-none"
         >
           {t('profile.message')}
         </button>
         <Link
           to={profilePath}
-          className="inline-flex h-[42px] min-h-[44px] items-center justify-center whitespace-nowrap rounded-full bg-jade-600 px-5 text-[13px] font-semibold text-white no-underline transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 sm:min-h-0"
+          className="inline-flex h-11 min-h-[44px] flex-1 items-center justify-center whitespace-nowrap rounded-full bg-page px-5 text-[13px] font-semibold text-ink-900 no-underline transition-colors duration-fast ease-out hover:bg-line-soft focus-visible:shadow-focus sm:min-h-0 sm:flex-none"
         >
           {t('browse.viewProfile')}
         </Link>
@@ -198,7 +160,7 @@ function TalentRowSkeleton() {
   return (
     <div
       aria-hidden
-      className="flex flex-wrap items-center gap-4 rounded-[18px] bg-white px-[18px] py-4 shadow-[0_1px_2px_rgba(16,22,19,0.04),0_8px_26px_rgba(16,22,19,0.05)]"
+      className="flex flex-wrap items-center gap-4 border-b border-line px-[18px] py-4"
     >
       <Skeleton className="h-16 w-16 shrink-0 rounded-full" />
       <div className="min-w-0 flex-[1_1_220px]">
@@ -211,15 +173,10 @@ function TalentRowSkeleton() {
           ))}
         </div>
       </div>
-      <div className="flex min-w-0 flex-[1_1_260px] flex-wrap gap-x-[22px] gap-y-1.5">
-        {[0, 1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-4 w-16" />
-        ))}
-      </div>
-      <div className="ml-auto flex items-center gap-2">
-        <Skeleton className="h-[38px] w-[38px] rounded-[12px]" />
-        <Skeleton className="h-[42px] w-[88px] rounded-full" />
-        <Skeleton className="h-[42px] w-[110px] rounded-full" />
+      <div className="ml-auto flex w-full items-center gap-2 sm:w-auto">
+        <Skeleton className="h-11 w-11 rounded-md" />
+        <Skeleton className="h-11 flex-1 rounded-full sm:w-[88px] sm:flex-none" />
+        <Skeleton className="h-11 flex-1 rounded-full sm:w-[110px] sm:flex-none" />
       </div>
     </div>
   );
@@ -304,7 +261,7 @@ export default function Browse() {
 
       <div className="mt-xl flex items-start gap-2xl lg:mt-2xl">
         <aside className="hidden w-[260px] shrink-0 lg:block">
-          <div className="sticky top-xl max-h-[calc(100dvh-48px)] overflow-y-auto rounded-lg border border-line bg-white p-lg">
+          <div className="sticky top-[72px] max-h-[calc(100dvh-88px)] overflow-y-auto rounded-xl2 border border-line bg-white p-lg shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-x-sm">
               <h2 className="text-body font-semibold text-ink-900">
                 {t('browse.filters')}
@@ -350,7 +307,7 @@ export default function Browse() {
 
           <div className="mt-lg">
             {prosQuery.isPending ? (
-              <div className="flex flex-col gap-[10px]" role="status">
+              <div className="flex flex-col" role="status">
                 <span className="sr-only">{t('common.loading')}</span>
                 {Array.from({ length: SKELETON_ROWS }, (_, i) => (
                   <TalentRowSkeleton key={i} />
@@ -392,7 +349,7 @@ export default function Browse() {
               </div>
             ) : (
               <ul
-                className={`flex flex-col gap-[10px] transition-opacity duration-base ease-out ${
+                className={`flex flex-col border-t border-line transition-opacity duration-base ease-out ${
                   prosQuery.isPlaceholderData ? 'opacity-60' : ''
                 }`}
               >

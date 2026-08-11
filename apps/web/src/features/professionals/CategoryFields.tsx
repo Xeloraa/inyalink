@@ -1,6 +1,11 @@
 import type { Category, CategorySlug } from '@inyalink/shared';
 import { useI18n } from '../../lib/i18n';
-import { FIELD_INPUT, FIELD_TEXTAREA } from './fieldStyles';
+import {
+  FIELD_INPUT,
+  FIELD_PILL_ACTIVE,
+  FIELD_PILL_IDLE,
+  FIELD_TEXTAREA,
+} from './fieldStyles';
 
 type CategoryFieldsProps = {
   displayName: string;
@@ -28,7 +33,7 @@ export function CategoryFields({
       <div>
         <label
           htmlFor="displayName"
-          className="mb-1.5 block text-caption text-ink-500"
+          className="mb-1.5 block text-[12px] text-ink-400"
         >
           {t('onboarding.displayName')}
         </label>
@@ -40,26 +45,23 @@ export function CategoryFields({
         />
       </div>
       <fieldset id="category">
-        <legend className="mb-md text-caption text-ink-500">
+        <legend className="mb-md text-[12px] text-ink-400">
           {t('onboarding.category')}
         </legend>
-        <div className="grid gap-sm">
+        <div className="flex flex-wrap gap-sm">
           {categories.map((cat) => {
             const label = locale === 'en' ? cat.nameEn : cat.nameMy;
+            const active = categorySlug === cat.slug;
             return (
               <label
                 key={cat.id}
-                className={`tap-target flex cursor-pointer items-center rounded-md border px-lg transition-colors duration-fast ease-out ${
-                  categorySlug === cat.slug
-                    ? 'border-jade-600 bg-jade-50 text-jade-800'
-                    : 'border-line bg-white text-ink-700 hover:border-jade-400'
-                }`}
+                className={`cursor-pointer ${active ? FIELD_PILL_ACTIVE : FIELD_PILL_IDLE}`}
               >
                 <input
                   type="radio"
                   name="category"
                   className="sr-only"
-                  checked={categorySlug === cat.slug}
+                  checked={active}
                   onChange={() => onCategoryChange(cat.slug)}
                 />
                 {label}
@@ -72,7 +74,7 @@ export function CategoryFields({
         <div>
           <label
             htmlFor="categoryOtherText"
-            className="mb-1.5 block text-caption text-ink-500"
+            className="mb-1.5 block text-[12px] text-ink-400"
           >
             {t('onboarding.categoryOther')}
           </label>

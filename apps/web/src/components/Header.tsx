@@ -5,6 +5,7 @@ import { useAuth } from '../lib/auth';
 import { useI18n } from '../lib/i18n';
 import {
   AccountMenu,
+  isApprovedProfessional,
   isActiveProfessional,
   useMyProfessional,
 } from './AccountMenu';
@@ -13,19 +14,19 @@ import { NotificationBell } from '../features/notifications/NotificationBell';
 
 /** Header nav never mid-word wraps — body uses overflow-wrap:anywhere for Burmese. */
 const NAV_LINK =
-  'tap-target hidden min-[420px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800 sm:px-sm sm:text-[13px]';
+  'tap-target hidden min-[420px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2sm px-[13px] py-[9px] text-[13.5px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-hover hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800';
 
 const QUIET_LINK =
-  'tap-target hidden min-[520px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium text-ink-400 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800 sm:px-sm sm:text-[13px]';
+  'tap-target hidden min-[520px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2sm px-[13px] py-[9px] text-[13.5px] font-medium text-ink-400 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800';
 
 const MENU_ITEM =
   'tap-target flex w-full items-center whitespace-nowrap rounded-sm px-lg text-[13px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-100';
 
 function langButtonClass(active: boolean): string {
-  return `inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center whitespace-nowrap rounded-md px-1.5 text-[12px] font-medium [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus sm:min-h-[48px] sm:px-sm sm:text-[13px] ${
+  return `inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 text-[12px] font-semibold [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
     active
       ? 'bg-jade-600 text-white hover:bg-jade-400 active:bg-jade-800'
-      : 'text-ink-500 hover:bg-jade-50 hover:text-ink-900 active:bg-jade-100'
+      : 'text-ink-500 hover:text-ink-900'
   }`;
 }
 
@@ -62,7 +63,7 @@ function LanguageToggle({
 }) {
   return (
     <div
-      className="flex shrink-0 flex-nowrap items-center gap-0.5 sm:gap-xs"
+      className="flex shrink-0 flex-nowrap items-center gap-0.5 rounded-full bg-line-track p-0.5 sm:gap-xs"
       role="group"
       aria-label={t('header.language')}
     >
@@ -90,7 +91,9 @@ export function Header() {
   const { locale, setLocale, t } = useI18n();
   const { session, loading } = useAuth();
   const pro = useMyProfessional();
+  const approvedPro = isApprovedProfessional(pro);
   const showProJoin = !isActiveProfessional(pro);
+  const isAdmin = Boolean(session?.isAdmin);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -99,17 +102,7 @@ export function Header() {
   );
 
   const mountAccountMenu = !loading && Boolean(session);
-
-  // TEMP debug — remove once avatar visibility is confirmed
-  useEffect(() => {
-    console.log('[Header avatar]', {
-      loading,
-      hasSession: Boolean(session),
-      userId: session?.userId ?? null,
-      mountAccountMenu,
-      willShowPlaceholder: loading,
-    });
-  }, [loading, session, mountAccountMenu]);
+  const workLabel = approvedPro ? t('header.myWork') : t('header.myBriefs');
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -159,7 +152,7 @@ export function Header() {
             id="header-menu"
             role="menu"
             style={{ top: menuPos.top, right: menuPos.right }}
-            className="fixed z-[100] w-52 rounded-md border border-line bg-white p-xs shadow-lg"
+            className="fixed z-[100] w-52 rounded-md border border-line bg-white p-xs shadow-md"
           >
             <Link
               to="/browse"
@@ -175,8 +168,26 @@ export function Header() {
               className={MENU_ITEM}
               onClick={() => setMenuOpen(false)}
             >
-              {t('header.proFeed')}
+              {workLabel}
             </Link>
+            <Link
+              to="/app/engagements"
+              role="menuitem"
+              className={MENU_ITEM}
+              onClick={() => setMenuOpen(false)}
+            >
+              {t('header.messages')}
+            </Link>
+            {isAdmin ? (
+              <Link
+                to="/admin"
+                role="menuitem"
+                className={MENU_ITEM}
+                onClick={() => setMenuOpen(false)}
+              >
+                {t('header.admin')}
+              </Link>
+            ) : null}
             {showProJoin ? (
               <Link
                 to="/professionals/join"
@@ -206,11 +217,11 @@ export function Header() {
       : null;
 
   return (
-    <header className="relative z-50 border-b border-line bg-paper/90 backdrop-blur-sm [overflow-wrap:normal]">
-      <div className="mx-auto flex max-w-container flex-nowrap items-center justify-between gap-1 px-5 py-xs sm:gap-sm sm:py-sm md:px-8 lg:px-6">
+    <header className="sticky top-0 z-50 border-b border-line bg-page/90 backdrop-blur-[14px] [overflow-wrap:normal]">
+      <div className="mx-auto flex max-w-container flex-nowrap items-center justify-between gap-1 px-[22px] py-[14px] sm:gap-sm">
         <Link
           to="/"
-          className="inline-flex shrink-0 items-center gap-xs whitespace-nowrap font-display text-[15px] font-semibold text-ink-900 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:rounded-sm active:text-jade-800 sm:gap-sm sm:text-title"
+          className="inline-flex shrink-0 items-center gap-xs whitespace-nowrap font-display text-[17px] font-semibold text-ink-900 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:rounded-2sm active:text-jade-800 sm:gap-sm"
         >
           <span className="text-jade-600">
             <LogoMark size={20} />
@@ -226,8 +237,16 @@ export function Header() {
             {t('header.browse')}
           </Link>
           <Link to="/app/briefs" className={NAV_LINK}>
-            {t('header.proFeed')}
+            {workLabel}
           </Link>
+          <Link to="/app/engagements" className={NAV_LINK}>
+            {t('header.messages')}
+          </Link>
+          {isAdmin ? (
+            <Link to="/admin" className={NAV_LINK}>
+              {t('header.admin')}
+            </Link>
+          ) : null}
           {showProJoin ? (
             <Link to="/professionals/join" className={QUIET_LINK}>
               {t('header.proJoin')}
@@ -244,7 +263,7 @@ export function Header() {
               aria-controls="header-menu"
               aria-haspopup="menu"
               aria-label={t('header.menu')}
-              className="tap-target inline-flex items-center justify-center rounded-md text-ink-700 transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800"
+              className="tap-target inline-flex items-center justify-center rounded-2sm text-ink-700 transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800"
             >
               <BurgerIcon open={menuOpen} />
             </button>
@@ -263,12 +282,11 @@ export function Header() {
 
           {mountAccountMenu ? <NotificationBell /> : null}
 
-          {/* Far right after EN. Placeholder while auth resolves so the slot is never empty. */}
           {loading ? (
             <div
               aria-hidden
               data-avatar-slot="loading"
-              className="h-11 w-11 shrink-0 rounded-full bg-jade-100 ring-1 ring-jade-600/30 sm:h-12 sm:w-12"
+              className="h-9 w-9 shrink-0 rounded-full bg-jade-100 ring-1 ring-jade-600/20"
             />
           ) : mountAccountMenu ? (
             <AccountMenu pro={pro} />

@@ -57,12 +57,14 @@ export default function AdminBriefs() {
 
   return (
     <div>
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-base font-semibold">{t('admin.briefs.title')}</h1>
-        <label className="text-xs text-ink-600">
+      <div className="mb-lg flex flex-wrap items-center justify-between gap-md">
+        <h1 className="font-display text-title text-ink-900">
+          {t('admin.briefs.title')}
+        </h1>
+        <label className="text-caption text-ink-500">
           {t('admin.filterStatus')}{' '}
           <select
-            className="ml-1 rounded border border-line bg-white px-1 py-0.5"
+            className="ml-1 rounded-2md border border-line bg-white px-sm py-xs"
             value={status}
             onChange={(e) => setStatus(e.target.value as BriefStatus | '')}
           >
@@ -76,13 +78,13 @@ export default function AdminBriefs() {
       </div>
 
       {q.data.items.length === 0 ? (
-        <p className="rounded border border-line bg-white px-3 py-4 text-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+        <p className="rounded-bubble border border-line bg-white px-lg py-xl text-body-sm text-ink-500 shadow-sm [overflow-wrap:anywhere]">
           {t('admin.briefs.empty')}
         </p>
       ) : (
-      <div className="overflow-x-auto rounded border border-line bg-white">
-        <table className="w-full min-w-[900px] border-collapse text-left text-xs">
-          <thead className="bg-line-soft text-[11px] uppercase text-ink-500">
+      <div className="overflow-x-auto rounded-bubble border border-line bg-white shadow-sm">
+        <table className="w-full min-w-[900px] border-collapse text-left text-caption">
+          <thead className="bg-page text-caption uppercase text-ink-500">
             <tr>
               <th className="px-2 py-1.5 font-medium">{t('admin.briefs.colTitle')}</th>
               <th className="px-2 py-1.5 font-medium">{t('admin.briefs.colStatus')}</th>
@@ -143,24 +145,26 @@ export default function AdminBriefs() {
       )}
 
       {assignFor ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded border border-line bg-white p-3">
-            <h3 className="text-sm font-semibold">{t('admin.briefs.assign')}</h3>
-            <label className="mt-2 block text-xs text-ink-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-lg">
+          <div className="w-full max-w-md rounded-bubble border border-line bg-white p-xl shadow-lg">
+            <h3 className="font-display text-title text-ink-900">
+              {t('admin.briefs.assign')}
+            </h3>
+            <label className="mt-md block text-caption text-ink-500">
               {t('admin.briefs.proId')}
               <input
-                className="tap-target mt-1 w-full rounded border border-line px-3 font-mono text-sm"
+                className="tap-target mt-sm w-full rounded-2md border border-line bg-paper px-md font-mono text-body-sm outline-none focus:border-jade-400 focus:shadow-focus"
                 value={proId}
                 onChange={(e) => setProId(e.target.value)}
                 placeholder="uuid"
                 autoFocus
               />
             </label>
-            {err ? <p className="mt-2 text-xs text-danger">{err}</p> : null}
-            <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            {err ? <p className="mt-md text-caption text-danger">{err}</p> : null}
+            <div className="mt-lg flex flex-col-reverse gap-sm sm:flex-row sm:justify-end">
               <button
                 type="button"
-                className="tap-target inline-flex items-center justify-center rounded-md px-3 text-sm text-ink-600"
+                className="tap-target inline-flex items-center justify-center rounded-2md px-md text-body-sm text-ink-500"
                 onClick={() => setAssignFor(null)}
               >
                 {t('common.back')}
@@ -168,7 +172,7 @@ export default function AdminBriefs() {
               <button
                 type="button"
                 disabled={assign.isPending || proId.trim().length < 36}
-                className="tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-3 text-sm text-white disabled:opacity-50"
+                className="tap-target inline-flex items-center justify-center rounded-2md bg-jade-600 px-lg text-body-sm text-white shadow-cta disabled:opacity-50"
                 onClick={() => assign.mutate()}
               >
                 {t('common.save')}

@@ -63,6 +63,7 @@ export function useMyProfessional(): ProfessionalMe | null | undefined {
   return pro;
 }
 
+/** Pending or approved — hides the “become a pro” CTA. */
 export function isActiveProfessional(
   pro: ProfessionalMe | null | undefined,
 ): pro is ProfessionalMe {
@@ -73,9 +74,16 @@ export function isActiveProfessional(
   );
 }
 
+/** Approved only — full professional nav (My work, no owner briefs label). */
+export function isApprovedProfessional(
+  pro: ProfessionalMe | null | undefined,
+): pro is ProfessionalMe {
+  return pro !== undefined && pro !== null && pro.status === 'approved';
+}
+
 /**
  * Signed-in avatar control — far right of the header after EN.
- * Photo when uploaded; otherwise a person silhouette (never initials).
+ * Green initial avatar when no photo (mockup); photo when uploaded.
  */
 export function AccountMenu({
   pro,
@@ -132,33 +140,12 @@ export function AccountMenu({
   }, [open]);
 
   const activePro = isActiveProfessional(pro) ? pro : null;
+  const approvedPro = isApprovedProfessional(pro) ? pro : null;
   const avatarUrl = activePro?.avatarUrl ?? null;
-
-  // TEMP debug — remove once avatar visibility is confirmed
-  useEffect(() => {
-    const el = buttonRef.current;
-    const rect = el?.getBoundingClientRect();
-    console.log('[AccountMenu]', {
-      hasSession: Boolean(session),
-      renderingButton: Boolean(session),
-      hasAvatarUrl: Boolean(avatarUrl),
-      buttonRect: rect
-        ? {
-            width: rect.width,
-            height: rect.height,
-            top: rect.top,
-            right: rect.right,
-            visible:
-              rect.width > 0 &&
-              rect.height > 0 &&
-              rect.bottom > 0 &&
-              rect.top < window.innerHeight &&
-              rect.right > 0 &&
-              rect.left < window.innerWidth,
-          }
-        : null,
-    });
-  }, [session, avatarUrl]);
+  const initial = (activePro?.displayName ?? session?.displayName ?? '?')
+    .trim()
+    .slice(0, 1)
+    .toUpperCase();
 
   if (!session) return null;
 
@@ -170,7 +157,7 @@ export function AccountMenu({
             id="account-menu"
             role="menu"
             style={{ top: menuPos.top, right: menuPos.right }}
-            className="fixed z-[100] w-52 rounded-md border border-line bg-white p-xs shadow-lg"
+            className="fixed z-[100] w-52 rounded-md border border-line bg-white p-xs shadow-md"
           >
             {activePro ? (
               <>
@@ -196,7 +183,7 @@ export function AccountMenu({
                   className={MENU_ITEM}
                   onClick={() => setOpen(false)}
                 >
-                  {t('header.myBriefs')}
+                  {approvedPro ? t('header.myWork') : t('header.myBriefs')}
                 </Link>
                 <Link
                   to="/app/engagements"
@@ -204,7 +191,7 @@ export function AccountMenu({
                   className={MENU_ITEM}
                   onClick={() => setOpen(false)}
                 >
-                  {t('messages.threadsTitle')}
+                  {t('header.messages')}
                 </Link>
               </>
             ) : (
@@ -223,7 +210,7 @@ export function AccountMenu({
                   className={MENU_ITEM}
                   onClick={() => setOpen(false)}
                 >
-                  {t('messages.threadsTitle')}
+                  {t('header.messages')}
                 </Link>
                 <Link
                   to="/professionals/join"
@@ -235,6 +222,16 @@ export function AccountMenu({
                 </Link>
               </>
             )}
+            {session.isAdmin ? (
+              <Link
+                to="/admin"
+                role="menuitem"
+                className={MENU_ITEM}
+                onClick={() => setOpen(false)}
+              >
+                {t('header.admin')}
+              </Link>
+            ) : null}
             <div className="my-xs border-t border-line-soft" />
             <button
               type="button"
@@ -262,12 +259,12 @@ export function AccountMenu({
         aria-controls="account-menu"
         aria-haspopup="menu"
         aria-label={t('header.accountMenu')}
-        className="tap-target inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-jade-100 text-jade-600 transition-colors duration-fast ease-out hover:bg-jade-50 focus-visible:shadow-focus sm:h-12 sm:w-12"
+        className="tap-target inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-jade-100 text-[13px] font-semibold text-jade-600 transition-colors duration-fast ease-out hover:bg-jade-50 focus-visible:shadow-focus"
       >
         {avatarUrl ? (
           <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
         ) : (
-          <UserCircleIcon size={20} />
+          <span aria-hidden>{initial || <UserCircleIcon size={18} />}</span>
         )}
       </button>
       {menu}

@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import { ActiveThreads } from '../features/messages/ActiveThreads';
 import { MessageThread } from '../features/messages/MessageThread';
 import { useAuth } from '../lib/auth';
 import { useI18n } from '../lib/i18n';
@@ -40,22 +41,47 @@ export default function EngagementMessages() {
   }
 
   return (
-    <section className="mx-auto max-w-lg">
-      <div className="mb-3 flex flex-wrap gap-3">
-        <Link
-          to="/app/briefs"
-          className="tap-target text-body-sm text-jade-600 no-underline hover:underline"
-        >
-          {t('messages.backToBriefs')}
-        </Link>
-        <Link
-          to="/app/engagements"
-          className="tap-target text-body-sm text-jade-600 no-underline hover:underline"
-        >
-          {t('messages.backToThreads')}
-        </Link>
+    <section className="space-y-lg">
+      {/* Mobile: full-screen thread with back */}
+      <div className="md:hidden">
+        <div className="mb-md flex flex-wrap gap-md">
+          <Link
+            to="/app/engagements"
+            className="tap-target text-body-sm font-medium text-jade-600 no-underline hover:underline"
+          >
+            {t('messages.backToThreads')}
+          </Link>
+          <Link
+            to="/app/briefs"
+            className="tap-target text-body-sm text-ink-500 no-underline hover:underline"
+          >
+            {t('messages.backToBriefs')}
+          </Link>
+        </div>
+        <div className="overflow-hidden rounded-xl2 bg-white shadow-md">
+          <MessageThread engagementId={id} />
+        </div>
       </div>
-      <MessageThread engagementId={id} />
+
+      {/* Desktop: list + active thread */}
+      <div className="hidden gap-[14px] md:flex">
+        <div className="flex min-h-[min(70vh,640px)] w-[320px] shrink-0 flex-col overflow-hidden rounded-xl2 bg-white shadow-md">
+          <div className="shrink-0 border-b border-line-soft px-lg py-md">
+            <h1 className="text-title text-ink-900">
+              {t('messages.threadsTitle')}
+            </h1>
+          </div>
+          <ActiveThreads
+            hideWhenEmpty={false}
+            variant="pane"
+            selectedId={id}
+          />
+        </div>
+
+        <div className="flex min-h-[min(70vh,640px)] min-w-0 flex-1 flex-col overflow-hidden rounded-xl2 bg-white shadow-md">
+          <MessageThread engagementId={id} />
+        </div>
+      </div>
     </section>
   );
 }

@@ -22,8 +22,12 @@ export function ReassuranceStrip() {
               className="reveal flex flex-col-reverse bg-jade-100 px-lg py-md"
               style={{ transitionDelay: `${i * 70}ms` }}
             >
-              <dt className="text-caption text-jade-800">{stat.label}</dt>
-              <dd className="text-stat text-jade-800">{stat.value}</dd>
+              <dt className="text-caption leading-burmese text-jade-800">
+                {stat.label}
+              </dt>
+              <dd className="text-stat leading-burmese text-jade-800">
+                {stat.value}
+              </dd>
             </div>
           ))}
         </dl>

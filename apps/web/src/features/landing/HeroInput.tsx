@@ -61,7 +61,7 @@ export function HeroInput({
     <form onSubmit={handleSubmit} className="w-full">
       <div
         data-focus-container
-        className="rounded-xl border border-line bg-white p-5 shadow-lg transition-[border-color,box-shadow] duration-fast ease-out focus-within:border-jade-400 focus-within:shadow-focus"
+        className="rounded-xl border border-line bg-white p-5 shadow-md transition-[border-color,box-shadow] duration-fast ease-out focus-within:border-jade-400 focus-within:shadow-focus"
       >
         <label className="sr-only" htmlFor={id}>
           {label}
@@ -75,14 +75,14 @@ export function HeroInput({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="font-myanmar w-full resize-none border-0 bg-transparent text-body-lg text-ink-900 outline-none placeholder:text-ink-300"
+          className="font-myanmar w-full resize-none border-0 bg-transparent text-body-lg leading-burmese text-ink-900 outline-none placeholder:text-ink-300"
         />
         <div className="mt-sm flex items-center justify-between gap-md border-t border-line-soft pt-md">
-          <p className="text-caption text-ink-400">{langHint}</p>
+          <p className="text-caption leading-burmese text-ink-400">{langHint}</p>
           <button
             type="submit"
             disabled={!canSubmit}
-            className="tap-target inline-flex shrink-0 items-center justify-center rounded-full bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:cursor-not-allowed disabled:bg-ink-300 disabled:hover:bg-ink-300"
+            className="tap-target inline-flex shrink-0 items-center justify-center rounded-full bg-jade-600 px-xl text-body font-medium text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:cursor-not-allowed disabled:bg-ink-300 disabled:shadow-none disabled:hover:bg-ink-300"
           >
             {submitLabel}
           </button>

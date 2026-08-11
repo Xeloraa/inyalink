@@ -97,17 +97,13 @@ export default function ProBriefs() {
   }
 
   return (
-    <section className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <section className="space-y-xl">
+      <div className="flex flex-wrap items-end justify-between gap-md">
         <div>
-          <h1 className="text-2xl font-semibold leading-[1.8]">
-            {t('proFeed.title')}
-          </h1>
-          <p className="mt-1 text-sm leading-[1.8] text-ink-500">
-            {t('proFeed.subhead')}
-          </p>
+          <h1 className="text-display-sm text-ink-900">{t('proFeed.title')}</h1>
+          <p className="mt-sm text-body-sm text-ink-500">{t('proFeed.subhead')}</p>
         </div>
-        <p className="text-sm text-ink-500">
+        <p className="rounded-full bg-jade-50 px-md py-xs text-body-sm font-medium text-jade-800">
           {t('proFeed.remaining')
             .replace('{remaining}', String(remaining))
             .replace('{cap}', String(cap))}
@@ -124,23 +120,23 @@ export default function ProBriefs() {
       <ActiveThreads />
 
       {!loading && !error && items.length === 0 ? (
-        <div className="rounded-lg border border-line bg-paper p-5 leading-[1.8]">
-          <p className="text-ink-900 [overflow-wrap:anywhere]">
+        <div className="rounded-xl2 border border-line bg-paper px-xl py-xl shadow-sm">
+          <p className="text-title text-ink-900 [overflow-wrap:anywhere]">
             {t('proFeed.emptyTitle')}
           </p>
-          <p className="mt-2 text-sm text-ink-500 [overflow-wrap:anywhere]">
+          <p className="mt-sm text-body-sm text-ink-500 [overflow-wrap:anywhere]">
             {t('proFeed.emptyBody')}
           </p>
           <Link
             to="/browse"
-            className="tap-target mt-4 inline-flex items-center text-sm text-jade-600 hover:underline"
+            className="tap-target mt-lg inline-flex items-center text-body-sm font-medium text-jade-600 hover:underline"
           >
             {t('header.browse')}
           </Link>
         </div>
       ) : null}
 
-      <ul className="space-y-4">
+      <ul className="space-y-lg">
         {items.map((item) => {
           const budget =
             item.budgetMinMmk !== null || item.budgetMaxMmk !== null
@@ -158,17 +154,30 @@ export default function ProBriefs() {
           return (
             <li
               key={item.briefId}
-              className="rounded-lg border border-line bg-white p-5"
+              className="rounded-xl2 border border-line bg-white p-xl shadow-sm transition-colors duration-fast ease-out hover:bg-hover"
             >
-              <h2 className="text-title text-ink-900 [overflow-wrap:anywhere]">
-                {item.title ?? t('proFeed.untitled')}
-              </h2>
+              <div className="flex flex-wrap items-start justify-between gap-md">
+                <h2 className="text-title text-ink-900 [overflow-wrap:anywhere]">
+                  {item.title ?? t('proFeed.untitled')}
+                </h2>
+                <span
+                  className={`shrink-0 rounded-full px-md py-xs text-caption font-medium ${
+                    item.alreadyInterested
+                      ? 'bg-jade-100 text-jade-800'
+                      : 'bg-page text-ink-500'
+                  }`}
+                >
+                  {item.alreadyInterested
+                    ? t('proFeed.statusInterested')
+                    : t('proFeed.statusOpen')}
+                </span>
+              </div>
               {item.description ? (
-                <p className="mt-2 text-body leading-[1.8] text-ink-700 [overflow-wrap:anywhere]">
+                <p className="mt-md text-body text-ink-700 [overflow-wrap:anywhere]">
                   {item.description}
                 </p>
               ) : null}
-              <p className="mt-3 text-caption leading-[1.8] text-ink-400 [overflow-wrap:anywhere]">
+              <p className="mt-md text-caption text-ink-400 [overflow-wrap:anywhere]">
                 {[item.categorySlug, budget, item.deadline]
                   .filter(Boolean)
                   .join(' · ')}
@@ -179,10 +188,10 @@ export default function ProBriefs() {
                 onClick={() =>
                   void onInterest(item.briefId, item.alreadyInterested)
                 }
-                className={`tap-target mt-4 inline-flex w-full items-center justify-center rounded-md px-4 text-sm font-medium sm:w-auto disabled:opacity-40 ${
+                className={`tap-target mt-lg inline-flex w-full items-center justify-center rounded-md px-lg text-body-sm font-medium sm:w-auto disabled:opacity-40 ${
                   item.alreadyInterested
-                    ? 'border border-line bg-white text-ink-700'
-                    : 'bg-jade-600 text-white'
+                    ? 'border border-line bg-white text-ink-700 hover:bg-page'
+                    : 'bg-jade-600 text-white shadow-cta hover:bg-jade-400'
                 }`}
               >
                 {item.alreadyInterested

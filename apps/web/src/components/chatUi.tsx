@@ -9,6 +9,16 @@ import {
 
 const OPEN_KEY = 'inyalink.chatOpen';
 
+/** Shared bubble chrome — messaging + floating AI chat. */
+export const CHAT_BUBBLE_OWN =
+  'rounded-[18px_18px_6px_18px] bg-jade-600 text-white';
+export const CHAT_BUBBLE_OTHER =
+  'rounded-[18px_18px_18px_6px] bg-jade-50 text-ink-900';
+export const CHAT_PANEL =
+  'border border-line bg-white shadow-lg max-sm:rounded-none sm:rounded-xl2';
+export const CHAT_COMPOSER =
+  'rounded-xl2 border border-line bg-paper focus-within:border-jade-400 focus-within:shadow-focus';
+
 type ChatUiValue = {
   open: boolean;
   setOpen: (open: boolean) => void;

@@ -10,6 +10,7 @@ import { applyAsProfessional, getCategories } from '../../lib/api';
 import { ApiError } from '../../lib/apiClient';
 import { useI18n } from '../../lib/i18n';
 import { CategoryFields } from './CategoryFields';
+import { NoIdWarning } from './NoIdWarning';
 import { PortfolioFields, type PortfolioDraftItem } from './PortfolioFields';
 import { QuestionnaireFields } from './QuestionnaireFields';
 import { SkillsFields } from './SkillsFields';
@@ -19,6 +20,17 @@ type Step = 0 | 1 | 2 | 3;
 type JoinWizardProps = {
   onApplied?: (result: ProfessionalApplyResponse) => void;
 };
+
+function PendingDot({ done }: { done: boolean }) {
+  return (
+    <span
+      className={`mt-[5px] block h-3.5 w-3.5 shrink-0 rounded-full ${
+        done ? 'bg-jade-600' : 'bg-jade-100'
+      }`}
+      aria-hidden
+    />
+  );
+}
 
 export function JoinWizard({ onApplied }: JoinWizardProps) {
   const { t } = useI18n();
@@ -144,33 +156,95 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
 
   if (done) {
     const approved = done.status === 'approved';
+    if (approved) {
+      return (
+        <section className="mx-auto max-w-[620px] py-3xl">
+          <div className="rounded-[22px] bg-white p-[28px] text-center shadow-md">
+            <h1 className="font-display text-display-sm font-semibold text-ink-900">
+              {t('onboarding.doneTitleApproved')}
+            </h1>
+            <p className="mt-sm text-body leading-[1.8] text-ink-500">
+              {t('onboarding.doneBodyApproved')}
+            </p>
+            <div className="mt-2xl flex flex-col items-center gap-sm sm:flex-row sm:justify-center">
+              <Link
+                to="/professionals/me/edit"
+                className="tap-target inline-flex h-12 items-center justify-center rounded-full bg-jade-600 px-xl text-[14.5px] font-semibold text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus"
+              >
+                {t('onboarding.editProfile')}
+              </Link>
+              <Link
+                to="/app/briefs"
+                className="tap-target inline-flex h-12 items-center justify-center rounded-full bg-line-soft px-xl text-[14px] font-semibold text-ink-700 transition-colors duration-fast ease-out hover:bg-hover focus-visible:shadow-focus"
+              >
+                {t('onboarding.doneCtaFeed')}
+              </Link>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     return (
-      <section className="mx-auto max-w-md py-3xl text-center">
-        <h1 className="text-display-sm text-ink-900">
-          {approved ? t('onboarding.doneTitleApproved') : t('onboarding.doneTitle')}
-        </h1>
-        <p className="mt-sm text-body text-ink-500">
-          {approved ? t('onboarding.doneBodyApproved') : t('onboarding.doneBody')}
-        </p>
-        <div className="mt-2xl flex flex-col items-center gap-sm">
-          {approved ? (
+      <section className="mx-auto max-w-[620px] py-[44px]">
+        <div className="rounded-[22px] bg-white p-[28px] shadow-md">
+          <span className="inline-flex items-center gap-sm rounded-full bg-amber-100 px-[13px] py-1.5 text-[11.5px] font-bold leading-[1.6] text-amber-800">
+            <span
+              className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning"
+              aria-hidden
+            />
+            {t('edit.statusPending')}
+          </span>
+          <h1 className="mt-lg font-display text-[clamp(22px,2.8vw,28px)] font-semibold leading-[1.7] text-ink-900 [overflow-wrap:anywhere]">
+            {t('onboarding.doneTitle')}
+          </h1>
+          <p className="mt-sm text-[14px] leading-[1.8] text-ink-500">
+            {t('onboarding.doneBody')}
+          </p>
+
+          <ol className="mt-2xl flex flex-col gap-0.5" aria-hidden>
+            <li className="flex gap-lg">
+              <div className="flex w-[26px] shrink-0 flex-col items-center">
+                <PendingDot done />
+                <span className="mt-0.5 w-0.5 flex-1 min-h-[20px] bg-jade-100" />
+              </div>
+              <div className="min-w-0 flex-1 pb-lg">
+                <div className="font-myanmar text-[14.5px] font-semibold leading-[1.7] text-ink-900">
+                  {t('onboarding.doneTitle')}
+                </div>
+              </div>
+            </li>
+            <li className="flex gap-lg">
+              <div className="flex w-[26px] shrink-0 flex-col items-center">
+                <PendingDot done />
+                <span className="mt-0.5 w-0.5 flex-1 min-h-[20px] bg-jade-100" />
+              </div>
+              <div className="min-w-0 flex-1 pb-lg">
+                <div className="font-myanmar text-[14.5px] font-semibold leading-[1.7] text-ink-900">
+                  {t('edit.statusPending')}
+                </div>
+              </div>
+            </li>
+            <li className="flex gap-lg">
+              <div className="flex w-[26px] shrink-0 flex-col items-center">
+                <PendingDot done={false} />
+              </div>
+              <div className="min-w-0 flex-1 pb-lg">
+                <div className="font-myanmar text-[14.5px] font-semibold leading-[1.7] text-ink-400">
+                  {t('edit.statusApproved')}
+                </div>
+              </div>
+            </li>
+          </ol>
+
+          <div className="mt-sm flex flex-wrap gap-2.5">
             <Link
-              to="/professionals/me/edit"
-              className="tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus"
+              to="/"
+              className="tap-target inline-flex h-12 items-center justify-center rounded-full bg-line-soft px-[22px] text-[14px] font-semibold text-ink-700 transition-colors duration-fast ease-out hover:bg-hover focus-visible:shadow-focus"
             >
-              {t('onboarding.editProfile')}
+              {t('onboarding.doneCta')}
             </Link>
-          ) : null}
-          <Link
-            to={approved ? '/app/briefs' : '/'}
-            className={
-              approved
-                ? 'tap-target text-body-sm text-ink-500 transition-colors hover:text-jade-600'
-                : 'tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus'
-            }
-          >
-            {approved ? t('onboarding.doneCtaFeed') : t('onboarding.doneCta')}
-          </Link>
+          </div>
         </div>
       </section>
     );
@@ -183,29 +257,45 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
     t('onboarding.stepQuestionnaire'),
   ];
 
+  const stepHelps = [
+    t('onboarding.subhead'),
+    t('onboarding.skillsHelp'),
+    t('onboarding.portfolioHelp'),
+    t('onboarding.subhead'),
+  ];
+
   return (
-    <section className="mx-auto max-w-lg py-2xl md:py-3xl">
-      <p className="text-caption font-medium text-ink-400">
-        {`${t('onboarding.progress')} ${step + 1} / 4 — ${stepLabels[step]}`}
-      </p>
-      <h1 className="mt-sm text-display-sm text-ink-900">
+    <section className="mx-auto max-w-[620px] py-2xl md:py-[34px]">
+      <h1 className="font-display text-[clamp(24px,3vw,30px)] font-semibold leading-[1.7] text-ink-900 [overflow-wrap:anywhere]">
         {t('onboarding.title')}
       </h1>
-      <p className="mt-sm text-body text-ink-500">{t('onboarding.subhead')}</p>
+      <p className="mt-xs text-[14px] leading-[1.8] text-ink-500">
+        {t('onboarding.subhead')}
+      </p>
 
-      <div className="mt-xl flex gap-xs" aria-hidden>
+      <div className="mt-2xl flex gap-1.5" aria-hidden>
         {[0, 1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className={`h-1 flex-1 rounded-full ${
-              i <= step ? 'bg-jade-600' : 'bg-line'
-            }`}
-          />
+          <div key={i} className="min-w-0 flex-1">
+            <div
+              className={`h-1 rounded-full ${
+                i <= step ? 'bg-jade-600' : 'bg-jade-100'
+              }`}
+            />
+            <div
+              className={`mt-[7px] text-[11px] leading-[1.6] [overflow-wrap:anywhere] ${
+                i === step
+                  ? 'font-bold text-jade-600'
+                  : 'font-normal text-ink-400'
+              }`}
+            >
+              {stepLabels[i]}
+            </div>
+          </div>
         ))}
       </div>
 
       <form
-        className="mt-2xl space-y-lg"
+        className="mt-lg rounded-xl2 bg-white p-xl shadow-md"
         onSubmit={(e) => {
           if (step < 3) {
             e.preventDefault();
@@ -218,74 +308,87 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
           void onSubmit(e);
         }}
       >
-        {step === 0 ? (
-          <CategoryFields
-            displayName={displayName}
-            onDisplayNameChange={setDisplayName}
-            categorySlug={categorySlug}
-            onCategoryChange={(slug) => {
-              setCategorySlug(slug);
-              if (slug !== 'other') setCategoryOtherText('');
-            }}
-            categoryOtherText={categoryOtherText}
-            onCategoryOtherTextChange={setCategoryOtherText}
-            categories={categories}
-          />
-        ) : null}
+        <h2 className="text-[17px] font-semibold leading-[1.7] text-ink-900">
+          {stepLabels[step]}
+        </h2>
+        <p className="mt-xs text-[13px] leading-[1.8] text-ink-500">
+          {stepHelps[step]}
+        </p>
 
-        {step === 1 ? (
-          <SkillsFields
-            categorySlug={categorySlug}
-            skills={skills}
-            skillDraft={skillDraft}
-            onSkillDraftChange={setSkillDraft}
-            onToggleSkill={toggleSkill}
-            onAddDraft={addSkillDraft}
-          />
-        ) : null}
+        <div className="mt-lg space-y-lg">
+          {step === 0 ? (
+            <CategoryFields
+              displayName={displayName}
+              onDisplayNameChange={setDisplayName}
+              categorySlug={categorySlug}
+              onCategoryChange={(slug) => {
+                setCategorySlug(slug);
+                if (slug !== 'other') setCategoryOtherText('');
+              }}
+              categoryOtherText={categoryOtherText}
+              onCategoryOtherTextChange={setCategoryOtherText}
+              categories={categories}
+            />
+          ) : null}
 
-        {step === 2 ? (
-          <PortfolioFields
-            portfolioUrl={portfolioUrl}
-            onPortfolioUrlChange={setPortfolioUrl}
-            portfolioCaption={portfolioCaption}
-            onPortfolioCaptionChange={setPortfolioCaption}
-            portfolio={portfolio}
-            onAdd={addPortfolioItem}
-            onRemove={(i) =>
-              setPortfolio((prev) => prev.filter((_, j) => j !== i))
-            }
-          />
-        ) : null}
+          {step === 1 ? (
+            <SkillsFields
+              categorySlug={categorySlug}
+              skills={skills}
+              skillDraft={skillDraft}
+              onSkillDraftChange={setSkillDraft}
+              onToggleSkill={toggleSkill}
+              onAddDraft={addSkillDraft}
+            />
+          ) : null}
 
-        {step === 3 ? (
-          <QuestionnaireFields
-            headlineMy={headlineMy}
-            onHeadlineMyChange={setHeadlineMy}
-            headlineEn={headlineEn}
-            onHeadlineEnChange={setHeadlineEn}
-            bioMy={bioMy}
-            onBioMyChange={setBioMy}
-            bioEn={bioEn}
-            onBioEnChange={setBioEn}
-            turnaround={turnaround}
-            onTurnaroundChange={setTurnaround}
-            minBudget={minBudget}
-            onMinBudgetChange={setMinBudget}
-            acceptingWork={acceptingWork}
-            onAcceptingWorkChange={setAcceptingWork}
-          />
-        ) : null}
+          {step === 2 ? (
+            <PortfolioFields
+              portfolioUrl={portfolioUrl}
+              onPortfolioUrlChange={setPortfolioUrl}
+              portfolioCaption={portfolioCaption}
+              onPortfolioCaptionChange={setPortfolioCaption}
+              portfolio={portfolio}
+              onAdd={addPortfolioItem}
+              onRemove={(i) =>
+                setPortfolio((prev) => prev.filter((_, j) => j !== i))
+              }
+              hideNoIdWarning
+            />
+          ) : null}
+
+          {step === 3 ? (
+            <QuestionnaireFields
+              headlineMy={headlineMy}
+              onHeadlineMyChange={setHeadlineMy}
+              headlineEn={headlineEn}
+              onHeadlineEnChange={setHeadlineEn}
+              bioMy={bioMy}
+              onBioMyChange={setBioMy}
+              bioEn={bioEn}
+              onBioEnChange={setBioEn}
+              turnaround={turnaround}
+              onTurnaroundChange={setTurnaround}
+              minBudget={minBudget}
+              onMinBudgetChange={setMinBudget}
+              acceptingWork={acceptingWork}
+              onAcceptingWorkChange={setAcceptingWork}
+              hideNoIdWarning
+            />
+          ) : null}
+        </div>
+
+        <NoIdWarning />
 
         {error ? (
-          <p className="text-body-sm text-danger" role="alert">
+          <p className="mt-md text-body-sm text-danger" role="alert">
             {error}
           </p>
         ) : null}
 
         {step === 3 && blockers.length > 0 ? (
           <div
-            className="rounded-md border border-danger/30 bg-[rgba(192,69,60,0.06)] px-md py-md"
+            className="mt-md rounded-2md border border-danger/30 bg-[rgba(192,69,60,0.06)] px-md py-md"
             role="status"
           >
             <p className="text-body-sm font-medium text-danger">
@@ -301,7 +404,7 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
 
         {step === 0 && blockers.length > 0 ? (
           <div
-            className="rounded-md border border-line bg-jade-50 px-md py-md"
+            className="mt-md rounded-2md bg-jade-50 px-md py-md"
             role="status"
           >
             <p className="text-body-sm font-medium text-ink-700">
@@ -315,24 +418,30 @@ export function JoinWizard({ onApplied }: JoinWizardProps) {
           </div>
         ) : null}
 
-        <div className="sticky bottom-0 -mx-5 mt-lg flex flex-col gap-sm border-t border-line-soft bg-paper/95 px-5 py-md backdrop-blur-sm sm:static sm:mx-0 sm:mt-0 sm:flex-row sm:justify-between sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pt-md sm:backdrop-blur-none">
+        <div className="mt-2xl flex gap-2.5">
           {step > 0 ? (
             <button
               type="button"
               onClick={() => setStep((s) => (s - 1) as Step)}
-              className="tap-target rounded-md px-xl text-body-sm text-ink-500 transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus"
+              className="tap-target h-12 shrink-0 rounded-full bg-line-soft px-xl text-[14.5px] font-semibold text-ink-700 transition-colors duration-fast ease-out hover:bg-hover focus-visible:shadow-focus"
             >
               {t('common.back')}
             </button>
           ) : (
-            <span className="hidden sm:block" />
+            <Link
+              to="/"
+              className="tap-target inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-line-soft px-xl text-[14.5px] font-semibold text-ink-700 no-underline transition-colors duration-fast ease-out hover:bg-hover focus-visible:shadow-focus"
+            >
+              {t('common.back')}
+            </Link>
           )}
           <button
             type="submit"
             disabled={
-              loading || (step === 0 ? !canSubmit : step === 3 ? !canSubmit : false)
+              loading ||
+              (step === 0 ? !canSubmit : step === 3 ? !canSubmit : false)
             }
-            className="tap-target w-full rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300 sm:ml-auto sm:w-auto"
+            className="tap-target h-12 flex-1 rounded-full bg-jade-600 text-[15px] font-semibold text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300 disabled:shadow-none"
           >
             {loading
               ? t('common.loading')

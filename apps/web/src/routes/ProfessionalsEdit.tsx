@@ -224,23 +224,67 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
           ? t('edit.statusPaused')
           : t('edit.statusRejected');
 
+  const initialChar = displayName.trim().slice(0, 1) || '·';
+  const isPending = initial.status === 'pending';
+
   return (
-    <section className="mx-auto max-w-lg space-y-2xl py-2xl md:py-3xl">
+    <section className="mx-auto max-w-[760px] space-y-lg py-2xl md:py-3xl">
       <div>
-        <p className="text-caption font-medium text-ink-400">{statusLabel}</p>
-        <h1 className="mt-sm text-display-sm text-ink-900">{t('edit.title')}</h1>
-        <p className="mt-sm text-body text-ink-500">{t('edit.subhead')}</p>
+        <h1 className="font-display text-[clamp(24px,3vw,32px)] font-semibold leading-[1.7] text-ink-900">
+          {t('edit.title')}
+        </h1>
+        <p className="mt-xs text-[14px] leading-[1.8] text-ink-500">
+          {t('edit.subhead')}
+        </p>
       </div>
 
-      <ProfileCompleteness
-        percent={completeness.percent}
-        missing={completeness.missing}
-        mode="edit"
-      />
+      {isPending ? (
+        <div className="rounded-xl2 bg-white p-[22px] shadow-md">
+          <span className="inline-flex items-center gap-sm rounded-full bg-amber-100 px-[13px] py-1.5 text-[11.5px] font-bold leading-[1.6] text-amber-800">
+            <span
+              className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning"
+              aria-hidden
+            />
+            {statusLabel}
+          </span>
+          <p className="mt-md text-[13.5px] leading-[1.8] text-ink-500">
+            {t('onboarding.doneBody')}
+          </p>
+        </div>
+      ) : null}
 
-      <form className="space-y-2xl" onSubmit={(e) => void onSubmit(e)}>
-        <fieldset className="space-y-lg">
-          <legend className="text-title text-ink-900">
+      <div className="rounded-xl2 bg-white p-[22px] shadow-md">
+        <div className="flex flex-wrap items-center gap-lg">
+          <span
+            className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-full bg-jade-100 font-display text-[28px] font-semibold text-jade-600"
+            aria-hidden
+          >
+            {initialChar}
+          </span>
+          <div className="min-w-[180px] flex-1">
+            <div className="text-[12px] leading-[1.6] text-ink-400">
+              {t('edit.title')}
+            </div>
+            <div className="mt-xs flex flex-wrap items-center gap-sm">
+              <span className="rounded-full bg-jade-100 px-md py-[5px] text-[12px] font-bold leading-[1.6] text-jade-800">
+                {statusLabel}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-xl">
+          <ProfileCompleteness
+            percent={completeness.percent}
+            missing={completeness.missing}
+            mode="edit"
+          />
+        </div>
+      </div>
+
+      <form className="space-y-lg" onSubmit={(e) => void onSubmit(e)}>
+        <fieldset className="space-y-lg rounded-xl2 bg-white p-[22px] shadow-md">
+          <legend className="px-xs text-[15px] font-bold tracking-[0.02em] text-ink-900">
             {t('onboarding.stepCategory')}
           </legend>
           <CategoryFields
@@ -257,8 +301,8 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
           />
         </fieldset>
 
-        <fieldset className="space-y-lg">
-          <legend className="text-title text-ink-900">
+        <fieldset className="space-y-lg rounded-xl2 bg-white p-[22px] shadow-md">
+          <legend className="px-xs text-[15px] font-bold tracking-[0.02em] text-ink-900">
             {t('onboarding.stepSkills')}
           </legend>
           <SkillsFields
@@ -276,8 +320,8 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
           />
         </fieldset>
 
-        <fieldset className="space-y-lg">
-          <legend className="text-title text-ink-900">
+        <fieldset className="space-y-lg rounded-xl2 bg-white p-[22px] shadow-md">
+          <legend className="px-xs text-[15px] font-bold tracking-[0.02em] text-ink-900">
             {t('onboarding.stepPortfolio')}
           </legend>
           <PortfolioFields
@@ -294,8 +338,8 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
           />
         </fieldset>
 
-        <fieldset className="space-y-lg">
-          <legend className="text-title text-ink-900">
+        <fieldset className="space-y-lg rounded-xl2 bg-white p-[22px] shadow-md">
+          <legend className="px-xs text-[15px] font-bold tracking-[0.02em] text-ink-900">
             {t('workLinks.title')}
           </legend>
           <WorkLinksEditor
@@ -312,8 +356,8 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
           />
         </fieldset>
 
-        <fieldset className="space-y-lg">
-          <legend className="text-title text-ink-900">
+        <fieldset className="space-y-lg rounded-xl2 bg-white p-[22px] shadow-md">
+          <legend className="px-xs text-[15px] font-bold tracking-[0.02em] text-ink-900">
             {t('onboarding.stepQuestionnaire')}
           </legend>
           <QuestionnaireFields
@@ -340,12 +384,12 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
           </p>
         ) : null}
         {saved ? (
-          <p className="text-body-sm text-jade-800" role="status">
+          <p className="text-[13px] font-semibold text-jade-600" role="status">
             {t('edit.saved')}
           </p>
         ) : null}
 
-        <div className="flex flex-col gap-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
           <Link
             to="/app/briefs"
             className="tap-target text-body-sm text-ink-500 transition-colors hover:text-jade-600"
@@ -360,7 +404,7 @@ function EditForm({ initial }: { initial: ProfessionalMe }) {
               skills.length < 1 ||
               (categorySlug === 'other' && categoryOtherText.trim().length < 2)
             }
-            className="tap-target rounded-md bg-jade-600 px-xl text-body font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300"
+            className="tap-target h-12 rounded-full bg-jade-600 px-xl text-[14.5px] font-semibold text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300 disabled:shadow-none"
           >
             {loading ? t('common.loading') : t('edit.save')}
           </button>
@@ -404,21 +448,23 @@ function EditLoader() {
 
   if (error) {
     return (
-      <div className="py-3xl">
-        <p
-          className="text-center text-body leading-[1.8] text-ink-700 [overflow-wrap:anywhere]"
-          role="alert"
-        >
-          {error}
-        </p>
-        <div className="mt-md flex justify-center">
-          <button
-            type="button"
-            onClick={load}
-            className="tap-target rounded-md bg-jade-600 px-lg text-body-sm font-medium text-white"
+      <div className="mx-auto max-w-[760px] py-3xl">
+        <div className="rounded-xl2 bg-white p-xl text-center shadow-md">
+          <p
+            className="text-body leading-[1.8] text-ink-700 [overflow-wrap:anywhere]"
+            role="alert"
           >
-            {t('common.retry')}
-          </button>
+            {error}
+          </p>
+          <div className="mt-lg flex justify-center">
+            <button
+              type="button"
+              onClick={load}
+              className="tap-target h-12 rounded-full bg-jade-600 px-xl text-[14px] font-semibold text-white shadow-cta"
+            >
+              {t('common.retry')}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -426,9 +472,11 @@ function EditLoader() {
 
   if (loading || !profile) {
     return (
-      <p className="py-3xl text-center text-body text-ink-500" role="status">
-        {t('common.loading')}
-      </p>
+      <div className="mx-auto max-w-[760px] py-3xl" role="status">
+        <div className="rounded-xl2 bg-white p-xl text-center shadow-md">
+          <p className="text-body text-ink-500">{t('common.loading')}</p>
+        </div>
+      </div>
     );
   }
 

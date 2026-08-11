@@ -8,6 +8,10 @@ import {
 import { ApiError } from '../../lib/apiClient';
 import { useAuth } from '../../lib/auth';
 import { useI18n } from '../../lib/i18n';
+import {
+  CHAT_BUBBLE_OTHER,
+  CHAT_BUBBLE_OWN,
+} from '../../components/chatUi';
 
 const POLL_MS = 8_000;
 
@@ -96,8 +100,8 @@ export function MessageThread({ engagementId }: MessageThreadProps) {
   const briefTitle = thread.brief.title?.trim() || t('proFeed.untitled');
 
   return (
-    <div className="flex min-h-[70vh] flex-col">
-      <header className="sticky top-0 z-10 space-y-2 border-b border-line bg-paper/95 px-1 py-4 backdrop-blur-sm">
+    <div className="flex h-full min-h-[min(70vh,640px)] flex-col">
+      <header className="shrink-0 space-y-sm border-b border-line-soft bg-paper/95 px-xl py-lg backdrop-blur-sm">
         <p className="text-caption font-medium uppercase tracking-wide text-ink-400">
           {t('messages.pinnedBrief')}
         </p>
@@ -105,18 +109,18 @@ export function MessageThread({ engagementId }: MessageThreadProps) {
           {briefTitle}
         </h1>
         {thread.brief.description ? (
-          <p className="text-body-sm leading-[1.8] text-ink-700 [overflow-wrap:anywhere]">
+          <p className="text-body-sm text-ink-700 [overflow-wrap:anywhere]">
             {thread.brief.description}
           </p>
         ) : null}
-        <p className="text-caption leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+        <p className="text-caption text-ink-500 [overflow-wrap:anywhere]">
           {t('messages.retentionNotice')}
         </p>
       </header>
 
       <div
         ref={listRef}
-        className="flex-1 space-y-3 overflow-y-auto py-4"
+        className="min-h-0 flex-1 space-y-md overflow-y-auto bg-page/40 px-xl py-lg"
         aria-live="polite"
       >
         {messages.length === 0 ? (
@@ -132,13 +136,11 @@ export function MessageThread({ engagementId }: MessageThreadProps) {
                 className={`flex ${mine ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-md px-3 py-2 ${
-                    mine
-                      ? 'bg-jade-600 text-white'
-                      : 'border border-line bg-white text-ink-900'
+                  className={`max-w-[85%] px-md py-sm ${
+                    mine ? CHAT_BUBBLE_OWN : CHAT_BUBBLE_OTHER
                   }`}
                 >
-                  <p className="text-body-sm leading-[1.8] [overflow-wrap:anywhere]">
+                  <p className="text-body-sm leading-burmese [overflow-wrap:anywhere]">
                     {msg.body}
                   </p>
                   <time
@@ -160,7 +162,7 @@ export function MessageThread({ engagementId }: MessageThreadProps) {
       {thread.canSend ? (
         <form
           onSubmit={(e) => void onSubmit(e)}
-          className="sticky bottom-0 space-y-2 border-t border-line bg-paper py-3"
+          className="sticky bottom-0 shrink-0 space-y-sm border-t border-line-soft bg-white px-lg py-lg"
         >
           {sendError ? (
             <p className="text-body-sm text-danger" role="alert">
@@ -170,35 +172,37 @@ export function MessageThread({ engagementId }: MessageThreadProps) {
           <label htmlFor="message-body" className="sr-only">
             {t('messages.composerLabel')}
           </label>
-          <textarea
-            id="message-body"
-            rows={3}
-            value={draft}
-            maxLength={MESSAGE_BODY_MAX}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder={t('messages.composerPlaceholder')}
-            className="w-full rounded-md border border-line bg-white px-md py-md text-body leading-[1.8] outline-none [overflow-wrap:anywhere] focus:border-jade-400 focus:shadow-focus"
-            disabled={sendMutation.isPending}
-          />
-          <div className="flex flex-wrap items-center justify-between gap-sm">
-            <p className="text-caption text-ink-400">
-              {draft.trim().length}/{MESSAGE_BODY_MAX}
-            </p>
-            <button
-              type="submit"
-              disabled={
-                sendMutation.isPending || draft.trim().length < 1
-              }
-              className="tap-target rounded-md bg-jade-600 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-40"
-            >
-              {sendMutation.isPending
-                ? t('messages.sending')
-                : t('messages.send')}
-            </button>
+          <div className="rounded-xl2 border border-line bg-paper p-md focus-within:border-jade-400 focus-within:shadow-focus">
+            <textarea
+              id="message-body"
+              rows={3}
+              value={draft}
+              maxLength={MESSAGE_BODY_MAX}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder={t('messages.composerPlaceholder')}
+              className="w-full resize-none bg-transparent text-body leading-burmese outline-none [overflow-wrap:anywhere]"
+              disabled={sendMutation.isPending}
+            />
+            <div className="mt-sm flex flex-wrap items-center justify-between gap-sm">
+              <p className="text-caption text-ink-400">
+                {draft.trim().length}/{MESSAGE_BODY_MAX}
+              </p>
+              <button
+                type="submit"
+                disabled={
+                  sendMutation.isPending || draft.trim().length < 1
+                }
+                className="tap-target rounded-md bg-jade-600 px-lg text-sm font-medium text-white shadow-cta disabled:opacity-40"
+              >
+                {sendMutation.isPending
+                  ? t('messages.sending')
+                  : t('messages.send')}
+              </button>
+            </div>
           </div>
         </form>
       ) : (
-        <p className="border-t border-line py-3 text-body-sm text-ink-500">
+        <p className="shrink-0 border-t border-line-soft px-xl py-lg text-body-sm text-ink-500">
           {t('messages.cannotSend')}
         </p>
       )}

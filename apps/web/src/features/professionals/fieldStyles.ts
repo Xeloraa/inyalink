@@ -39,7 +39,16 @@ export const SKILL_SUGGESTIONS: Record<CategorySlug, string[]> = {
 };
 
 export const FIELD_INPUT =
-  'tap-target w-full rounded-md border border-line bg-white px-md text-body text-ink-900 outline-none focus:border-jade-400 focus:shadow-focus';
+  'tap-target h-12 w-full rounded-2md border-0 bg-page px-lg text-body text-ink-900 outline-none transition-shadow duration-fast ease-out placeholder:text-ink-300 focus:shadow-focus';
 
 export const FIELD_TEXTAREA =
-  'w-full rounded-md border border-line bg-white px-md py-md text-body text-ink-900 outline-none focus:border-jade-400 focus:shadow-focus';
+  'w-full rounded-2md border-0 bg-page px-lg py-md text-body text-ink-900 outline-none transition-shadow duration-fast ease-out placeholder:text-ink-300 focus:shadow-focus';
+
+export const FIELD_PILL_IDLE =
+  'tap-target rounded-full bg-page px-[18px] py-2.5 text-[13.5px] font-semibold text-ink-700 transition-colors duration-fast ease-out hover:bg-hover focus-visible:shadow-focus';
+
+export const FIELD_PILL_ACTIVE =
+  'tap-target rounded-full bg-jade-600 px-[18px] py-2.5 text-[13.5px] font-semibold text-white transition-colors duration-fast ease-out focus-visible:shadow-focus';
+
+export const FIELD_BTN_SECONDARY =
+  'tap-target h-12 rounded-2md bg-line-soft px-lg text-body-sm font-semibold text-ink-700 transition-colors duration-fast ease-out hover:bg-hover focus-visible:shadow-focus';

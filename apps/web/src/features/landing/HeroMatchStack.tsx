@@ -18,8 +18,8 @@ const POS_CLASS = [
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 flex-1 rounded-sm bg-jade-50 px-md py-sm">
-      <p className="text-caption text-ink-500 [overflow-wrap:anywhere]">{label}</p>
-      <p className="mt-xs text-stat text-jade-600 [overflow-wrap:anywhere]">{value}</p>
+      <p className="text-caption leading-burmese text-ink-500 [overflow-wrap:anywhere]">{label}</p>
+      <p className="mt-xs text-stat leading-burmese text-jade-600 [overflow-wrap:anywhere]">{value}</p>
     </div>
   );
 }
@@ -84,7 +84,7 @@ function StackCard({
         ))}
       </div>
 
-      <p className="mt-lg rounded-sm bg-jade-50 px-md py-md text-body-sm text-ink-700">
+      <p className="mt-lg rounded-sm bg-jade-50 px-md py-md text-body-sm leading-burmese text-ink-700">
         {t(pro.reasonKey)}
       </p>
     </div>

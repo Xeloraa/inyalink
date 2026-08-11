@@ -1,5 +1,6 @@
 import { useI18n } from '../../lib/i18n';
-import { FIELD_INPUT } from './fieldStyles';
+import { FIELD_BTN_SECONDARY, FIELD_INPUT } from './fieldStyles';
+import { NoIdWarning } from './NoIdWarning';
 
 export type PortfolioDraftItem = {
   externalUrl: string;
@@ -14,6 +15,8 @@ type PortfolioFieldsProps = {
   portfolio: PortfolioDraftItem[];
   onAdd: () => void;
   onRemove: (index: number) => void;
+  /** Hide the amber strip when the parent already shows one. */
+  hideNoIdWarning?: boolean;
 };
 
 export function PortfolioFields({
@@ -24,16 +27,19 @@ export function PortfolioFields({
   portfolio,
   onAdd,
   onRemove,
+  hideNoIdWarning = false,
 }: PortfolioFieldsProps) {
   const { t } = useI18n();
 
   return (
     <>
-      <p className="text-body-sm text-ink-500">{t('onboarding.portfolioHelp')}</p>
+      <p className="text-[13px] leading-[1.8] text-ink-500">
+        {t('onboarding.portfolioHelp')}
+      </p>
       <div>
         <label
           htmlFor="portfolio"
-          className="mb-1.5 block text-caption text-ink-500"
+          className="mb-1.5 block text-[12px] text-ink-400"
         >
           {t('onboarding.portfolioUrl')}
         </label>
@@ -49,7 +55,7 @@ export function PortfolioFields({
       <div>
         <label
           htmlFor="portfolioCaption"
-          className="mb-1.5 block text-caption text-ink-500"
+          className="mb-1.5 block text-[12px] text-ink-400"
         >
           {t('onboarding.portfolioCaption')}
         </label>
@@ -60,11 +66,7 @@ export function PortfolioFields({
           className={FIELD_INPUT}
         />
       </div>
-      <button
-        type="button"
-        onClick={onAdd}
-        className="tap-target rounded-md border border-line px-lg text-body-sm transition-colors duration-fast ease-out hover:border-jade-400 focus-visible:shadow-focus"
-      >
+      <button type="button" onClick={onAdd} className={FIELD_BTN_SECONDARY}>
         {t('onboarding.addPortfolio')}
       </button>
       {portfolio.length > 0 ? (
@@ -72,7 +74,7 @@ export function PortfolioFields({
           {portfolio.map((item, i) => (
             <li
               key={`${item.externalUrl}-${i}`}
-              className="flex items-center justify-between gap-md rounded-sm border border-line-soft px-md py-sm text-body-sm"
+              className="flex items-center justify-between gap-md rounded-2md bg-page px-md py-sm text-body-sm"
             >
               <span className="truncate text-ink-700">
                 {item.caption ?? item.externalUrl}
@@ -80,7 +82,7 @@ export function PortfolioFields({
               <button
                 type="button"
                 onClick={() => onRemove(i)}
-                className="tap-target shrink-0 rounded-md px-md text-ink-400 transition-colors hover:text-danger focus-visible:shadow-focus"
+                className="tap-target shrink-0 rounded-2sm px-md text-ink-400 transition-colors hover:text-danger focus-visible:shadow-focus"
               >
                 {t('onboarding.remove')}
               </button>
@@ -88,7 +90,7 @@ export function PortfolioFields({
           ))}
         </ul>
       ) : null}
-      <p className="text-caption text-ink-400">{t('onboarding.noIdDocs')}</p>
+      {hideNoIdWarning ? null : <NoIdWarning />}
     </>
   );
 }

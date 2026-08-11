@@ -61,12 +61,14 @@ export default function AdminEngagements() {
 
   return (
     <div>
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-base font-semibold">{t('admin.eng.title')}</h1>
-        <label className="text-xs text-ink-600">
+      <div className="mb-lg flex flex-wrap items-center justify-between gap-md">
+        <h1 className="font-display text-title text-ink-900">
+          {t('admin.eng.title')}
+        </h1>
+        <label className="text-caption text-ink-500">
           {t('admin.filterStatus')}{' '}
           <select
-            className="ml-1 rounded border border-line bg-white px-1 py-0.5"
+            className="ml-1 rounded-2md border border-line bg-white px-sm py-xs"
             value={status}
             onChange={(e) => setStatus(e.target.value as EngagementStatus | '')}
           >
@@ -80,13 +82,13 @@ export default function AdminEngagements() {
       </div>
 
       {q.data.items.length === 0 ? (
-        <p className="rounded border border-line bg-white px-3 py-4 text-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+        <p className="rounded-bubble border border-line bg-white px-lg py-xl text-body-sm text-ink-500 shadow-sm [overflow-wrap:anywhere]">
           {t('admin.eng.empty')}
         </p>
       ) : (
-      <div className="overflow-x-auto rounded border border-line bg-white">
-        <table className="w-full min-w-[960px] border-collapse text-left text-xs">
-          <thead className="bg-line-soft text-[11px] uppercase text-ink-500">
+      <div className="overflow-x-auto rounded-bubble border border-line bg-white shadow-sm">
+        <table className="w-full min-w-[960px] border-collapse text-left text-caption">
+          <thead className="bg-page text-caption uppercase text-ink-500">
             <tr>
               <th className="px-2 py-1.5 font-medium">{t('admin.eng.colBrief')}</th>
               <th className="px-2 py-1.5 font-medium">{t('admin.eng.colPro')}</th>
@@ -117,7 +119,7 @@ export default function AdminEngagements() {
                 <td className="px-2 py-1.5 tabular-nums">{e.hoursInState}h</td>
                 <td className="px-2 py-1.5">
                   {e.stalled ? (
-                    <span className="rounded bg-amber-100 px-1 text-amber-800">
+                    <span className="rounded-full bg-amber-100 px-sm text-amber-800">
                       {e.stallReason === 'past_respond_by'
                         ? t('admin.eng.stallRespondBy')
                         : t('admin.eng.stall30d')}
@@ -147,13 +149,13 @@ export default function AdminEngagements() {
       )}
 
       {editId ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-sm rounded border border-line bg-white p-3">
-            <h3 className="text-sm font-semibold">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-lg">
+          <div className="w-full max-w-sm rounded-bubble border border-line bg-white p-xl shadow-lg">
+            <h3 className="font-display text-title text-ink-900">
               {t('admin.eng.changeStatus')}
             </h3>
             <select
-              className="tap-target mt-2 w-full rounded border border-line px-3 text-sm"
+              className="tap-target mt-md w-full rounded-2md border border-line bg-paper px-md text-body-sm outline-none focus:border-jade-400 focus:shadow-focus"
               value={nextStatus}
               onChange={(e) =>
                 setNextStatus(e.target.value as EngagementStatus)
@@ -165,11 +167,11 @@ export default function AdminEngagements() {
                 </option>
               ))}
             </select>
-            {err ? <p className="mt-2 text-xs text-danger">{err}</p> : null}
-            <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            {err ? <p className="mt-md text-caption text-danger">{err}</p> : null}
+            <div className="mt-lg flex flex-col-reverse gap-sm sm:flex-row sm:justify-end">
               <button
                 type="button"
-                className="tap-target inline-flex items-center justify-center rounded-md px-3 text-sm text-ink-600"
+                className="tap-target inline-flex items-center justify-center rounded-2md px-md text-body-sm text-ink-500"
                 onClick={() => setEditId(null)}
               >
                 {t('common.back')}
@@ -177,7 +179,7 @@ export default function AdminEngagements() {
               <button
                 type="button"
                 disabled={patch.isPending}
-                className="tap-target inline-flex items-center justify-center rounded-md bg-jade-600 px-3 text-sm text-white disabled:opacity-50"
+                className="tap-target inline-flex items-center justify-center rounded-2md bg-jade-600 px-lg text-body-sm text-white shadow-cta disabled:opacity-50"
                 onClick={() => patch.mutate()}
               >
                 {t('common.save')}

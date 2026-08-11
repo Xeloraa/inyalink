@@ -126,7 +126,7 @@ export function EngagementInbox({
 
   if (!loading && items.length === 0 && showEmpty) {
     return (
-      <section className="rounded-lg border border-line bg-paper px-lg py-lg leading-[1.8]">
+      <section className="rounded-xl2 border border-line bg-paper px-xl py-xl shadow-sm">
         <h2 className="text-title text-ink-900">{t('inbox.emptyTitle')}</h2>
         <p className="mt-sm text-body-sm text-ink-500 [overflow-wrap:anywhere]">
           {t('inbox.emptyBody')}
@@ -136,10 +136,10 @@ export function EngagementInbox({
   }
 
   return (
-    <section className="space-y-4 rounded-lg border border-jade-200 bg-jade-50 p-5">
+    <section className="space-y-lg rounded-xl2 border border-line bg-white p-xl shadow-md">
       <div>
-        <h2 className="text-title text-jade-900">{t('inbox.title')}</h2>
-        <p className="mt-1 text-body-sm leading-[1.8] text-jade-800">
+        <h2 className="text-title text-ink-900">{t('inbox.title')}</h2>
+        <p className="mt-sm text-body-sm text-ink-500">
           {t('inbox.subhead')}
         </p>
       </div>
@@ -148,7 +148,7 @@ export function EngagementInbox({
         <LoadErrorNotice message={error} onRetry={() => void reload()} />
       ) : null}
 
-      <ul className="space-y-4">
+      <ul className="space-y-lg">
         {items.map((item) => {
           const remaining = secondsUntil(item.respondBy);
           // Re-render each second via tick.
@@ -170,7 +170,7 @@ export function EngagementInbox({
           return (
             <li
               key={item.id}
-              className="rounded-md border border-jade-200 bg-white p-4"
+              className="rounded-bubble border border-line bg-paper p-lg"
             >
               <h3 className="text-title text-ink-900 [overflow-wrap:anywhere]">
                 {item.briefTitle ?? t('proFeed.untitled')}

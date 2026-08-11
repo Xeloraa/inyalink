@@ -33,7 +33,7 @@ import { MatchAvatarRow, MatchAvatarRowSkeleton } from '../features/chat/MatchAv
 import { RoadmapCards } from '../features/chat/RoadmapCards';
 import { ChatBubble, ThinkingBubble } from './ChatBubble';
 import { ChatHistoryPanel } from './ChatHistoryPanel';
-import { useChatUi } from './chatUi';
+import { CHAT_COMPOSER, CHAT_PANEL, useChatUi } from './chatUi';
 import { LogoMark } from './Logo';
 import { RotatingProgress } from './RotatingProgress';
 import { RateLimitNotice } from './Notices';
@@ -643,7 +643,7 @@ export function FloatingChat() {
         aria-label={t('chat.open')}
         aria-expanded={open}
         aria-controls="floating-chat-panel"
-        className={`fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-jade-600 text-white shadow-lg transition-[opacity,transform,background-color] duration-slow ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 motion-reduce:transition-none ${
+        className={`fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-jade-600 text-white shadow-cta transition-[opacity,transform,background-color] duration-slow ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 motion-reduce:transition-none ${
           open
             ? 'pointer-events-none scale-90 opacity-0'
             : 'pointer-events-auto scale-100 opacity-100'
@@ -652,29 +652,38 @@ export function FloatingChat() {
         <ChatFabIcon />
       </button>
 
+      {open ? (
+        <button
+          type="button"
+          aria-label={t('chat.close')}
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-40 hidden bg-scrim sm:block"
+        />
+      ) : null}
+
       <div
         id="floating-chat-panel"
         role="dialog"
         aria-label={t('chat.title')}
         aria-hidden={!open}
-        className={`fixed z-50 flex flex-col overflow-hidden border border-line bg-white shadow-lg transition-[opacity,transform] duration-slow ease-out motion-reduce:transition-none max-sm:inset-0 max-sm:h-dvh max-sm:max-h-dvh max-sm:w-full max-sm:rounded-none max-sm:border-0 sm:bottom-5 sm:right-5 sm:h-[min(680px,calc(100dvh-5.5rem))] sm:max-h-[calc(100dvh-5.5rem)] sm:w-[min(400px,calc(100vw-1.5rem))] sm:rounded-xl ${
+        className={`fixed z-50 flex flex-col overflow-hidden transition-[opacity,transform] duration-slow ease-out motion-reduce:transition-none max-sm:inset-0 max-sm:h-dvh max-sm:max-h-dvh max-sm:w-full max-sm:border-0 sm:bottom-5 sm:right-5 sm:h-[min(680px,calc(100dvh-5.5rem))] sm:max-h-[calc(100dvh-5.5rem)] sm:w-[min(400px,calc(100vw-1.5rem))] ${CHAT_PANEL} ${
           open
             ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
             : 'pointer-events-none translate-y-3 scale-[0.98] opacity-0'
         }`}
       >
-        <header className="flex shrink-0 items-center gap-sm border-b border-line-soft px-xl py-lg pt-[max(0.75rem,env(safe-area-inset-top))]">
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-jade-50 text-jade-600">
+        <header className="flex shrink-0 items-center gap-sm border-b border-line-soft bg-paper px-xl py-lg pt-[max(0.75rem,env(safe-area-inset-top))]">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2md bg-jade-50 text-jade-600">
             <LogoMark size={20} />
           </span>
-          <h2 className="min-w-0 flex-1 truncate text-title text-ink-900">
+          <h2 className="min-w-0 flex-1 truncate font-display text-title text-ink-900">
             {t('chat.title')}
           </h2>
           <button
             type="button"
             onClick={() => setHistoryOpen(true)}
             tabIndex={open ? 0 : -1}
-            className="tap-target inline-flex items-center justify-center rounded-md text-ink-500 transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus"
+            className="tap-target inline-flex items-center justify-center rounded-2md text-ink-500 transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus"
           >
             <span className="sr-only">{t('chat.history')}</span>
             <HistoryIcon />
@@ -683,7 +692,7 @@ export function FloatingChat() {
             type="button"
             onClick={() => setOpen(false)}
             tabIndex={open ? 0 : -1}
-            className="tap-target inline-flex items-center justify-center rounded-md text-ink-500 transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus"
+            className="tap-target inline-flex items-center justify-center rounded-2md text-ink-500 transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus"
           >
             <span className="sr-only">{t('chat.close')}</span>
             <XIcon />
@@ -765,7 +774,7 @@ export function FloatingChat() {
               <label className="sr-only" htmlFor="floating-chat-input">
                 {t('converse.placeholder')}
               </label>
-              <div className="flex flex-wrap items-stretch gap-sm">
+              <div className={`flex flex-wrap items-stretch gap-sm p-sm ${CHAT_COMPOSER}`}>
                 <input
                   ref={inputRef}
                   id="floating-chat-input"
@@ -774,7 +783,7 @@ export function FloatingChat() {
                   placeholder={t('converse.placeholder')}
                   disabled={composerLocked || !open || historyOpen}
                   tabIndex={open && !historyOpen ? 0 : -1}
-                  className="tap-target font-myanmar min-w-0 flex-1 rounded-md border border-line px-md text-body-lg leading-burmese outline-none focus:border-jade-400 focus:shadow-focus disabled:opacity-50"
+                  className="tap-target font-myanmar min-w-0 flex-1 bg-transparent px-md text-body-lg leading-burmese outline-none disabled:opacity-50"
                 />
                 <button
                   type="submit"
@@ -785,7 +794,7 @@ export function FloatingChat() {
                     historyOpen
                   }
                   tabIndex={open && !historyOpen ? 0 : -1}
-                  className="tap-target shrink-0 rounded-md bg-jade-600 px-lg text-body-sm font-medium text-white transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300"
+                  className="tap-target shrink-0 rounded-md bg-jade-600 px-lg text-body-sm font-medium text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:bg-ink-300 disabled:shadow-none"
                 >
                   {t('converse.send')}
                 </button>

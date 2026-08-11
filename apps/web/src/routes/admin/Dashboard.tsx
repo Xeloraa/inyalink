@@ -21,7 +21,7 @@ export default function AdminDashboard() {
   }
   if (q.isError || !q.data) {
     return (
-      <p className="text-sm text-danger">
+      <p className="text-body-sm text-danger">
         {t('admin.loadError')}{' '}
         <button type="button" className="underline" onClick={() => void q.refetch()}>
           {t('common.retry')}
@@ -61,18 +61,20 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="mb-3 text-base font-semibold">{t('admin.dash.title')}</h1>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+      <h1 className="mb-lg font-display text-title text-ink-900">
+        {t('admin.dash.title')}
+      </h1>
+      <div className="grid grid-cols-2 gap-md md:grid-cols-5">
         {cells.map((c) => (
           <Link
             key={c.label}
             to={c.to}
-            className="tap-target flex min-h-[72px] flex-col justify-center rounded border border-line bg-white px-3 py-3 hover:border-jade-400"
+            className="tap-target flex min-h-[72px] flex-col justify-center rounded-2md border border-line bg-white px-lg py-lg shadow-sm transition-colors duration-fast ease-out hover:bg-hover hover:border-jade-200"
           >
-            <div className="text-[11px] uppercase tracking-wide text-ink-500 [overflow-wrap:anywhere]">
+            <div className="text-caption uppercase tracking-wide text-ink-500 [overflow-wrap:anywhere]">
               {c.label}
             </div>
-            <div className="mt-1 text-xl font-semibold tabular-nums text-ink-900">
+            <div className="mt-sm text-stat tabular-nums text-ink-900">
               {c.value}
             </div>
           </Link>

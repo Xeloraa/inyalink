@@ -33,7 +33,7 @@ export function HeroDawn({
 
   return (
     <FullBleed
-      className="overflow-x-clip bg-[linear-gradient(180deg,var(--paper)_0%,var(--jade-50)_58%,rgba(223,242,232,0.55)_100%)]"
+      className="overflow-x-clip bg-[linear-gradient(180deg,var(--paper)_0%,var(--jade-50)_58%,var(--jade-100)_100%)]"
       labelledBy="hero-heading"
     >
       <div
@@ -65,7 +65,7 @@ export function HeroDawn({
                 {t('landing.headlineBefore')}
               </span>
               {t('landing.headlineAccent') ? (
-                <span className="text-hero-directive mt-xs block text-jade-600">
+                <span className="text-hero-directive mt-xs block text-jade-bright">
                   {t('landing.headlineAccent')}
                 </span>
               ) : null}

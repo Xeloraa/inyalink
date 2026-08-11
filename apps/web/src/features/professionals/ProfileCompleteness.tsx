@@ -42,7 +42,7 @@ export function ProfileCompleteness({
   if (missing.length === 0) {
     return (
       <aside
-        className="rounded-md border border-jade-200 bg-jade-50 px-lg py-lg"
+        className="rounded-2md bg-jade-50 px-lg py-lg"
         aria-label={t('completeness.title')}
       >
         <p className="text-body-sm font-medium text-jade-800 [overflow-wrap:anywhere] [line-height:1.8]">
@@ -54,19 +54,19 @@ export function ProfileCompleteness({
 
   return (
     <aside
-      className="rounded-md border border-line bg-white px-lg py-lg"
+      className="rounded-2md bg-page px-lg py-lg"
       aria-label={t('completeness.title')}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-sm">
-        <h2 className="text-title text-ink-900 [overflow-wrap:anywhere] [line-height:1.8]">
+        <h2 className="text-[15px] font-bold tracking-[0.02em] text-ink-900 [overflow-wrap:anywhere] [line-height:1.8]">
           {t('completeness.title')}
         </h2>
-        <p className="text-body font-medium text-jade-700">
+        <p className="text-body font-medium text-jade-600">
           {t('completeness.percent').replace('{percent}', String(percent))}
         </p>
       </div>
       <div
-        className="mt-md h-2 overflow-hidden rounded-sm bg-jade-100"
+        className="mt-md h-1.5 overflow-hidden rounded-full bg-jade-100"
         role="progressbar"
         aria-valuenow={percent}
         aria-valuemin={0}
@@ -77,7 +77,7 @@ export function ProfileCompleteness({
         )}
       >
         <div
-          className="h-full rounded-sm bg-jade-600 transition-[width] duration-fast ease-out"
+          className="h-full rounded-full bg-jade-600 transition-[width] duration-fast ease-out"
           style={{ width: `${percent}%` }}
         />
       </div>

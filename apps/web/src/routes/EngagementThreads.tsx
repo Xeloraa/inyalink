@@ -34,16 +34,27 @@ export default function EngagementThreads() {
   }
 
   return (
-    <section className="mx-auto max-w-lg space-y-6">
+    <section className="space-y-xl">
       <div>
-        <h1 className="text-2xl font-semibold leading-[1.8] text-ink-900">
+        <h1 className="text-display-sm text-ink-900">
           {t('messages.threadsTitle')}
         </h1>
-        <p className="mt-1 text-body-sm leading-[1.8] text-ink-500">
+        <p className="mt-sm text-body-sm text-ink-500">
           {t('messages.threadsSubhead')}
         </p>
       </div>
-      <ActiveThreads hideWhenEmpty={false} />
+
+      <div className="flex gap-[14px]">
+        <div className="flex min-h-[min(70vh,640px)] w-full flex-col overflow-hidden rounded-xl2 bg-white shadow-md md:w-[320px] md:shrink-0">
+          <ActiveThreads hideWhenEmpty={false} variant="pane" />
+        </div>
+
+        <div className="hidden min-h-[min(70vh,640px)] flex-1 flex-col items-center justify-center rounded-xl2 bg-white px-xl py-3xl text-center shadow-md md:flex">
+          <p className="max-w-xs text-body text-ink-500">
+            {t('messages.selectThread')}
+          </p>
+        </div>
+      </div>
     </section>
   );
 }

@@ -48,9 +48,9 @@ function BriefCard() {
   ];
 
   return (
-    <div className="max-w-[340px] rounded-md bg-paper p-lg text-ink-900 shadow-[0_16px_40px_rgba(0,0,0,0.45)]">
-      <p className="text-caption text-ink-400">{t('landing.deepBriefLabel')}</p>
-      <p className="mt-xs text-title text-ink-900">
+    <div className="max-w-[340px] rounded-md bg-paper p-lg text-ink-900 shadow-lg">
+      <p className="text-caption leading-burmese text-ink-400">{t('landing.deepBriefLabel')}</p>
+      <p className="mt-xs text-title leading-burmese text-ink-900">
         {t('landing.sampleBriefTitle')}
       </p>
       <dl className="mt-md">
@@ -95,7 +95,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
 
   return (
     <FullBleed
-      className="overflow-hidden bg-[var(--jade-900)]"
+      className="overflow-hidden bg-[var(--jade-950)]"
       labelledBy="deep-heading"
       innerClassName="py-4xl md:py-5xl"
     >
@@ -149,7 +149,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
                 }
               >
                 <p
-                  className={`px-lg py-md text-body-lg ${
+                  className={`px-lg py-md text-body-lg leading-burmese ${
                     message.role === 'user'
                       ? 'max-w-[78%] rounded-[16px] rounded-br-[4px] bg-[var(--jade-600)] text-[color:var(--white)]'
                       : 'max-w-[86%] rounded-[16px] rounded-bl-[4px] border border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.07)] text-[color:var(--jade-50)]'
@@ -189,7 +189,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
           <button
             type="button"
             onClick={onStart}
-            className="reveal tap-target mt-2xl inline-flex items-center gap-sm text-body-sm text-[color:var(--jade-300)] underline underline-offset-4 transition-colors duration-fast ease-out hover:text-jade-100 focus-visible:rounded-sm focus-visible:shadow-[0_0_0_3px_rgba(131,201,166,0.35)]"
+            className="reveal tap-target mt-2xl inline-flex items-center gap-sm text-body-sm leading-burmese text-[color:var(--jade-300)] underline underline-offset-4 transition-colors duration-fast ease-out hover:text-jade-100 focus-visible:rounded-sm focus-visible:shadow-[0_0_0_3px_color-mix(in_srgb,var(--jade-300)_35%,transparent)]"
             style={{ transitionDelay: '850ms' }}
           >
             {t('landing.deepStart')}

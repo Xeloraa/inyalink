@@ -17,16 +17,16 @@ function LinkList({
 }) {
   if (links.length === 0) return null;
   return (
-    <div className="mt-2">
-      <div className="text-[11px] font-medium uppercase text-ink-500">{label}</div>
-      <ul className="mt-1 space-y-1">
+    <div className="mt-md">
+      <div className="text-caption font-medium uppercase text-ink-500">{label}</div>
+      <ul className="mt-sm space-y-xs">
         {links.map((l) => (
           <li key={l.href}>
             <a
               href={l.href}
               target="_blank"
               rel="noreferrer"
-              className="text-sm text-jade-700 underline [overflow-wrap:anywhere]"
+              className="text-body-sm text-jade-600 underline [overflow-wrap:anywhere]"
             >
               {l.text}
             </a>
@@ -53,7 +53,7 @@ function Detail({ item }: { item: AdminPendingProfessional }) {
     : [];
 
   return (
-    <div className="space-y-2 text-sm leading-[1.8]">
+    <div className="space-y-sm text-body-sm leading-burmese">
       <div>
         <span className="text-ink-500">{t('admin.pro.category')}: </span>
         {item.categoryNameEn}
@@ -68,7 +68,7 @@ function Detail({ item }: { item: AdminPendingProfessional }) {
         <span className="whitespace-pre-wrap [overflow-wrap:anywhere]">{bio}</span>
       </div>
       {item.reviewNote ? (
-        <div className="rounded bg-amber-100 px-2 py-1 text-amber-800">
+        <div className="rounded-2md bg-amber-100 px-md py-sm text-amber-800">
           {t('admin.pro.note')}: {item.reviewNote}
         </div>
       ) : null}
@@ -154,7 +154,7 @@ export default function AdminProfessionals() {
   }
   if (q.isError) {
     return (
-      <p className="text-sm text-danger">
+      <p className="text-body-sm text-danger">
         {t('admin.loadError')}{' '}
         <button type="button" className="underline" onClick={() => void q.refetch()}>
           {t('common.retry')}
@@ -165,35 +165,37 @@ export default function AdminProfessionals() {
 
   return (
     <div>
-      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-base font-semibold">
+      <div className="mb-lg flex flex-wrap items-baseline justify-between gap-md">
+        <h1 className="font-display text-title text-ink-900">
           {t('admin.pro.title')}{' '}
-          <span className="font-normal text-ink-500">({items.length})</span>
+          <span className="font-sans font-normal text-ink-500">
+            ({items.length})
+          </span>
         </h1>
-        <p className="text-[11px] text-ink-400">{t('admin.pro.shortcuts')}</p>
+        <p className="text-caption text-ink-400">{t('admin.pro.shortcuts')}</p>
       </div>
 
       {items.length === 0 ? (
-        <p className="rounded border border-line bg-white px-3 py-4 text-sm leading-[1.8] text-ink-500 [overflow-wrap:anywhere]">
+        <p className="rounded-bubble border border-line bg-white px-lg py-xl text-body-sm text-ink-500 shadow-sm [overflow-wrap:anywhere]">
           {t('admin.pro.empty')}
         </p>
       ) : (
-        <div className="grid gap-2 md:grid-cols-[280px_1fr]">
-          <ul className="max-h-[70vh] overflow-auto rounded border border-line bg-white">
+        <div className="grid gap-md md:grid-cols-[280px_1fr]">
+          <ul className="max-h-[70vh] overflow-auto rounded-bubble border border-line bg-white shadow-sm">
             {items.map((item, i) => (
               <li key={item.userId}>
                 <button
                   type="button"
                   onClick={() => setIndex(i)}
                   className={[
-                    'tap-target w-full border-b border-line-soft px-3 text-left text-sm',
-                    i === index ? 'bg-jade-50' : 'hover:bg-line-soft',
+                    'tap-target w-full border-b border-line-soft px-lg text-left text-body-sm transition-colors duration-fast ease-out',
+                    i === index ? 'bg-jade-50' : 'hover:bg-hover',
                   ].join(' ')}
                 >
                   <div className="font-medium [overflow-wrap:anywhere]">
                     {item.displayName}
                   </div>
-                  <div className="text-[11px] text-ink-500 [overflow-wrap:anywhere]">
+                  <div className="text-caption text-ink-500 [overflow-wrap:anywhere]">
                     {item.categoryNameEn}
                   </div>
                 </button>
@@ -202,14 +204,16 @@ export default function AdminProfessionals() {
           </ul>
 
           {selected ? (
-            <div className="rounded border border-line bg-white p-3">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-sm font-semibold">{selected.displayName}</h2>
-                <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+            <div className="rounded-bubble border border-line bg-white p-xl shadow-sm">
+              <div className="mb-lg flex flex-wrap items-center justify-between gap-md">
+                <h2 className="font-display text-title text-ink-900">
+                  {selected.displayName}
+                </h2>
+                <div className="flex w-full flex-wrap items-center gap-md sm:w-auto">
                   <button
                     type="button"
                     disabled={mutation.isPending}
-                    className="tap-target inline-flex flex-1 items-center justify-center rounded-md bg-jade-600 px-3 text-sm text-white disabled:opacity-50 sm:flex-none"
+                    className="tap-target inline-flex flex-1 items-center justify-center px-md text-body-sm font-medium text-jade-600 hover:text-jade-800 disabled:opacity-50 sm:flex-none"
                     onClick={() =>
                       mutation.mutate({
                         id: selected.userId,
@@ -222,7 +226,7 @@ export default function AdminProfessionals() {
                   <button
                     type="button"
                     disabled={mutation.isPending}
-                    className="tap-target inline-flex flex-1 items-center justify-center rounded-md bg-danger px-3 text-sm text-white disabled:opacity-50 sm:flex-none"
+                    className="tap-target inline-flex flex-1 items-center justify-center px-md text-body-sm font-medium text-danger hover:opacity-80 disabled:opacity-50 sm:flex-none"
                     onClick={() => setReasonOpen('reject')}
                   >
                     {t('admin.pro.reject')}
@@ -230,7 +234,7 @@ export default function AdminProfessionals() {
                   <button
                     type="button"
                     disabled={mutation.isPending}
-                    className="tap-target inline-flex w-full items-center justify-center rounded-md border border-line px-3 text-sm disabled:opacity-50 sm:w-auto"
+                    className="tap-target inline-flex w-full items-center justify-center rounded-2md border border-line px-md text-body-sm text-ink-700 hover:bg-hover disabled:opacity-50 sm:w-auto"
                     onClick={() => setReasonOpen('request_info')}
                   >
                     {t('admin.pro.requestInfo')}
@@ -238,7 +242,7 @@ export default function AdminProfessionals() {
                 </div>
               </div>
               {actionError ? (
-                <p className="mb-2 text-xs text-danger">{actionError}</p>
+                <p className="mb-md text-caption text-danger">{actionError}</p>
               ) : null}
               <Detail item={selected} />
             </div>
@@ -247,25 +251,25 @@ export default function AdminProfessionals() {
       )}
 
       {reasonOpen && selected ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded border border-line bg-white p-3 shadow">
-            <h3 className="text-sm font-semibold">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-lg">
+          <div className="w-full max-w-md rounded-bubble border border-line bg-white p-xl shadow-lg">
+            <h3 className="font-display text-title text-ink-900">
               {reasonOpen === 'reject'
                 ? t('admin.pro.reject')
                 : t('admin.pro.requestInfo')}
             </h3>
             <textarea
-              className="mt-2 w-full rounded border border-line p-2 text-sm leading-[1.8]"
+              className="mt-md w-full rounded-2md border border-line bg-paper p-md text-body-sm leading-burmese outline-none focus:border-jade-400 focus:shadow-focus"
               rows={4}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder={t('admin.pro.reasonPlaceholder')}
               autoFocus
             />
-            <div className="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <div className="mt-lg flex flex-col-reverse gap-sm sm:flex-row sm:justify-end">
               <button
                 type="button"
-                className="tap-target inline-flex items-center justify-center rounded-md px-3 text-sm text-ink-600"
+                className="tap-target inline-flex items-center justify-center rounded-2md px-md text-body-sm text-ink-500"
                 onClick={() => {
                   setReasonOpen(null);
                   setReason('');
@@ -276,7 +280,7 @@ export default function AdminProfessionals() {
               <button
                 type="button"
                 disabled={mutation.isPending || reason.trim().length < 2}
-                className="tap-target inline-flex items-center justify-center rounded-md bg-ink-900 px-3 text-sm text-white disabled:opacity-50"
+                className="tap-target inline-flex items-center justify-center rounded-2md bg-ink-900 px-lg text-body-sm text-white disabled:opacity-50"
                 onClick={() =>
                   mutation.mutate({
                     id: selected.userId,

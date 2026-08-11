@@ -2,7 +2,7 @@
 
 /* Question line — quieter lead-in. */
 .text-hero-question {
-  font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+  font-family: 'Bricolage Grotesque', 'Noto Sans Myanmar', system-ui, sans-serif;
   font-size: 28px;
   font-weight: 500;
   line-height: 1.25;
@@ -12,7 +12,7 @@
 
 /* Directive — larger, heavier; leads the eye. */
 .text-hero-directive {
-  font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+  font-family: 'Bricolage Grotesque', 'Noto Sans Myanmar', system-ui, sans-serif;
   font-size: 40px;
   font-weight: 600;
   line-height: 1.15;
@@ -21,7 +21,7 @@
 }
 
 .text-sect {
-  font-family: Sora, 'Noto Sans Myanmar', system-ui, sans-serif;
+  font-family: 'Bricolage Grotesque', 'Noto Sans Myanmar', system-ui, sans-serif;
   font-size: 24px;
   font-weight: 600;
   line-height: 1.4;

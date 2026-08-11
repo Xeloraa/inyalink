@@ -80,7 +80,7 @@ export function Commitments() {
           {COMMITS.map((commit) => (
             <li
               key={commit.key}
-              className="flex items-start gap-md text-body-lg text-[color:var(--jade-50)]"
+              className="flex items-start gap-md text-body-lg leading-burmese text-[color:var(--jade-50)]"
             >
               <span
                 aria-hidden

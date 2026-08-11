@@ -36,9 +36,11 @@ function JoinGate() {
 
   if (checking) {
     return (
-      <p className="py-3xl text-center text-body text-ink-500" role="status">
-        {t('common.loading')}
-      </p>
+      <div className="mx-auto max-w-[620px] py-3xl" role="status">
+        <div className="rounded-xl2 bg-white p-xl text-center shadow-md">
+          <p className="text-body text-ink-500">{t('common.loading')}</p>
+        </div>
+      </div>
     );
   }
 

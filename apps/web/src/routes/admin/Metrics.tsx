@@ -33,19 +33,23 @@ export default function AdminMetrics() {
 
   return (
     <div>
-      <h1 className="mb-3 text-base font-semibold">{t('admin.metrics.title')}</h1>
+      <h1 className="mb-lg font-display text-title text-ink-900">
+        {t('admin.metrics.title')}
+      </h1>
 
-      <div className="mb-3 rounded border-2 border-jade-600 bg-jade-50 px-4 py-3">
-        <div className="text-[11px] uppercase tracking-wide text-jade-800">
+      <div className="mb-lg rounded-bubble border border-jade-200 bg-jade-50 px-xl py-lg shadow-sm">
+        <div className="text-caption uppercase tracking-wide text-jade-800">
           {t('admin.metrics.repeatRate')}
         </div>
-        <div className="mt-1 text-3xl font-semibold tabular-nums text-jade-900">
+        <div className="mt-sm text-stat tabular-nums text-jade-900">
           {pct(m.clientRepeatRate)}
         </div>
-        <p className="mt-1 text-xs text-jade-800">{t('admin.metrics.repeatHint')}</p>
+        <p className="mt-sm text-caption text-jade-800">
+          {t('admin.metrics.repeatHint')}
+        </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-md md:grid-cols-3">
         {[
           { label: t('admin.metrics.briefsCreated'), value: String(m.briefsCreated) },
           { label: t('admin.metrics.matchRate'), value: pct(m.matchRate) },
@@ -68,12 +72,14 @@ export default function AdminMetrics() {
         ].map((c) => (
           <div
             key={c.label}
-            className="rounded border border-line bg-white px-3 py-2"
+            className="rounded-2md border border-line bg-white px-lg py-md shadow-sm"
           >
-            <div className="text-[11px] uppercase tracking-wide text-ink-500">
+            <div className="text-caption uppercase tracking-wide text-ink-500">
               {c.label}
             </div>
-            <div className="mt-1 text-xl font-semibold tabular-nums">{c.value}</div>
+            <div className="mt-sm text-stat tabular-nums text-ink-900">
+              {c.value}
+            </div>
           </div>
         ))}
       </div>

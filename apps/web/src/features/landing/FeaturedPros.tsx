@@ -57,8 +57,8 @@ export type FeaturedPro = {
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-sm bg-jade-50 px-md py-md">
-      <dt className="text-caption text-ink-500 [overflow-wrap:anywhere]">{label}</dt>
-      <dd className="mt-xs text-stat text-jade-600 [overflow-wrap:anywhere]">{value}</dd>
+      <dt className="text-caption leading-burmese text-ink-500 [overflow-wrap:anywhere]">{label}</dt>
+      <dd className="mt-xs text-stat leading-burmese text-jade-600 [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }
@@ -104,8 +104,8 @@ export function FeaturedProCard({ pro }: { pro: FeaturedPro }) {
               </span>
             ) : null}
           </div>
-          <p className="mt-xs text-body-sm text-ink-500">{t(pro.headlineKey)}</p>
-          <p className="mt-xs flex items-center gap-xs text-caption text-ink-400">
+          <p className="mt-xs text-body-sm leading-burmese text-ink-500">{t(pro.headlineKey)}</p>
+          <p className="mt-xs flex items-center gap-xs text-caption leading-burmese text-ink-400">
             <PinIcon />
             {t(pro.locationKey)}
           </p>
@@ -150,7 +150,7 @@ export function FeaturedProCard({ pro }: { pro: FeaturedPro }) {
       </ul>
 
       <div className="mt-lg rounded-sm bg-jade-50 p-md">
-        <p className="text-body-sm text-ink-700">{t(pro.reasonKey)}</p>
+        <p className="text-body-sm leading-burmese text-ink-700">{t(pro.reasonKey)}</p>
       </div>
     </article>
   );

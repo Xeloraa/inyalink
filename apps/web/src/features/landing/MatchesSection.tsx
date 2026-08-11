@@ -30,7 +30,7 @@ export function MatchesSection() {
           {t('landing.matchesHeading')}
         </h2>
         <p
-          className="reveal mt-sm max-w-hero text-body text-ink-500 md:ml-8"
+          className="reveal mt-sm max-w-hero text-body leading-burmese text-ink-500 md:ml-8"
           style={{ transitionDelay: '140ms' }}
         >
           {t('landing.featuredSubhead')}

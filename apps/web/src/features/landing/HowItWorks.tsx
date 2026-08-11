@@ -36,7 +36,7 @@ export function HowItWorks() {
           {t('landing.howTitle')}
         </h2>
         <p
-          className="reveal mt-sm max-w-hero text-body text-ink-500"
+          className="reveal mt-sm max-w-hero text-body leading-burmese text-ink-500"
           style={{ transitionDelay: '70ms' }}
         >
           {t('landing.howSubhead')}
@@ -59,13 +59,13 @@ export function HowItWorks() {
             >
               <span
                 aria-hidden
-                className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-jade-200 bg-white font-display text-[22px] font-semibold text-jade-600"
+                className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-jade-200 bg-white font-display text-[22px] font-semibold text-jade-bright"
               >
                 {t(step.numKey)}
               </span>
               <div className="md:mt-lg">
                 <h3 className="text-title text-ink-900">{t(step.titleKey)}</h3>
-                <p className="mt-sm text-body-sm text-ink-500">
+                <p className="mt-sm text-body-sm leading-burmese text-ink-500">
                   {t(step.bodyKey)}
                 </p>
               </div>

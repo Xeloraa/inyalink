@@ -1,5 +1,6 @@
 import type { WorkLink, WorkLinkPlatform } from '@inyalink/shared';
 import { useI18n } from '../../lib/i18n';
+import { FIELD_BTN_SECONDARY, FIELD_INPUT } from './fieldStyles';
 import { WorkLinkIcon } from './WorkLinkIcon';
 
 const PLATFORMS: WorkLinkPlatform[] = [
@@ -38,7 +39,7 @@ export function WorkLinksDisplay({ links }: WorkLinksDisplayProps) {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="tap-target inline-flex items-center gap-xs rounded-sm border border-line bg-white px-md text-caption text-ink-700 transition-colors duration-fast ease-out hover:border-jade-400 hover:text-jade-800 focus-visible:shadow-focus"
+            className="tap-target inline-flex items-center gap-xs rounded-full bg-page px-md py-1.5 text-caption text-ink-700 transition-colors duration-fast ease-out hover:bg-hover hover:text-jade-800 focus-visible:shadow-focus"
           >
             <span className="text-ink-500">
               <WorkLinkIcon platform={link.platform} />
@@ -85,7 +86,7 @@ export function WorkLinksEditor({
         <div>
           <label
             htmlFor="workLinkPlatform"
-            className="mb-1.5 block text-caption text-ink-500"
+            className="mb-1.5 block text-[12px] text-ink-400"
           >
             {t('workLinks.platform')}
           </label>
@@ -95,7 +96,7 @@ export function WorkLinksEditor({
             onChange={(e) =>
               onPlatformChange(e.target.value as WorkLinkPlatform)
             }
-            className="tap-target w-full rounded-md border border-line bg-white px-md text-body outline-none focus:border-jade-400 focus:shadow-focus"
+            className={FIELD_INPUT}
           >
             {PLATFORMS.map((p) => (
               <option key={p} value={p}>
@@ -107,7 +108,7 @@ export function WorkLinksEditor({
         <div>
           <label
             htmlFor="workLinks"
-            className="mb-1.5 block text-caption text-ink-500"
+            className="mb-1.5 block text-[12px] text-ink-400"
           >
             {t('workLinks.url')}
           </label>
@@ -117,7 +118,7 @@ export function WorkLinksEditor({
             value={url}
             onChange={(e) => onUrlChange(e.target.value)}
             placeholder="https://"
-            className="tap-target w-full rounded-md border border-line bg-white px-md text-body outline-none focus:border-jade-400 focus:shadow-focus"
+            className={FIELD_INPUT}
           />
         </div>
       </div>
@@ -125,7 +126,7 @@ export function WorkLinksEditor({
         <div>
           <label
             htmlFor="workLinkLabel"
-            className="mb-1.5 block text-caption text-ink-500"
+            className="mb-1.5 block text-[12px] text-ink-400"
           >
             {t('workLinks.label')}
           </label>
@@ -133,7 +134,7 @@ export function WorkLinksEditor({
             id="workLinkLabel"
             value={label}
             onChange={(e) => onLabelChange(e.target.value)}
-            className="tap-target w-full rounded-md border border-line bg-white px-md text-body outline-none focus:border-jade-400 focus:shadow-focus"
+            className={FIELD_INPUT}
           />
         </div>
       ) : null}
@@ -141,7 +142,7 @@ export function WorkLinksEditor({
         type="button"
         disabled={busy || !url.trim()}
         onClick={onAdd}
-        className="tap-target rounded-md border border-line px-lg text-body-sm transition-colors duration-fast ease-out hover:border-jade-400 focus-visible:shadow-focus disabled:opacity-40"
+        className={`${FIELD_BTN_SECONDARY} disabled:opacity-40`}
       >
         {t('workLinks.add')}
       </button>
@@ -150,7 +151,7 @@ export function WorkLinksEditor({
           {links.map((link) => (
             <li
               key={link.id}
-              className="flex items-center justify-between gap-md rounded-sm border border-line-soft px-md py-sm text-body-sm"
+              className="flex items-center justify-between gap-md rounded-2md bg-page px-md py-sm text-body-sm"
             >
               <span className="inline-flex min-w-0 items-center gap-xs truncate text-ink-700">
                 <WorkLinkIcon platform={link.platform} />

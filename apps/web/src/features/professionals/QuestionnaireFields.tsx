@@ -1,5 +1,6 @@
 import { useI18n } from '../../lib/i18n';
 import { FIELD_INPUT, FIELD_TEXTAREA } from './fieldStyles';
+import { NoIdWarning } from './NoIdWarning';
 
 type QuestionnaireFieldsProps = {
   headlineMy: string;
@@ -16,6 +17,8 @@ type QuestionnaireFieldsProps = {
   onMinBudgetChange: (value: number) => void;
   acceptingWork: boolean;
   onAcceptingWorkChange: (value: boolean) => void;
+  /** Hide the amber strip when the parent already shows one. */
+  hideNoIdWarning?: boolean;
 };
 
 export function QuestionnaireFields({
@@ -33,6 +36,7 @@ export function QuestionnaireFields({
   onMinBudgetChange,
   acceptingWork,
   onAcceptingWorkChange,
+  hideNoIdWarning = false,
 }: QuestionnaireFieldsProps) {
   const { t } = useI18n();
 
@@ -41,7 +45,7 @@ export function QuestionnaireFields({
       <div>
         <label
           htmlFor="headlineMy"
-          className="mb-1.5 block text-caption text-ink-500"
+          className="mb-1.5 block text-[12px] text-ink-400"
         >
           {t('onboarding.headlineMy')}
         </label>
@@ -55,7 +59,7 @@ export function QuestionnaireFields({
       <div>
         <label
           htmlFor="headlineEn"
-          className="mb-1.5 block text-caption text-ink-500"
+          className="mb-1.5 block text-[12px] text-ink-400"
         >
           {t('onboarding.headlineEn')}
         </label>
@@ -69,7 +73,7 @@ export function QuestionnaireFields({
       <div>
         <label
           htmlFor="bioMy"
-          className="mb-1.5 block text-caption text-ink-500"
+          className="mb-1.5 block text-[12px] text-ink-400"
         >
           {t('onboarding.bioMy')}
         </label>
@@ -84,7 +88,7 @@ export function QuestionnaireFields({
       <div>
         <label
           htmlFor="bioEn"
-          className="mb-1.5 block text-caption text-ink-500"
+          className="mb-1.5 block text-[12px] text-ink-400"
         >
           {t('onboarding.bioEn')}
         </label>
@@ -98,7 +102,7 @@ export function QuestionnaireFields({
       </div>
       <label
         id="acceptingWork"
-        className="tap-target flex cursor-pointer items-center justify-between gap-md rounded-md border border-line bg-white px-lg text-body text-ink-700 [overflow-wrap:anywhere] [line-height:1.8]"
+        className="tap-target flex cursor-pointer items-center justify-between gap-md rounded-2md bg-page px-lg text-body text-ink-700 [overflow-wrap:anywhere] [line-height:1.8]"
       >
         <span>{t('onboarding.acceptingWork')}</span>
         <input
@@ -112,7 +116,7 @@ export function QuestionnaireFields({
         <div>
           <label
             htmlFor="turnaround"
-            className="mb-1.5 block text-caption text-ink-500"
+            className="mb-1.5 block text-[12px] text-ink-400"
           >
             {t('onboarding.turnaround')}
           </label>
@@ -129,7 +133,7 @@ export function QuestionnaireFields({
         <div>
           <label
             htmlFor="minBudget"
-            className="mb-1.5 block text-caption text-ink-500"
+            className="mb-1.5 block text-[12px] text-ink-400"
           >
             {t('onboarding.minBudget')}
           </label>
@@ -144,7 +148,7 @@ export function QuestionnaireFields({
           />
         </div>
       </div>
-      <p className="text-caption text-ink-400">{t('onboarding.noIdDocs')}</p>
+      {hideNoIdWarning ? null : <NoIdWarning />}
     </>
   );
 }

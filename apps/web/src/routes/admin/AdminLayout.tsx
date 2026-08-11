@@ -18,7 +18,7 @@ function AdminGate({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <p className="py-12 text-center text-sm text-ink-500" role="status">
+      <p className="py-3xl text-center text-body-sm text-ink-500" role="status">
         {t('common.loading')}
       </p>
     );
@@ -37,17 +37,17 @@ export default function AdminLayout() {
   return (
     <RequireAuth>
       <AdminGate>
-        <div className="min-h-screen overflow-x-clip bg-[#f4f5f4] text-ink-900">
+        <div className="min-h-screen overflow-x-clip bg-page text-ink-900">
           <header className="border-b border-line bg-white">
-            <div className="mx-auto flex max-w-[1400px] flex-col gap-sm px-4 py-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:px-3 sm:py-2">
+            <div className="mx-auto flex max-w-container flex-col gap-sm px-[22px] py-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-md">
               <a
                 href="/"
-                className="tap-target inline-flex items-center text-xs font-semibold tracking-wide text-jade-800"
+                className="tap-target inline-flex items-center font-display text-body-sm font-semibold tracking-wide text-jade-800"
               >
                 {t('admin.brand')}
               </a>
               <nav
-                className="no-scrollbar -mx-1 flex gap-1 overflow-x-auto px-1 text-xs"
+                className="no-scrollbar -mx-1 flex gap-1 overflow-x-auto px-1 text-caption"
                 aria-label={t('admin.navLabel')}
               >
                 {NAV.map((item) => (
@@ -57,10 +57,10 @@ export default function AdminLayout() {
                     end={item.end}
                     className={({ isActive }) =>
                       [
-                        'tap-target inline-flex shrink-0 items-center whitespace-nowrap rounded-md px-3',
+                        'tap-target inline-flex shrink-0 items-center whitespace-nowrap rounded-2md px-md',
                         isActive
                           ? 'bg-jade-100 font-medium text-jade-900'
-                          : 'text-ink-600 hover:bg-line-soft',
+                          : 'text-ink-500 hover:bg-hover hover:text-ink-700',
                       ].join(' ')
                     }
                   >
@@ -70,7 +70,7 @@ export default function AdminLayout() {
               </nav>
             </div>
           </header>
-          <main className="mx-auto max-w-[1400px] px-4 py-4 sm:px-3 sm:py-3">
+          <main className="mx-auto max-w-container px-[22px] py-xl">
             <Outlet />
           </main>
         </div>
