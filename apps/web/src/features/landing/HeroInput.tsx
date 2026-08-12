@@ -63,7 +63,10 @@ export function HeroInput({
         data-focus-container
         className="rounded-xl border border-line bg-white p-5 shadow-md transition-[border-color,box-shadow] duration-fast ease-out focus-within:border-jade-400 focus-within:shadow-focus"
       >
-        <label className="sr-only" htmlFor={id}>
+        <label
+          className="block text-[10px] font-bold uppercase tracking-[0.12em] text-ink-400"
+          htmlFor={id}
+        >
           {label}
         </label>
         <textarea

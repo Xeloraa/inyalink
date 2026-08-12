@@ -4,7 +4,6 @@ import { useI18n } from '../../lib/i18n';
 import { useParallaxDrift } from '../../lib/scrollFx';
 import { FullBleed } from './FullBleed';
 import { HeroInput } from './HeroInput';
-import { HeroMatchStack } from './HeroMatchStack';
 import { Ripples } from './Ripples';
 
 type HeroDawnProps = {
@@ -17,7 +16,15 @@ type HeroDawnProps = {
 };
 
 const CHIP_CLASS =
-  'tap-target font-myanmar inline-flex items-center rounded-full border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.10)] px-lg text-left text-body-sm text-white transition-colors duration-fast ease-out hover:border-[rgba(255,255,255,0.25)] hover:bg-[rgba(255,255,255,0.15)] focus-visible:shadow-focus active:bg-[rgba(255,255,255,0.20)]';
+  'tap-target font-myanmar inline-flex items-center rounded-full bg-[rgba(255,255,255,0.09)] px-md py-sm text-left text-[12.5px] leading-burmese text-[rgba(255,255,255,0.9)] transition-colors duration-fast ease-out hover:bg-[rgba(255,255,255,0.15)] focus-visible:shadow-focus active:bg-[rgba(255,255,255,0.20)]';
+
+/** 2x2 portfolio-photo grid — mirrors the mockup's hero visual exactly. */
+const HERO_GRID_IMAGES = [
+  '/images/portfolio/min-thet-1.jpg',
+  '/images/portfolio/win-htut-1.jpg',
+  '/images/portfolio/tun-lin-1.jpg',
+  '/images/portfolio/min-thet-2.jpg',
+];
 
 /** Full-viewport dawn hero — the input is the stone dropped in the lake. */
 export function HeroDawn({
@@ -39,11 +46,11 @@ export function HeroDawn({
       <div
         ref={rippleRef}
         aria-hidden
-        className="pointer-events-none absolute -left-44 top-[46%] md:left-[10%]"
+        className="pointer-events-none absolute -left-40 -top-32 opacity-50"
       >
         <Ripples
-          size={560}
-          rings={6}
+          size={640}
+          rings={4}
           strokeClassName="stroke-jade-800"
           className="animate-ripple"
         />
@@ -52,8 +59,8 @@ export function HeroDawn({
       <div className="relative flex min-h-[calc(100vh-4.5rem)] flex-col supports-[height:100svh]:min-h-[calc(100svh-4.5rem)]">
         <div className="grid flex-1 items-center gap-4xl py-xl md:py-4xl lg:grid-cols-2 lg:gap-5xl">
           <div className="min-w-0">
-            <p className="animate-fade-up inline-flex items-center gap-sm text-caption font-medium text-jade-200">
-              <span aria-hidden className="inline-block h-px w-6 bg-jade-400" />
+            <p className="animate-fade-up inline-flex items-center gap-sm text-caption font-medium text-jade-300">
+              <span aria-hidden className="inline-block h-px w-6 bg-jade-bright" />
               {t('landing.eyebrow')}
             </p>
 
@@ -76,7 +83,7 @@ export function HeroDawn({
               ) : null}
             </h1>
 
-            <p className="animate-fade-up delay-2 mt-sm max-w-hero text-[18px] leading-burmese text-jade-100">
+            <p className="animate-fade-up delay-2 mt-sm max-w-hero text-[18px] leading-burmese text-[rgba(255,255,255,0.70)]">
               {t('landing.subhead')}
             </p>
 
@@ -95,7 +102,10 @@ export function HeroDawn({
               />
             </div>
 
-            <div className="animate-fade-up delay-4 mt-md flex flex-col gap-sm sm:flex-row sm:flex-wrap md:mt-lg">
+            <div className="animate-fade-up delay-4 mt-md flex flex-wrap items-center gap-sm">
+              <span className="text-[11.5px] leading-burmese text-[rgba(255,255,255,0.66)]">
+                {t('landing.tryLabel')}
+              </span>
               <button
                 type="button"
                 onClick={() => onChip(t('landing.chipQuickGoal'))}
@@ -115,17 +125,26 @@ export function HeroDawn({
             <p className="animate-fade-in delay-4 mt-md md:mt-xl">
               <Link
                 to="/browse"
-                className="tap-target inline-flex items-center text-body-sm text-jade-200 underline-offset-4 transition-colors duration-fast ease-out hover:text-white hover:underline focus-visible:rounded-sm focus-visible:shadow-focus active:text-jade-100"
+                className="tap-target inline-flex items-center text-body-sm text-[rgba(255,255,255,0.55)] underline-offset-4 transition-colors duration-fast ease-out hover:text-white hover:underline focus-visible:rounded-sm focus-visible:shadow-focus active:text-jade-100"
               >
                 {t('landing.browseQuiet')}
               </Link>
             </p>
           </div>
 
-          <div ref={stackRef} className="hidden min-h-[360px] lg:block">
-            <div className="animate-fade-up delay-3">
-              <HeroMatchStack />
-            </div>
+          <div
+            ref={stackRef}
+            className="animate-fade-up delay-3 grid min-w-0 grid-cols-2 gap-[10px]"
+          >
+            {HERO_GRID_IMAGES.map((src) => (
+              <img
+                key={src}
+                src={src}
+                alt=""
+                loading="lazy"
+                className="aspect-square w-full rounded-lg bg-jade-800 object-cover"
+              />
+            ))}
           </div>
         </div>
 
