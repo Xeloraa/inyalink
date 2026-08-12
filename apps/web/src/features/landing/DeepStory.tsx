@@ -78,16 +78,34 @@ function BriefCard() {
   );
 }
 
+function StatExplainCard({
+  value,
+  label,
+  description,
+}: {
+  value: string;
+  label: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-lg bg-jade-900 p-lg">
+      <p className="text-stat text-jade-bright">{value}</p>
+      <p className="mt-xs text-caption font-semibold tracking-[0.08em] text-jade-300">
+        {label}
+      </p>
+      <p className="mt-sm text-body-sm leading-burmese text-jade-100">
+        {description}
+      </p>
+    </div>
+  );
+}
+
 /**
  * The Deep — dark-water centerpiece. "How it feels" restaged as a
  * storyboard. Deliberately not interactive: the page's single AI entry
  * point is the hero input, and this section ends with a signpost back up
- * to it.
- *
- * Colors on this dark surface use var(--...) arbitrary classes instead of
- * config tokens: they are generated from file content alone, so they keep
- * working even when a running Tailwind process holds a stale config. The
- * heading and AI bubbles carry no reveal animation — full opacity always.
+ * to it. The heading and AI bubbles carry no reveal animation — full
+ * opacity always, since light ink on dark must not pass through opacity:0.
  */
 export function DeepStory({ onStart }: { onStart: () => void }) {
   const { t } = useI18n();
@@ -123,17 +141,16 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
           </h2>
         </div>
 
+        <div className="mt-2xl grid gap-xl lg:grid-cols-2 lg:items-start">
         <div
           ref={story.ref}
-          className={`relative mt-2xl max-w-conversation ${story.className}`}
+          className={`relative max-w-conversation ${story.className}`}
         >
           <span
             aria-hidden
             className="absolute bottom-0 left-2 top-0 w-px bg-[rgba(255,255,255,0.08)]"
           />
           <div className="flex flex-col gap-md">
-            {/* AI replies never animate — light ink on dark must not pass
-                through an opacity-0 state. User bubbles keep the reveal. */}
             {MESSAGES.map((message, i) => (
               <div
                 key={message.key}
@@ -195,6 +212,20 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
             {t('landing.deepStart')}
             <UpArrow />
           </button>
+        </div>
+
+        <div className="flex flex-col gap-lg">
+          <StatExplainCard
+            value={t('landing.stat3.value')}
+            label={t('landing.stat3.label')}
+            description={t('landing.deepExplainQuestions')}
+          />
+          <StatExplainCard
+            value={t('landing.stat2.value')}
+            label={t('landing.stat2.label')}
+            description={t('landing.deepExplainMatches')}
+          />
+        </div>
         </div>
       </div>
     </FullBleed>
