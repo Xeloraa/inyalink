@@ -17,25 +17,53 @@ const NAV_LINK =
   'tap-target hidden min-[420px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2sm px-[13px] py-[9px] text-[13.5px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-hover hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800';
 
 const NAV_LINK_DARK =
-  'tap-target hidden min-[420px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2sm px-[13px] py-[9px] text-[13.5px] font-medium text-white no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-[rgba(255,255,255,0.10)] focus-visible:shadow-focus active:text-jade-100';
+  'tap-target hidden min-[420px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2sm px-[13px] py-[9px] text-[13.5px] font-medium text-[rgba(255,255,255,0.85)] no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-[rgba(255,255,255,0.10)] hover:text-white focus-visible:shadow-focus active:text-jade-100';
 
 const QUIET_LINK =
   'tap-target hidden min-[520px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2sm px-[13px] py-[9px] text-[13.5px] font-medium text-ink-400 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-jade-600 focus-visible:shadow-focus active:text-jade-800';
 
 const QUIET_LINK_DARK =
-  'tap-target hidden min-[520px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2sm px-[13px] py-[9px] text-[13.5px] font-medium text-jade-200 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-white focus-visible:shadow-focus active:text-jade-100';
+  'tap-target hidden min-[520px]:inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2sm px-[13px] py-[9px] text-[13.5px] font-medium text-[rgba(255,255,255,0.50)] no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:text-white focus-visible:shadow-focus active:text-[rgba(255,255,255,0.70)]';
 
 const MENU_ITEM =
   'tap-target flex w-full items-center whitespace-nowrap rounded-sm px-lg text-[13px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-100';
 
+/** Round jade-100/jade-600 avatar-style entry point — same on light and dark headers. */
+const PROFILE_ICON_BUTTON =
+  'tap-target inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-jade-100 text-jade-600 transition-colors duration-fast ease-out hover:bg-jade-200 focus-visible:shadow-focus active:bg-jade-200';
+
 function langButtonClass(active: boolean, dark: boolean): string {
+  if (active) {
+    return `inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 text-[12px] font-semibold [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
+      dark
+        ? 'bg-jade-bright text-jade-950 hover:bg-jade-300'
+        : 'bg-jade-600 text-white hover:bg-jade-400 active:bg-jade-800'
+    }`;
+  }
   return `inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 text-[12px] font-semibold [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
-    active
-      ? 'bg-jade-600 text-white hover:bg-jade-400 active:bg-jade-800'
-      : dark
-        ? 'text-jade-200 hover:text-white'
-        : 'text-ink-500 hover:text-ink-900'
+    dark
+      ? 'text-[rgba(255,255,255,0.60)] hover:text-white'
+      : 'text-ink-500 hover:text-ink-900'
   }`;
+}
+
+function ProfileGlyph() {
+  return (
+    <svg
+      width={20}
+      height={20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      aria-hidden
+      focusable={false}
+    >
+      <circle cx="12" cy="8.5" r="3.6" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+    </svg>
+  );
 }
 
 function BurgerIcon({ open }: { open: boolean }) {
@@ -229,10 +257,10 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 [overflow-wrap:normal] ${
+      className={`sticky top-0 z-50 backdrop-blur-[14px] [overflow-wrap:normal] ${
         isLanding
-          ? 'border-b border-[rgba(255,255,255,0.10)] bg-jade-900'
-          : 'border-b border-line bg-page/90 backdrop-blur-[14px]'
+          ? 'border-b border-[rgba(255,255,255,0.10)] bg-[rgba(7,56,37,0.92)]'
+          : 'border-b border-line bg-page/90'
       }`}
     >
       <div className="mx-auto flex max-w-container flex-nowrap items-center justify-between gap-1 px-[22px] py-[14px] sm:gap-sm">
@@ -299,8 +327,12 @@ export function Header() {
           </div>
 
           {!loading && !session ? (
-            <Link to="/login" className={isLanding ? NAV_LINK_DARK : NAV_LINK}>
-              {t('header.login')}
+            <Link
+              to="/login"
+              aria-label={t('header.login')}
+              className={`${PROFILE_ICON_BUTTON} ml-1`}
+            >
+              <ProfileGlyph />
             </Link>
           ) : null}
 
