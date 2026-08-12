@@ -17,7 +17,7 @@ type HeroDawnProps = {
 };
 
 const CHIP_CLASS =
-  'tap-target font-myanmar inline-flex items-center rounded-sm border border-line bg-white px-lg text-left text-body-sm text-ink-700 transition-colors duration-fast ease-out hover:border-jade-400 hover:bg-jade-50 focus-visible:shadow-focus active:border-jade-600 active:bg-jade-100';
+  'tap-target font-myanmar inline-flex items-center rounded-full border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.10)] px-lg text-left text-body-sm text-white transition-colors duration-fast ease-out hover:border-[rgba(255,255,255,0.25)] hover:bg-[rgba(255,255,255,0.15)] focus-visible:shadow-focus active:bg-[rgba(255,255,255,0.20)]';
 
 /** Full-viewport dawn hero — the input is the stone dropped in the lake. */
 export function HeroDawn({
@@ -33,7 +33,7 @@ export function HeroDawn({
 
   return (
     <FullBleed
-      className="overflow-x-clip bg-[linear-gradient(180deg,var(--paper)_0%,var(--jade-50)_58%,var(--jade-100)_100%)]"
+      className="overflow-x-clip bg-jade-900"
       labelledBy="hero-heading"
     >
       <div
@@ -44,7 +44,7 @@ export function HeroDawn({
         <Ripples
           size={560}
           rings={6}
-          strokeClassName="stroke-jade-300"
+          strokeClassName="stroke-jade-800"
           className="animate-ripple"
         />
       </div>
@@ -52,14 +52,14 @@ export function HeroDawn({
       <div className="relative flex min-h-[calc(100vh-4.5rem)] flex-col supports-[height:100svh]:min-h-[calc(100svh-4.5rem)]">
         <div className="grid flex-1 items-center gap-4xl py-xl md:py-4xl lg:grid-cols-2 lg:gap-5xl">
           <div className="min-w-0">
-            <p className="animate-fade-up inline-flex items-center gap-sm text-caption font-medium text-jade-800">
+            <p className="animate-fade-up inline-flex items-center gap-sm text-caption font-medium text-jade-200">
               <span aria-hidden className="inline-block h-px w-6 bg-jade-400" />
               {t('landing.eyebrow')}
             </p>
 
             <h1
               id="hero-heading"
-              className="animate-fade-up delay-1 mt-lg text-ink-900 md:mt-xl"
+              className="animate-fade-up delay-1 mt-lg text-white md:mt-xl"
             >
               <span className="text-hero-question block">
                 {t('landing.headlineBefore')}
@@ -76,7 +76,7 @@ export function HeroDawn({
               ) : null}
             </h1>
 
-            <p className="animate-fade-up delay-2 mt-sm max-w-hero text-[18px] leading-burmese text-ink-500">
+            <p className="animate-fade-up delay-2 mt-sm max-w-hero text-[18px] leading-burmese text-jade-100">
               {t('landing.subhead')}
             </p>
 
@@ -115,7 +115,7 @@ export function HeroDawn({
             <p className="animate-fade-in delay-4 mt-md md:mt-xl">
               <Link
                 to="/browse"
-                className="tap-target inline-flex items-center text-body-sm text-ink-500 underline-offset-4 transition-colors duration-fast ease-out hover:text-jade-600 hover:underline focus-visible:rounded-sm focus-visible:shadow-focus active:text-jade-800"
+                className="tap-target inline-flex items-center text-body-sm text-jade-200 underline-offset-4 transition-colors duration-fast ease-out hover:text-white hover:underline focus-visible:rounded-sm focus-visible:shadow-focus active:text-jade-100"
               >
                 {t('landing.browseQuiet')}
               </Link>
@@ -131,7 +131,7 @@ export function HeroDawn({
 
         <div className="flex flex-col items-center gap-xs pb-lg">
           <span aria-hidden className="block h-9 w-px bg-jade-400" />
-          <span className="text-caption text-ink-400">
+          <span className="text-caption text-jade-200">
             {t('landing.scrollCue')}
           </span>
         </div>
