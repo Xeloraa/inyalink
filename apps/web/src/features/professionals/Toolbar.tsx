@@ -30,13 +30,15 @@ function ResultCount({ count }: { count: number | null }) {
   );
 }
 
-/** Result count, search trigger (opens square dialog), sort, mobile Filters. */
+/** Result count, search trigger (opens square dialog), availability, sort, Filters. */
 export function Toolbar({
   count,
   search,
   onSearch,
   sort,
   onSort,
+  availableOnly,
+  onToggleAvailable,
   activeCount,
   onOpenFilters,
 }: {
@@ -45,6 +47,8 @@ export function Toolbar({
   onSearch: (value: string) => void;
   sort: ProfessionalsSort;
   onSort: (value: ProfessionalsSort) => void;
+  availableOnly: boolean;
+  onToggleAvailable: () => void;
   activeCount: number;
   onOpenFilters: () => void;
 }) {
@@ -74,6 +78,24 @@ export function Toolbar({
           </span>
         </button>
 
+        <button
+          type="button"
+          role="switch"
+          aria-checked={availableOnly}
+          onClick={onToggleAvailable}
+          className={`tap-target inline-flex items-center gap-sm whitespace-nowrap rounded-2md border px-lg text-body-sm font-medium transition-colors duration-fast ease-out focus-visible:shadow-focus ${
+            availableOnly
+              ? 'border-jade-600 bg-jade-50 text-jade-800'
+              : 'border-line bg-white text-ink-700 hover:border-jade-400'
+          }`}
+        >
+          <span
+            aria-hidden
+            className={`h-2 w-2 shrink-0 rounded-full ${availableOnly ? 'bg-jade-600' : 'bg-ink-300'}`}
+          />
+          {t('browse.acceptingOnly')}
+        </button>
+
         <div className="flex gap-sm">
           <select
             value={sort}
@@ -91,7 +113,7 @@ export function Toolbar({
           <button
             type="button"
             onClick={onOpenFilters}
-            className="tap-target inline-flex items-center justify-center gap-sm rounded-2md border border-line bg-white px-lg text-body-sm font-medium text-ink-700 transition-colors duration-fast ease-out hover:border-jade-400 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-50 lg:hidden"
+            className="tap-target inline-flex items-center justify-center gap-sm rounded-2md border border-line bg-white px-lg text-body-sm font-medium text-ink-700 transition-colors duration-fast ease-out hover:border-jade-400 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-50"
           >
             <SlidersIcon />
             {t('browse.filtersButton')}

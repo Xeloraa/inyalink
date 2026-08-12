@@ -4,9 +4,11 @@ import { ClearFiltersButton } from './FilterRail';
 import { CloseIcon } from './icons';
 
 /**
- * Mobile-only bottom sheet for the filter rail. Filters inside apply live;
- * the primary button just confirms and closes. Esc, backdrop tap, and the X
- * all close it, and focus returns to whatever opened it.
+ * Bottom sheet for the advanced filter rail (skills + budget — quick
+ * category/availability filters live inline in the toolbar). Filters
+ * inside apply live; the primary button just confirms and closes. Esc,
+ * backdrop tap, and the X all close it, and focus returns to whatever
+ * opened it.
  */
 export function FilterSheet({
   open,
@@ -54,7 +56,7 @@ export function FilterSheet({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
+    <div className="fixed inset-0 z-50">
       <div
         aria-hidden
         onClick={onClose}

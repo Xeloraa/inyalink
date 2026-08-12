@@ -23,7 +23,8 @@ import {
   countActiveFilters,
   type BrowseFilters,
 } from '../features/professionals/filters';
-import { ClearFiltersButton, FilterRail } from '../features/professionals/FilterRail';
+import { CategoryPills } from '../features/professionals/CategoryPills';
+import { FilterRail } from '../features/professionals/FilterRail';
 import { FilterSheet } from '../features/professionals/FilterSheet';
 import { Toolbar } from '../features/professionals/Toolbar';
 import {
@@ -35,6 +36,21 @@ import { useSavedPros } from '../features/professionals/savedPros';
 import { useDebouncedValue } from '../features/professionals/useDebouncedValue';
 
 const SKELETON_ROWS = 4;
+
+function replyValue(medianMins: number | null): string {
+  if (medianMins === null) return '—';
+  if (medianMins < 60) return `${Math.round(medianMins)}m`;
+  return `${Math.round(medianMins / 60)}h`;
+}
+
+function StatCell({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex min-w-[52px] flex-col items-center text-center">
+      <span className="text-body-sm font-semibold text-ink-900">{value}</span>
+      <span className="text-caption text-ink-400">{label}</span>
+    </div>
+  );
+}
 
 /**
  * Find talent row — full-width flat row per design handoff:
@@ -124,6 +140,23 @@ function TalentRow({
         ) : null}
       </div>
 
+      <div className="hidden shrink-0 items-center gap-lg sm:flex">
+        <StatCell value={String(pro.stats.completedCount)} label={t('browse.metricJobs')} />
+        <StatCell value={String(pro.stats.uniqueClients)} label={t('browse.metricClients')} />
+        <StatCell
+          value={
+            pro.stats.completionRatePct === null
+              ? '—'
+              : `${Math.round(pro.stats.completionRatePct)}%`
+          }
+          label={t('browse.metricRate')}
+        />
+        <StatCell
+          value={replyValue(pro.stats.medianResponseMins)}
+          label={t('browse.metricReply')}
+        />
+      </div>
+
       <div className="ml-auto flex w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
         <button
           type="button"
@@ -172,6 +205,14 @@ function TalentRowSkeleton() {
             <Skeleton key={i} className="h-6 w-16 rounded-full" />
           ))}
         </div>
+      </div>
+      <div className="hidden shrink-0 gap-lg sm:flex">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="flex w-[52px] flex-col items-center gap-1">
+            <Skeleton className="h-4 w-6" />
+            <Skeleton className="h-3 w-10" />
+          </div>
+        ))}
       </div>
       <div className="ml-auto flex w-full items-center gap-2 sm:w-auto">
         <Skeleton className="h-11 w-11 rounded-md" />
@@ -259,54 +300,52 @@ export default function Browse() {
         {t('browse.subhead')}
       </p>
 
-      <div className="mt-xl flex items-start gap-2xl lg:mt-2xl">
-        <aside className="hidden w-[260px] shrink-0 lg:block">
-          <div className="sticky top-[72px] max-h-[calc(100dvh-88px)] overflow-y-auto rounded-xl2 border border-line bg-white p-lg shadow-sm">
-            <div className="flex flex-wrap items-center justify-between gap-x-sm">
-              <h2 className="text-body font-semibold text-ink-900">
-                {t('browse.filters')}
-              </h2>
-              <ClearFiltersButton
-                activeCount={activeCount}
-                onClear={clearFilters}
-              />
-            </div>
-            <div className="mt-lg">{rail}</div>
-          </div>
-        </aside>
+      <div className="mt-xl lg:mt-2xl">
+        <Toolbar
+          count={pros?.length ?? null}
+          search={search}
+          onSearch={setSearch}
+          sort={sort}
+          onSort={setSort}
+          availableOnly={filters.availableOnly}
+          onToggleAvailable={() =>
+            setFilters({ ...filters, availableOnly: !filters.availableOnly })
+          }
+          activeCount={activeCount}
+          onOpenFilters={() => setSheetOpen(true)}
+        />
 
-        <div className="min-w-0 flex-1">
-          <Toolbar
-            count={pros?.length ?? null}
-            search={search}
-            onSearch={setSearch}
-            sort={sort}
-            onSort={setSort}
-            activeCount={activeCount}
-            onOpenFilters={() => setSheetOpen(true)}
+        <div className="mt-lg">
+          <CategoryPills
+            categories={categoriesQuery.data?.categories ?? []}
+            selected={filters.categories[0] ?? null}
+            onSelect={(slug) =>
+              setFilters({ ...filters, categories: slug ? [slug] : [] })
+            }
           />
+        </div>
 
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="group mt-lg flex min-h-[48px] w-full items-center justify-between gap-md rounded-md border border-jade-100 bg-jade-50 px-lg py-sm text-left no-underline transition-colors duration-fast ease-out hover:border-jade-200 hover:bg-jade-100 focus-visible:shadow-focus active:bg-jade-100"
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="group mt-lg flex min-h-[48px] w-full items-center justify-between gap-md rounded-md border border-jade-100 bg-jade-50 px-lg py-sm text-left no-underline transition-colors duration-fast ease-out hover:border-jade-200 hover:bg-jade-100 focus-visible:shadow-focus active:bg-jade-100"
+        >
+          <span className="text-body-sm text-ink-700">
+            {t('browse.aiBarText')}{' '}
+            <span className="font-medium text-jade-600 group-hover:underline group-hover:underline-offset-4">
+              {t('browse.aiBarCta')}
+            </span>
+          </span>
+          <span
+            aria-hidden
+            className="shrink-0 text-jade-600 transition-transform duration-fast ease-out group-hover:translate-x-xs motion-reduce:transition-none"
           >
-            <span className="text-body-sm text-ink-700">
-              {t('browse.aiBarText')}{' '}
-              <span className="font-medium text-jade-600 group-hover:underline group-hover:underline-offset-4">
-                {t('browse.aiBarCta')}
-              </span>
-            </span>
-            <span
-              aria-hidden
-              className="shrink-0 text-jade-600 transition-transform duration-fast ease-out group-hover:translate-x-xs motion-reduce:transition-none"
-            >
-              <ArrowRightIcon />
-            </span>
-          </button>
+            <ArrowRightIcon />
+          </span>
+        </button>
 
-          <div className="mt-lg">
-            {prosQuery.isPending ? (
+        <div className="mt-lg">
+          {prosQuery.isPending ? (
               <div className="flex flex-col" role="status">
                 <span className="sr-only">{t('common.loading')}</span>
                 {Array.from({ length: SKELETON_ROWS }, (_, i) => (
@@ -365,7 +404,6 @@ export default function Browse() {
                 ))}
               </ul>
             )}
-          </div>
         </div>
       </div>
 

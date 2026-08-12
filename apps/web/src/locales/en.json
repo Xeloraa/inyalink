@@ -343,6 +343,7 @@
   "browse.filtersButton": "Filters",
   "browse.clearFilters": "Clear filters",
   "browse.categories": "Category",
+  "browse.categoryAll": "All",
   "browse.skills": "Skills",
   "browse.budget": "Budget (MMK)",
   "browse.budgetMin": "Minimum budget",
