@@ -91,6 +91,7 @@ export {
   type ProfessionalReputation,
 } from './schemas/matching.js';
 export {
+  CreateDirectEngagementInputSchema,
   CreateEngagementInputSchema,
   DeclineEngagementInputSchema,
   ENGAGEMENT_RESPOND_HOURS,
@@ -101,6 +102,7 @@ export {
   EngagementListResponseSchema,
   EngagementSchema,
   EngagementStatusSchema,
+  type CreateDirectEngagementInput,
   type CreateEngagementInput,
   type DeclineEngagementInput,
   type Engagement,

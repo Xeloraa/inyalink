@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
 import {
   formatMmk,
   type ProfessionalListItem,
@@ -10,9 +14,11 @@ import {
   getCategories,
   getProfessionalSkills,
   listProfessionals,
+  startDirectConversation,
   type ListProfessionalsParams,
 } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
+import { useAuth } from '../lib/auth';
 import { useChatUi } from '../features/chat/FloatingChat';
 import { Skeleton } from '../components/Skeleton';
 import { useI18n } from '../lib/i18n';
@@ -61,11 +67,13 @@ function TalentRow({
   saved,
   onToggleSave,
   onMessage,
+  messagePending,
 }: {
   pro: ProfessionalListItem;
   saved: boolean;
   onToggleSave: () => void;
   onMessage: () => void;
+  messagePending: boolean;
 }) {
   const { t, locale } = useI18n();
   const profilePath = `/professionals/${pro.id}`;
@@ -174,9 +182,10 @@ function TalentRow({
         <button
           type="button"
           onClick={onMessage}
-          className="inline-flex h-11 min-h-[44px] flex-1 items-center justify-center whitespace-nowrap rounded-full bg-jade-600 px-[18px] text-[13px] font-semibold text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 sm:min-h-0 sm:flex-none"
+          disabled={messagePending}
+          className="inline-flex h-11 min-h-[44px] flex-1 items-center justify-center whitespace-nowrap rounded-full bg-jade-600 px-[18px] text-[13px] font-semibold text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:cursor-not-allowed disabled:opacity-70 sm:min-h-0 sm:flex-none"
         >
-          {t('profile.message')}
+          {messagePending ? t('common.loading') : t('profile.message')}
         </button>
         <Link
           to={profilePath}
@@ -230,8 +239,34 @@ function TalentRowSkeleton() {
  */
 export default function Browse() {
   const { t } = useI18n();
+  const navigate = useNavigate();
+  const { session } = useAuth();
   const { setOpen } = useChatUi();
   const { saved, toggleSaved } = useSavedPros();
+
+  const [messageError, setMessageError] = useState<string | null>(null);
+  const directMessageMutation = useMutation({
+    mutationFn: (professionalId: string) =>
+      startDirectConversation(professionalId),
+    onSuccess: (engagement) => {
+      setMessageError(null);
+      navigate(`/app/engagements/${engagement.id}`);
+    },
+    onError: (err) => {
+      setMessageError(
+        err instanceof ApiError ? err.message : t('messages.sendError'),
+      );
+    },
+  });
+
+  function handleMessage(professionalId: string) {
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+    setMessageError(null);
+    directMessageMutation.mutate(professionalId);
+  }
 
   const [filters, setFilters] = useState<BrowseFilters>(DEFAULT_FILTERS);
   const [search, setSearch] = useState('');
@@ -344,6 +379,15 @@ export default function Browse() {
           </span>
         </button>
 
+        {messageError ? (
+          <p
+            role="alert"
+            className="mt-lg rounded-md border border-line bg-white px-lg py-md text-body-sm text-danger [overflow-wrap:anywhere]"
+          >
+            {messageError}
+          </p>
+        ) : null}
+
         <div className="mt-lg">
           {prosQuery.isPending ? (
               <div className="flex flex-col" role="status">
@@ -398,7 +442,11 @@ export default function Browse() {
                       pro={pro}
                       saved={saved.has(pro.id)}
                       onToggleSave={() => toggleSaved(pro.id)}
-                      onMessage={() => setOpen(true)}
+                      onMessage={() => handleMessage(pro.id)}
+                      messagePending={
+                        directMessageMutation.isPending &&
+                        directMessageMutation.variables === pro.id
+                      }
                     />
                   </li>
                 ))}

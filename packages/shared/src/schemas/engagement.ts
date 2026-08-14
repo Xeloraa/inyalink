@@ -31,6 +31,19 @@ export const CreateEngagementInputSchema = z.object({
 
 export type CreateEngagementInput = z.infer<typeof CreateEngagementInputSchema>;
 
+/**
+ * Client starts a conversation with a professional directly (Browse /
+ * profile "Message"), with no brief/matching step first. Reuses an
+ * existing live engagement between the pair if one already exists.
+ */
+export const CreateDirectEngagementInputSchema = z.object({
+  professionalId: z.string().uuid(),
+});
+
+export type CreateDirectEngagementInput = z.infer<
+  typeof CreateDirectEngagementInputSchema
+>;
+
 export const DeclineEngagementInputSchema = z.object({
   reason: z.string().trim().min(4).max(500),
 });

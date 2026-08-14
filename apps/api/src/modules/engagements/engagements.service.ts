@@ -4,17 +4,37 @@ import {
   EngagementInboxResponseSchema,
   EngagementListResponseSchema,
   EngagementSchema,
+  MessageSchema,
+  MessageThreadListResponseSchema,
+  MessageThreadResponseSchema,
+  type CreateDirectEngagementInput,
   type CreateEngagementInput,
   type DeclineEngagementInput,
   type Engagement,
   type EngagementInboxItem,
   type EngagementInboxResponse,
   type EngagementListResponse,
+  type EngagementStatus,
+  type Message,
+  type MessageThreadListResponse,
+  type MessageThreadResponse,
+  type SendMessageInput,
 } from '@inyalink/shared';
 import { AppError } from '../../middleware/errors.js';
 import { backfillAfterDecline } from '../matching/matching.service.js';
 import * as notifications from '../notifications/notifications.service.js';
 import * as repo from './engagements.repo.js';
+
+const SENDABLE_STATUSES = new Set<EngagementStatus>([
+  'accepted',
+  'in_progress',
+  'delivered',
+  'disputed',
+]);
+
+export function canSendMessages(status: EngagementStatus): boolean {
+  return SENDABLE_STATUSES.has(status);
+}
 
 const EXPIRED_REASON = 'No response within 24 hours';
 
@@ -244,4 +264,145 @@ export async function declineEngagement(
   });
   await backfillAfterDecline(updated.briefId, updated.professionalId);
   return toEngagement(updated);
+}
+
+// -------------------------------------------------------------- messages
+
+function toMessage(row: repo.MessageRow): Message {
+  return MessageSchema.parse({
+    id: row.id,
+    engagementId: row.engagementId,
+    senderId: row.senderId,
+    body: row.body,
+    createdAt: row.createdAt,
+    expiresAt: row.expiresAt,
+  });
+}
+
+function assertParticipant(
+  access: repo.EngagementAccessRow,
+  userId: string,
+): void {
+  if (access.clientId !== userId && access.professionalId !== userId) {
+    throw new AppError(403, 'FORBIDDEN', 'Not a participant on this engagement');
+  }
+}
+
+export async function listThread(
+  engagementId: string,
+  userId: string,
+): Promise<MessageThreadResponse> {
+  const access = await repo.getEngagementAccess(engagementId);
+  if (!access) {
+    throw new AppError(404, 'NOT_FOUND', 'Engagement not found');
+  }
+  assertParticipant(access, userId);
+
+  const rows = await repo.listMessagesByEngagement(engagementId);
+  return MessageThreadResponseSchema.parse({
+    engagementId: access.id,
+    status: access.status,
+    brief: {
+      id: access.briefId,
+      title: access.briefTitle,
+      description: access.briefDescription,
+      language: access.briefLanguage,
+    },
+    messages: rows.map(toMessage),
+    canSend: canSendMessages(access.status),
+  });
+}
+
+export async function sendMessage(
+  engagementId: string,
+  userId: string,
+  input: SendMessageInput,
+): Promise<Message> {
+  const access = await repo.getEngagementAccess(engagementId);
+  if (!access) {
+    throw new AppError(404, 'NOT_FOUND', 'Engagement not found');
+  }
+  assertParticipant(access, userId);
+
+  if (!canSendMessages(access.status)) {
+    throw new AppError(
+      409,
+      'ENGAGEMENT_NOT_ACTIVE',
+      'Messaging is only available on accepted engagements',
+    );
+  }
+
+  const body = normalizeToUnicode(input.body.trim());
+  if (body.length < 1 || body.length > 4000) {
+    throw new AppError(
+      400,
+      'VALIDATION_ERROR',
+      'Message body must be 1–4000 characters',
+    );
+  }
+
+  const row = await repo.insertMessage({
+    engagementId,
+    senderId: userId,
+    body,
+  });
+  return toMessage(row);
+}
+
+export async function listThreads(
+  userId: string,
+): Promise<MessageThreadListResponse> {
+  const rows = await repo.listThreadsForUser(userId);
+  return MessageThreadListResponseSchema.parse({
+    threads: rows.map((row) => ({
+      engagementId: row.engagementId,
+      status: row.status,
+      briefId: row.briefId,
+      briefTitle: row.briefTitle,
+      counterpartName: row.counterpartName,
+      lastMessageAt: row.lastMessageAt,
+    })),
+  });
+}
+
+// ---------------------------------------------------- direct conversations
+
+/**
+ * Business owner clicks "Message" on a professional they haven't been
+ * matched with yet (Browse, profile overlay). Reuses a live engagement
+ * between the pair if one exists; otherwise creates a minimal brief +
+ * already-accepted engagement so messaging works immediately, with no
+ * propose/accept step and no top-3-candidate gating (the client is
+ * choosing this professional directly, on purpose).
+ */
+export async function startDirectConversation(
+  clientId: string,
+  input: CreateDirectEngagementInput,
+): Promise<Engagement> {
+  const approved = await repo.isApprovedProfessional(input.professionalId);
+  if (!approved) {
+    throw new AppError(404, 'PROFESSIONAL_NOT_FOUND', 'Professional not found');
+  }
+
+  const existing = await repo.findLiveEngagement(
+    clientId,
+    input.professionalId,
+  );
+  if (existing) {
+    return toEngagement(existing);
+  }
+
+  const row = await repo.insertDirectEngagement({
+    clientId,
+    professionalId: input.professionalId,
+  });
+  // Notifies the professional (not the client) that someone wants to talk —
+  // reuses the 'proposed' notification type since this brief has no title
+  // to show; the frontend already falls back to generic copy for that case.
+  await notifications.notifyEngagementProposed({
+    professionalId: row.professionalId,
+    briefId: row.briefId,
+    engagementId: row.id,
+  });
+  return toEngagement(row);
 }

@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 import type { ProfessionalProfile } from '@inyalink/shared';
 import {
   completenessInputFromProfile,
   computeProfessionalCompleteness,
   formatMmk,
 } from '@inyalink/shared';
-import { getProfessional } from '../lib/api';
+import { getProfessional, startDirectConversation } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
+import { useAuth } from '../lib/auth';
 import { useMyProfessional } from '../features/auth/AccountMenu';
-import { useChatUi } from '../features/chat/FloatingChat';
 import { Skeleton } from '../components/Skeleton';
 import { useI18n } from '../lib/i18n';
 import { LoadErrorNotice } from '../components/Notices';
@@ -191,13 +192,28 @@ export default function ProfessionalProfilePage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const { t, locale } = useI18n();
-  const { setOpen } = useChatUi();
+  const { session } = useAuth();
   const myPro = useMyProfessional();
 
   const [profile, setProfile] = useState<ProfessionalProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(() => readSaved().includes(id));
+  const [messageError, setMessageError] = useState<string | null>(null);
+
+  const directMessageMutation = useMutation({
+    mutationFn: (professionalId: string) =>
+      startDirectConversation(professionalId),
+    onSuccess: (engagement) => {
+      setMessageError(null);
+      navigate(`/app/engagements/${engagement.id}`);
+    },
+    onError: (err) => {
+      setMessageError(
+        err instanceof ApiError ? err.message : t('messages.sendError'),
+      );
+    },
+  });
 
   const onClose = useCallback(() => {
     if (window.history.length > 1) {
@@ -253,7 +269,12 @@ export default function ProfessionalProfilePage() {
   }
 
   function onMessage() {
-    setOpen(true);
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+    setMessageError(null);
+    directMessageMutation.mutate(id);
   }
 
   const backLabel = t('common.back');
@@ -390,9 +411,12 @@ export default function ProfessionalProfilePage() {
                 <button
                   type="button"
                   onClick={onMessage}
-                  className="tap-target inline-flex h-12 items-center justify-center rounded-full bg-jade-600 px-xl text-[14.5px] font-semibold text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800"
+                  disabled={directMessageMutation.isPending}
+                  className="tap-target inline-flex h-12 items-center justify-center rounded-full bg-jade-600 px-xl text-[14.5px] font-semibold text-white shadow-cta transition-colors duration-fast ease-out hover:bg-jade-400 focus-visible:shadow-focus active:bg-jade-800 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {t('profile.message')}
+                  {directMessageMutation.isPending
+                    ? t('common.loading')
+                    : t('profile.message')}
                 </button>
               )}
               <button
@@ -410,6 +434,15 @@ export default function ProfessionalProfilePage() {
               </button>
             </div>
           </div>
+
+          {messageError ? (
+            <p
+              role="alert"
+              className="mt-md text-body-sm text-danger [overflow-wrap:anywhere]"
+            >
+              {messageError}
+            </p>
+          ) : null}
 
           {completeness && completeness.missing.length > 0 ? (
             <div className="mt-xl">

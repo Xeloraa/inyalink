@@ -188,6 +188,14 @@ export function declineEngagement(id: string, body: DeclineEngagementInput) {
   );
 }
 
+/** Message a professional directly — no brief/matching step first. */
+export function startDirectConversation(professionalId: string) {
+  return apiFetch<Engagement>('/api/v1/engagements/direct', {
+    method: 'POST',
+    body: JSON.stringify({ professionalId }),
+  });
+}
+
 export function listMessageThreads() {
   return apiFetch<MessageThreadListResponse>('/api/v1/engagements/threads');
 }
