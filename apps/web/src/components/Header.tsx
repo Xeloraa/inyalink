@@ -34,13 +34,13 @@ const PROFILE_ICON_BUTTON =
 
 function langButtonClass(active: boolean, dark: boolean): string {
   if (active) {
-    return `inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 text-[12px] font-semibold [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
+    return `font-myanmar inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 text-[12px] font-semibold leading-burmese [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
       dark
         ? 'bg-jade-bright text-jade-950 hover:bg-jade-300'
         : 'bg-jade-600 text-white hover:bg-jade-400 active:bg-jade-800'
     }`;
   }
-  return `inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 text-[12px] font-semibold [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
+  return `font-myanmar inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 text-[12px] font-semibold leading-burmese [overflow-wrap:normal] transition-colors duration-fast ease-out focus-visible:shadow-focus ${
     dark
       ? 'text-[rgba(255,255,255,0.60)] hover:text-white'
       : 'text-ink-500 hover:text-ink-900'
