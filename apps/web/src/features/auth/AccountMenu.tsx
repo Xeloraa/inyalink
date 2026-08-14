@@ -53,7 +53,12 @@ export function useMyProfessional(): ProfessionalMe | null | undefined {
           setPro(null);
           return;
         }
-        setPro(null);
+        // Unknown due to a failed request (network/CORS/5xx) — not the same
+        // as a confirmed "not a professional". Leave pro as-is (undefined
+        // while still loading) rather than asserting a fact we don't have;
+        // confidently showing "not a pro" here hid the join CTA bug's real
+        // cause behind what looked like a professional-status bug.
+        console.error('Failed to load professional status', err);
       });
     return () => {
       cancelled = true;
