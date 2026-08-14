@@ -26,6 +26,33 @@ import { aiApiKeyPresent, config } from '../../lib/config.js';
 import { AppError } from '../../middleware/errors.js';
 import * as repo from './ai.repo.js';
 
+/**
+ * Off-topic openings (dating, homework, trivia, …) always get essentially
+ * the same decline-and-redirect — verified against real model output before
+ * this was written (see git history / PR notes). Answering them costs a
+ * full provider call for text that never varies with the input, so this
+ * skips the model entirely, same as the goal→roadmap redirect below.
+ * A few variants avoid the reply looking identical on every off-topic ask.
+ */
+const UNRELATED_REPLIES: Record<UiLocale, string[]> = {
+  // Variant 1 matches apps/web's converse.unrelatedRedirect (used for
+  // off-topic follow-ups mid-conversation) so the opening-turn case reads
+  // the same as the rest of the app, not a second invented phrasing.
+  my: [
+    'ဒါက ဒီမှာ ကူညီပေးတဲ့ အပိုင်းမဟုတ်ပါဘူး။ logo၊ website၊ photography၊ social media ငှားမယ်၊ ဒါမှမဟုတ် ဆိုင်ဖွင့်မယ့် plan လိုချင်ရင် လုပ်နေတာ ပြောပေးပါ။',
+    'ဒါကတော့ ဒီမှာ ကူညီပေးနိုင်တဲ့ အကြောင်းအရာ မဟုတ်ပါဘူး။ logo၊ website၊ ဓာတ်ပုံ၊ (သို့) social media အတွက် အကူအညီလိုချင်ရင် ပြောပြပါ။',
+  ],
+  en: [
+    "That's outside what I help with here. If you're hiring for logo, website, photography, or social media — or planning a shop launch — say what you're working on.",
+    "That's not something I can help with here. If you need a logo, website, photos, or social media help for your business, tell me what you're working on.",
+  ],
+};
+
+function pickUnrelatedReply(locale: UiLocale): string {
+  const options = UNRELATED_REPLIES[locale];
+  return options[Math.floor(Math.random() * options.length)] ?? options[0]!;
+}
+
 /** Response language from the most recent user message (not the UI toggle). */
 function converseResponseLocale(
   messages: ConverseBriefInput['messages'],
@@ -230,6 +257,16 @@ export async function converseBrief(
     console.log('[classify] redirect → roadmap (goal-shaped opening)');
     return ConverseBriefResponseSchema.parse({
       redirectTo: 'roadmap',
+      briefDraft: normalized.briefDraft ?? {},
+      complete: false,
+    });
+  }
+
+  // Off-topic openings never need the model — same canned decline every time.
+  if (assistantCount === 0 && userCount === 1 && openingShape === 'unrelated') {
+    console.log('[classify] canned decline (unrelated opening) — no provider call');
+    return ConverseBriefResponseSchema.parse({
+      nextQuestion: pickUnrelatedReply(responseLocale),
       briefDraft: normalized.briefDraft ?? {},
       complete: false,
     });

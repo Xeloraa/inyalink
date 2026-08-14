@@ -134,6 +134,11 @@ const UNRELATED_PATTERNS: RegExp[] = [
   /\b(my\s+)?symptoms?\b/,
   /\bmental\s+health\s+advice\b/,
   /\btherapy\s+for\s+(me|myself|depression|anxiety)\b/,
+  // General trivia / entertainment — clearly not a hire or a business goal.
+  /\bweather\b/,
+  /\btell\s+me\s+a\s+joke\b/,
+  /\bwhat\s+time\s+is\s+it\b/,
+  /\bwrite\s+(me\s+)?a\s+(poem|song|story)\b/,
   // Burmese — dating / personal
   /ချစ်သူ/,
   /မိန်းမယူ|ယောက်ျားယူ/,
@@ -144,6 +149,11 @@ const UNRELATED_PATTERNS: RegExp[] = [
   /စာမေးပွဲ/,
   /အက်ဆေး/,
   /\bessay\b/,
+  // Burmese — trivia / entertainment
+  /ရာသီဥတု/,
+  /ပျော်စရာပြော/,
+  /ဘယ်နာရီရှိပြီလဲ/,
+  /ကဗျာရေးပေး|သီချင်းရေးပေး/,
 ];
 
 /** User declined to answer / has no idea — stop probing, hand off to roadmap. */

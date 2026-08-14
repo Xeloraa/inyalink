@@ -237,6 +237,46 @@ describe('ai.service demo fallback', () => {
     log.mockRestore();
   });
 
+  it('declines an unrelated opening without calling the provider', async () => {
+    const result = await converseBrief({
+      messages: [{ role: 'user', content: 'what is the weather today' }],
+      locale: 'en',
+    });
+
+    expect(complete).not.toHaveBeenCalled();
+    expect(result.complete).toBe(false);
+    expect(result.redirectTo).toBeUndefined();
+    expect(result.retryable).toBeUndefined();
+    expect(result.nextQuestion).toBeTruthy();
+    expect(result.briefDraft).toEqual({});
+  });
+
+  it('declines a Burmese unrelated opening in Burmese without calling the provider', async () => {
+    const result = await converseBrief({
+      messages: [{ role: 'user', content: 'ဒီနေ့ ရာသီဥတု ဘယ်လိုရှိလဲ' }],
+      locale: 'en',
+    });
+
+    expect(complete).not.toHaveBeenCalled();
+    expect(result.nextQuestion).toMatch(/[က-႟]/);
+  });
+
+  it('does not treat a real service request as unrelated', async () => {
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await converseBrief({
+      messages: [{ role: 'user', content: DEMO_CONVERSE_INPUT }],
+      locale: 'my',
+    });
+
+    // Falls through to the real (mocked) provider path, not the canned decline.
+    expect(result.nextQuestion).not.toBe(undefined);
+    expect(result.briefDraft.category).toBe('graphic-design');
+  });
+
   it('serves roadmap fixture when generateRoadmap fails for the demo goal', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     complete.mockResolvedValue({

@@ -56,6 +56,17 @@ describe('classifyInputShape', () => {
     expect(classifyInputShape('အိမ်စာ ကူညီပေးပါ')).toBe('unrelated');
   });
 
+  it('routes general trivia / entertainment to unrelated', () => {
+    expect(classifyInputShape("what's the weather today")).toBe('unrelated');
+    expect(classifyInputShape('tell me a joke')).toBe('unrelated');
+    expect(classifyInputShape('what time is it')).toBe('unrelated');
+    expect(classifyInputShape('write me a poem about the moon')).toBe(
+      'unrelated',
+    );
+    expect(classifyInputShape('ဒီနေ့ ရာသီဥတု ဘယ်လိုရှိလဲ')).toBe('unrelated');
+    expect(classifyInputShape('ဘယ်နာရီရှိပြီလဲ')).toBe('unrelated');
+  });
+
   it('keeps hireable asks as service even if dating words appear', () => {
     expect(
       classifyInputShape("I need a logo for my girlfriend's cafe"),
