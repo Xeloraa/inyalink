@@ -113,7 +113,7 @@ export function DeepStory({ onStart }: { onStart: () => void }) {
 
   return (
     <FullBleed
-      className="overflow-hidden bg-jade-950"
+      className="bg-jade-950"
       labelledBy="deep-heading"
       innerClassName="py-4xl md:py-5xl"
     >

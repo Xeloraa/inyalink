@@ -26,7 +26,7 @@ export function FullBleed({
     <section
       id={id}
       aria-labelledby={labelledBy}
-      className="relative isolate"
+      className="relative isolate overflow-hidden"
     >
       <div
         aria-hidden

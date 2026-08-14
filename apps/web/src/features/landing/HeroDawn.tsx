@@ -39,10 +39,7 @@ export function HeroDawn({
   const stackRef = useParallaxDrift<HTMLDivElement>(-0.05);
 
   return (
-    <FullBleed
-      className="overflow-x-clip bg-jade-900"
-      labelledBy="hero-heading"
-    >
+    <FullBleed className="bg-jade-900" labelledBy="hero-heading">
       <div
         ref={rippleRef}
         aria-hidden
