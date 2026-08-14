@@ -8,7 +8,7 @@ import {
   isApprovedProfessional,
   isActiveProfessional,
   useMyProfessional,
-} from './AccountMenu';
+} from '../features/auth/AccountMenu';
 import { LogoMark } from './Logo';
 import { NotificationBell } from '../features/notifications/NotificationBell';
 

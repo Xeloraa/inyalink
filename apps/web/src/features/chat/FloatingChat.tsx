@@ -19,24 +19,24 @@ import {
   getMatchCandidates,
   submitBrief,
   updateBrief,
-} from '../lib/api';
-import { ApiError } from '../lib/apiClient';
-import { useAuth } from '../lib/auth';
+} from '../../lib/api';
+import { ApiError } from '../../lib/apiClient';
+import { useAuth } from '../../lib/auth';
 import {
   fetchConversationDetail,
   persistConversationSnapshot,
-} from '../lib/conversationStore';
-import { useDemoFlow } from '../lib/demoFlow';
-import { translateIn, useI18n } from '../lib/i18n';
-import { BriefSummaryCard } from '../features/chat/BriefSummaryCard';
-import { MatchAvatarRow, MatchAvatarRowSkeleton } from '../features/chat/MatchAvatarRow';
-import { RoadmapCards } from '../features/chat/RoadmapCards';
-import { ChatBubble, ThinkingBubble } from './ChatBubble';
+} from '../../lib/conversationStore';
+import { useDemoFlow } from '../../lib/demoFlow';
+import { translateIn, useI18n } from '../../lib/i18n';
+import { BriefSummaryCard } from './BriefSummaryCard';
+import { MatchAvatarRow, MatchAvatarRowSkeleton } from './MatchAvatarRow';
+import { RoadmapCards } from './RoadmapCards';
+import { ChatBubble, ThinkingBubble } from '../../components/ChatBubble';
 import { ChatHistoryPanel } from './ChatHistoryPanel';
 import { CHAT_COMPOSER, CHAT_PANEL, useChatUi } from './chatUi';
-import { LogoMark } from './Logo';
-import { RotatingProgress } from './RotatingProgress';
-import { RateLimitNotice } from './Notices';
+import { LogoMark } from '../../components/Logo';
+import { RotatingProgress } from '../../components/RotatingProgress';
+import { RateLimitNotice } from '../../components/Notices';
 
 export { ChatUiProvider, useChatUi } from './chatUi';
 

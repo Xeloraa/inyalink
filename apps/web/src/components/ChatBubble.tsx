@@ -1,4 +1,4 @@
-import { CHAT_BUBBLE_OTHER, CHAT_BUBBLE_OWN } from './chatUi';
+import { CHAT_BUBBLE_OTHER, CHAT_BUBBLE_OWN } from '../features/chat/chatUi';
 
 type ChatBubbleProps = {
   role: 'user' | 'assistant';
@@ -7,7 +7,7 @@ type ChatBubbleProps = {
 
 /**
  * Conversation bubble — hugs content; alignment + colour carry the speaker.
- * Spec: 06-design-system.md § Chat bubbles.
+ * Spec: docs/06-design-system.md § Chat bubbles.
  * User: right, max 78%. AI: left, max 86%. Both w-fit (never full-width stretch).
  */
 export function ChatBubble({ role, children }: ChatBubbleProps) {

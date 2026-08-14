@@ -1,6 +1,6 @@
 import { FormEvent, useState, type ReactNode } from 'react';
-import { useI18n } from '../lib/i18n';
-import { LogoMark } from './Logo';
+import { useI18n } from '../../lib/i18n';
+import { LogoMark } from '../../components/Logo';
 
 const STORAGE_KEY = 'inyalink.access.ok';
 

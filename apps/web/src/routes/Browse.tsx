@@ -13,7 +13,7 @@ import {
   type ListProfessionalsParams,
 } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
-import { useChatUi } from '../components/FloatingChat';
+import { useChatUi } from '../features/chat/FloatingChat';
 import { Skeleton } from '../components/Skeleton';
 import { useI18n } from '../lib/i18n';
 import {

@@ -1,5 +1,5 @@
 import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { RequireAuth } from '../../components/RequireAuth';
+import { RequireAuth } from '../../features/auth/RequireAuth';
 import { useAuth } from '../../lib/auth';
 import { useI18n } from '../../lib/i18n';
 

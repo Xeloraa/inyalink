@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { ConversationSummary } from '@inyalink/shared';
-import { fetchConversationSummaries } from '../lib/conversationStore';
-import { useI18n } from '../lib/i18n';
-import { Skeleton } from './Skeleton';
+import { fetchConversationSummaries } from '../../lib/conversationStore';
+import { useI18n } from '../../lib/i18n';
+import { Skeleton } from '../../components/Skeleton';
 
 type ChatHistoryPanelProps = {
   open: boolean;

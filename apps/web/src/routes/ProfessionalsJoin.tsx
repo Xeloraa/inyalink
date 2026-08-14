@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { getMyProfessional } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
 import { useI18n } from '../lib/i18n';
-import { RequireAuth } from '../components/RequireAuth';
+import { RequireAuth } from '../features/auth/RequireAuth';
 import { JoinWizard } from '../features/professionals/JoinWizard';
 
 function JoinGate() {

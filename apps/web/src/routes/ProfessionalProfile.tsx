@@ -8,8 +8,8 @@ import {
 } from '@inyalink/shared';
 import { getProfessional } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
-import { useMyProfessional } from '../components/AccountMenu';
-import { useChatUi } from '../components/FloatingChat';
+import { useMyProfessional } from '../features/auth/AccountMenu';
+import { useChatUi } from '../features/chat/FloatingChat';
 import { Skeleton } from '../components/Skeleton';
 import { useI18n } from '../lib/i18n';
 import { LoadErrorNotice } from '../components/Notices';

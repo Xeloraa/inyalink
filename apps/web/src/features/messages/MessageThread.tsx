@@ -11,7 +11,7 @@ import { useI18n } from '../../lib/i18n';
 import {
   CHAT_BUBBLE_OTHER,
   CHAT_BUBBLE_OWN,
-} from '../../components/chatUi';
+} from '../chat/chatUi';
 
 const POLL_MS = 8_000;
 

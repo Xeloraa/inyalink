@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import type { ProfessionalMe } from '@inyalink/shared';
-import { getMyProfessional } from '../lib/api';
-import { ApiError } from '../lib/apiClient';
-import { useAuth } from '../lib/auth';
-import { useI18n } from '../lib/i18n';
+import { getMyProfessional } from '../../lib/api';
+import { ApiError } from '../../lib/apiClient';
+import { useAuth } from '../../lib/auth';
+import { useI18n } from '../../lib/i18n';
 
 const MENU_ITEM =
   'tap-target flex w-full items-center whitespace-nowrap rounded-sm px-lg text-[13px] font-medium text-ink-700 no-underline [overflow-wrap:normal] transition-colors duration-fast ease-out hover:bg-jade-50 hover:text-jade-600 focus-visible:shadow-focus active:bg-jade-100';

@@ -21,7 +21,7 @@ import {
 } from '../lib/api';
 import { ApiError } from '../lib/apiClient';
 import { useI18n } from '../lib/i18n';
-import { RequireAuth } from '../components/RequireAuth';
+import { RequireAuth } from '../features/auth/RequireAuth';
 import { CategoryFields } from '../features/professionals/CategoryFields';
 import { PortfolioFields } from '../features/professionals/PortfolioFields';
 import {

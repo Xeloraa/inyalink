@@ -6,7 +6,7 @@ import { HeroDawn } from '../features/landing/HeroDawn';
 import { HowItWorks } from '../features/landing/HowItWorks';
 import { MatchesSection } from '../features/landing/MatchesSection';
 import { ReassuranceStrip } from '../features/landing/ReassuranceStrip';
-import { useChatUi } from '../components/FloatingChat';
+import { useChatUi } from '../features/chat/FloatingChat';
 import { useDemoFlow } from '../lib/demoFlow';
 
 /**

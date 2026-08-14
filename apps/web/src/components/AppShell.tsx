@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { FloatingChat, ChatUiProvider } from './FloatingChat';
+import { FloatingChat, ChatUiProvider } from '../features/chat/FloatingChat';
 import { Header } from './Header';
 
 export function AppShell() {

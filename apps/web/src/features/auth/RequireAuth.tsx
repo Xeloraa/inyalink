@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../lib/auth';
-import { useI18n } from '../lib/i18n';
+import { useAuth } from '../../lib/auth';
+import { useI18n } from '../../lib/i18n';
 
 /** Redirects anonymous users to /login, preserving the intended path. */
 export function RequireAuth({ children }: { children: React.ReactNode }) {
