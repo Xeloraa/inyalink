@@ -36,9 +36,9 @@ function optionalBool(name: string, fallback: boolean): boolean {
 
 export const config = {
   port: optionalInt('PORT', 3001),
-  databaseUrl: process.env['DATABASE_URL'] ?? '',
-  supabaseUrl: process.env['SUPABASE_URL'] ?? '',
-  supabaseServiceKey: process.env['SUPABASE_SERVICE_KEY'] ?? '',
+  databaseUrl: required('DATABASE_URL'),
+  supabaseUrl: required('SUPABASE_URL'),
+  supabaseServiceKey: required('SUPABASE_SERVICE_KEY'),
   aiProvider: process.env['AI_PROVIDER'] ?? '',
   geminiApiKey: process.env['GEMINI_API_KEY'] ?? '',
   openaiApiKey: process.env['OPENAI_API_KEY'] ?? '',
@@ -46,10 +46,17 @@ export const config = {
   messageRetentionDays: optionalInt('MESSAGE_RETENTION_DAYS', 90),
   aiMaxTurns: optionalInt('AI_MAX_TURNS', 5),
   /**
-   * Hackathon default on. Seeds interests and early-closes so the stage
-   * demo never sticks on a waiting screen. Does NOT gate AI fallback.
+   * When on: (1) unauthenticated requests are granted a full session as a
+   * caller-chosen demo identity — including an admin-flagged one — via the
+   * X-Demo-User-Id header (middleware/requireAuth.ts's attachSession); (2)
+   * professional applications auto-approve instead of needing admin review
+   * (professionals.service.ts); (3) matching seeds fake interest and closes
+   * the matching window early instead of waiting for real activity
+   * (matching.service.ts, briefs.service.ts). All real-product-breaking if
+   * left on, so this must be opt-in, not opt-out: default off. Set
+   * DEMO_MODE=true explicitly for local/stage-demo use only.
    */
-  demoMode: optionalBool('DEMO_MODE', true),
+  demoMode: optionalBool('DEMO_MODE', false),
   /**
    * Serve demo AI fixtures when the live provider fails / is unset.
    * Default on — including production / Railway. Not tied to NODE_ENV.

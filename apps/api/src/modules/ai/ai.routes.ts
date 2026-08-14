@@ -15,16 +15,8 @@ aiRouter.use(aiRateLimit);
 
 aiRouter.post(
   '/brief/converse',
-  (req, _res, next) => {
-    console.log('[ai] converse route hit', {
-      method: req.method,
-      path: req.originalUrl ?? req.url,
-    });
-    next();
-  },
   validateBody(ConverseBriefInputSchema),
   async (req, res, next) => {
-    console.log('[ai] converse handler entered');
     try {
       const body = ConverseBriefInputSchema.parse(req.body);
       const result = await aiService.converseBrief(body);

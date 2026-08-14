@@ -6,9 +6,12 @@ import {
 } from '../src/lib/cors.js';
 
 describe('parseCorsOrigins', () => {
-  it('treats empty and * as wildcard', () => {
-    expect(parseCorsOrigins(undefined)).toBe('*');
-    expect(parseCorsOrigins('')).toBe('*');
+  it('defaults empty/unset to deny (not wildcard) — must be explicit to open CORS', () => {
+    expect(parseCorsOrigins(undefined)).toEqual([]);
+    expect(parseCorsOrigins('')).toEqual([]);
+  });
+
+  it('only treats an explicit * as wildcard', () => {
     expect(parseCorsOrigins('  *  ')).toBe('*');
   });
 
@@ -69,5 +72,12 @@ describe('isOriginAllowed', () => {
 
   it('allows everything when allowlist is *', () => {
     expect(isOriginAllowed('https://anywhere.example', '*')).toBe(true);
+  });
+
+  it('denies non-vercel origins when allowlist is empty (unset CORS_ORIGIN)', () => {
+    expect(isOriginAllowed('https://anywhere.example', [])).toBe(false);
+    expect(
+      isOriginAllowed('https://inyalink-web-git-feat-abc.vercel.app', []),
+    ).toBe(true);
   });
 });

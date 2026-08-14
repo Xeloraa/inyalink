@@ -7,6 +7,10 @@ import {
 } from '@inyalink/shared';
 import { validateBody } from '../../middleware/validate.js';
 import { getAuth, requireAuth } from '../../middleware/requireAuth.js';
+import {
+  otpRequestRateLimit,
+  otpVerifyRateLimit,
+} from '../../middleware/rateLimit.js';
 import * as authService from './auth.service.js';
 
 export const authRouter = Router();
@@ -35,6 +39,7 @@ authRouter.post('/logout', requireAuth, async (req, res, next) => {
  */
 authRouter.post(
   '/otp/request',
+  otpRequestRateLimit,
   validateBody(RequestOtpInputSchema),
   async (req, res, next) => {
     try {
@@ -49,6 +54,7 @@ authRouter.post(
 
 authRouter.post(
   '/otp/verify',
+  otpVerifyRateLimit,
   validateBody(VerifyOtpInputSchema),
   async (req, res, next) => {
     try {

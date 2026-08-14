@@ -105,3 +105,17 @@ export const messageSendRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 60,
 });
+
+/** OTP request costs real SMS money and can be used to spam a phone number. */
+export const otpRequestRateLimit = rateLimit({
+  keyPrefix: 'otp-request',
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+});
+
+/** OTP verify is a brute-force target for guessing the code. */
+export const otpVerifyRateLimit = rateLimit({
+  keyPrefix: 'otp-verify',
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+});

@@ -24,14 +24,6 @@ app.use((req, res, next) => {
   const requestOrigin = req.headers.origin;
   const matched = isOriginAllowed(requestOrigin, corsAllowlist);
 
-  console.log('[cors]', {
-    origin: requestOrigin ?? null,
-    matched,
-    allowlist: corsAllowlist === '*' ? '*' : corsAllowlist,
-    method: req.method,
-    path: req.originalUrl ?? req.url,
-  });
-
   if (corsAllowlist === '*') {
     res.setHeader('Access-Control-Allow-Origin', '*');
   } else if (matched && requestOrigin) {

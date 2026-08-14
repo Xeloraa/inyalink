@@ -5,23 +5,30 @@
 
 export type CorsAllowlist = '*' | string[];
 
-/** Parse CORS_ORIGIN env into '*' or a trimmed origin list. */
+/**
+ * Parse CORS_ORIGIN env into '*' or a trimmed origin list.
+ * Unset/empty defaults to [] (deny, aside from the *.vercel.app preview
+ * allowance in isOriginAllowed) — a blank env var must never silently
+ * widen to allow every origin. '*' only applies if explicitly set.
+ */
 export function parseCorsOrigins(raw: string | undefined): CorsAllowlist {
   let value = (raw ?? '').trim();
-  if (!value || value === '*') return '*';
+  if (!value) return [];
+  if (value === '*') return '*';
 
   // Env UIs often persist the whole CSV wrapped in double quotes.
   if (value.startsWith('"') && value.endsWith('"')) {
     value = value.slice(1, -1).trim();
   }
-  if (!value || value === '*') return '*';
+  if (!value) return [];
+  if (value === '*') return '*';
 
   const origins = value
     .split(',')
     .map((part) => stripWrappingQuotes(part.trim()).trim())
     .filter((part) => part.length > 0);
 
-  return origins.length > 0 ? origins : '*';
+  return origins;
 }
 
 function stripWrappingQuotes(s: string): string {
