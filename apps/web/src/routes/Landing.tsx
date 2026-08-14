@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Commitments } from '../features/landing/Commitments';
 import { DeepStory } from '../features/landing/DeepStory';
+import { HeroCompact } from '../features/landing/HeroCompact';
 import { HeroDawn } from '../features/landing/HeroDawn';
 import { HowItWorks } from '../features/landing/HowItWorks';
 import { MatchesSection } from '../features/landing/MatchesSection';
@@ -17,7 +18,17 @@ export default function Landing() {
   const { startFromInput } = useDemoFlow();
   const { setOpen } = useChatUi();
   const [goal, setGoal] = useState('');
-  const heroRef = useRef<HTMLDivElement>(null);
+  // Two hero variants stay mounted at once (CSS-swapped by breakpoint), so
+  // each needs its own ref — a shared one would only ever track whichever
+  // rendered last, breaking focus/scroll on the other breakpoint.
+  const heroRefCompact = useRef<HTMLDivElement>(null);
+  const heroRefDawn = useRef<HTMLDivElement>(null);
+
+  function activeHeroRef() {
+    return heroRefCompact.current?.offsetParent !== null
+      ? heroRefCompact
+      : heroRefDawn;
+  }
 
   function submitGoal(text: string) {
     const trimmed = text.trim();
@@ -28,8 +39,8 @@ export default function Landing() {
   }
 
   function focusInput() {
-    heroRef.current
-      ?.querySelector<HTMLTextAreaElement>('textarea')
+    activeHeroRef()
+      .current?.querySelector<HTMLTextAreaElement>('textarea')
       ?.focus({ preventScroll: true });
   }
 
@@ -41,7 +52,7 @@ export default function Landing() {
     const reduced = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches;
-    heroRef.current?.scrollIntoView({
+    activeHeroRef().current?.scrollIntoView({
       behavior: reduced ? 'auto' : 'smooth',
       block: 'center',
     });
@@ -50,13 +61,24 @@ export default function Landing() {
 
   return (
     <div>
-      <HeroDawn
-        goal={goal}
-        onGoalChange={setGoal}
-        onSubmit={() => submitGoal(goal)}
-        onChip={applyChip}
-        heroRef={heroRef}
-      />
+      <div className="md:hidden">
+        <HeroCompact
+          goal={goal}
+          onGoalChange={setGoal}
+          onSubmit={() => submitGoal(goal)}
+          onChip={applyChip}
+          heroRef={heroRefCompact}
+        />
+      </div>
+      <div className="hidden md:block">
+        <HeroDawn
+          goal={goal}
+          onGoalChange={setGoal}
+          onSubmit={() => submitGoal(goal)}
+          onChip={applyChip}
+          heroRef={heroRefDawn}
+        />
+      </div>
       <ReassuranceStrip />
       <DeepStory onStart={backToInput} />
       <MatchesSection />
