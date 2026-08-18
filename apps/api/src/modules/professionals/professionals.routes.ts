@@ -166,7 +166,7 @@ professionalsRouter.delete(
   },
 );
 
-/** Mutating — session required (DEMO_MODE falls back to demo identity). */
+/** Mutating — session required (DEMO_SHARED_USER falls back to demo identity). */
 professionalsRouter.post(
   '/apply',
   attachSession,

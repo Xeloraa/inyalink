@@ -30,7 +30,6 @@ vi.mock('../../lib/config.js', () => ({
     aiProvider: 'groq',
     aiMaxTurns: 5,
     groqApiKey: 'test',
-    demoMode: true,
     demoAiFallback: true,
   },
   aiApiKeyPresent: () => true,
@@ -301,5 +300,82 @@ describe('ai.service demo fallback', () => {
       expect.objectContaining({ feature: 'roadmap' }),
     );
     log.mockRestore();
+  });
+
+  it('serves the roadmap fixture without persisting for an anonymous (null userId) caller', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await createRoadmap(
+      {
+        goal: DEMO_ROADMAP_INPUT,
+        locale: 'my',
+      },
+      null,
+    );
+
+    expect(result.id).toBeUndefined();
+    expect(result.steps?.length).toBeGreaterThanOrEqual(4);
+    expect(insertRoadmap).not.toHaveBeenCalled();
+    log.mockRestore();
+  });
+
+  it('generates a roadmap without persisting when the caller is anonymous', async () => {
+    complete.mockResolvedValue({
+      ok: true,
+      data: {
+        language: 'en',
+        steps: [
+          {
+            order: 1,
+            title: 'Register the business name',
+            why: 'Needed before opening a bank account.',
+            category_slug: 'graphic-design',
+            est_min_mmk: 10_000,
+            est_max_mmk: 20_000,
+          },
+          {
+            order: 2,
+            title: 'Design a logo',
+            why: 'Needed for signage and packaging.',
+            category_slug: 'graphic-design',
+            est_min_mmk: 50_000,
+            est_max_mmk: 150_000,
+          },
+          {
+            order: 3,
+            title: 'Build a simple website',
+            why: 'Lets customers find you online.',
+            category_slug: 'web-development',
+            est_min_mmk: 200_000,
+            est_max_mmk: 500_000,
+          },
+          {
+            order: 4,
+            title: 'Set up social media',
+            why: 'Reach customers where they already are.',
+            category_slug: 'social-media-marketing',
+            est_min_mmk: 100_000,
+            est_max_mmk: 300_000,
+          },
+        ],
+        disclaimer: 'This is a general starting plan, not professional advice.',
+      },
+      usage: { tokensIn: 120, tokensOut: 240 },
+      latencyMs: 900,
+    });
+
+    const result = await createRoadmap(
+      { goal: 'I want to open a coffee shop', locale: 'en' },
+      null,
+    );
+
+    expect(result.id).toBeUndefined();
+    expect(result.steps?.length).toBeGreaterThanOrEqual(4);
+    expect(result.disclaimer).toBeTruthy();
+    expect(insertRoadmap).not.toHaveBeenCalled();
   });
 });

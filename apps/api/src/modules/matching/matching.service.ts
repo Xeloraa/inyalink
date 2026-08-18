@@ -89,8 +89,8 @@ export async function resolveBriefMatching(briefId: string): Promise<void> {
       fallbackUsed = true;
     }
   } else {
-    // DEMO_MODE: seed ≥5 interests so stage always resolves with N > 4.
-    if (config.demoMode && interestedIds.length < 5) {
+    // DEMO_SEED_INTERESTS: seed ≥5 interests so stage always resolves with N > 4.
+    if (config.demoSeedInterests && interestedIds.length < 5) {
       const all = await repo.listApprovedProsInCategory(brief.categoryId);
       const need = all
         .map((p) => p.userId)
@@ -246,7 +246,7 @@ async function maybeEarlyClose(briefId: string): Promise<void> {
     ? new Date(brief.interestClosesAt).getTime()
     : null;
   const windowClosed = closesAt !== null && Date.now() >= closesAt;
-  if (count >= 3 || windowClosed || config.demoMode) {
+  if (count >= 3 || windowClosed || config.demoSeedInterests) {
     await resolveBriefMatching(briefId);
   }
 }

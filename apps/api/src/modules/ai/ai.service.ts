@@ -118,7 +118,6 @@ function logAiRequestStart(
     provider: config.aiProvider || '(unset)',
     apiKeyPresent: aiApiKeyPresent(),
     fallbackEnabled: config.demoAiFallback,
-    demoMode: config.demoMode,
     nodeEnv: process.env['NODE_ENV'] ?? '(unset)',
     ...detail,
   });
@@ -187,7 +186,7 @@ async function serveConverseFallback(
 async function serveRoadmapFallback(
   goal: string,
   locale: UiLocale,
-  userId: string,
+  userId: string | null,
   providerErrorKind: string,
 ): Promise<GenerateRoadmapResponse | null> {
   if (!config.demoAiFallback) {
@@ -217,6 +216,11 @@ async function serveRoadmapFallback(
     succeeded: true,
     errorKind: `demo_fallback:${providerErrorKind}`,
   });
+
+  if (!userId) {
+    return GenerateRoadmapResponseSchema.parse(cached);
+  }
+
   const { id } = await repo.insertRoadmap({
     userId,
     goalText: goal,
@@ -340,7 +344,7 @@ export async function converseBrief(
 
 export async function createRoadmap(
   input: GenerateRoadmapInput,
-  userId: string,
+  userId: string | null,
 ): Promise<GenerateRoadmapResponse> {
   const goal = normalizeToUnicode(input.goal.trim());
   if (!goal) {
@@ -397,6 +401,18 @@ export async function createRoadmap(
       'AI_ROADMAP_FAILED',
       'Could not generate a roadmap. Please try again.',
     );
+  }
+
+  // Anonymous caller (no account yet): hand back the roadmap without
+  // persisting it. roadmaps.user_id is not-null, so there's no row to own —
+  // the client is expected to hold it locally, same as anonymous brief chat
+  // (see DATA_MAP.md's ai_conversations entry).
+  if (!userId) {
+    return GenerateRoadmapResponseSchema.parse({
+      language: result.language,
+      steps: result.steps,
+      disclaimer: result.disclaimer,
+    });
   }
 
   const { id } = await repo.insertRoadmap({

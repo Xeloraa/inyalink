@@ -28,7 +28,7 @@ vi.mock('@inyalink/burmese', () => ({
 }));
 
 vi.mock('../../lib/config.js', () => ({
-  config: { demoMode: true },
+  config: { demoAutoApprovePros: true },
 }));
 
 function makeRow(
@@ -277,7 +277,7 @@ describe('professionals.service', () => {
     );
   });
 
-  it('auto-approves applications when DEMO_MODE is on', async () => {
+  it('auto-approves applications when DEMO_AUTO_APPROVE_PROS is on', async () => {
     vi.mocked(repo.getProfileByUserId).mockResolvedValue(null);
     vi.mocked(repo.getCategoryBySlug).mockResolvedValue({
       id: 'c0000000-0000-4000-8000-000000000001',

@@ -1116,7 +1116,7 @@ values
    now() - interval '105 days', now() - interval '100 days',
    now() - interval '128 days', now() - interval '100 days');
 
--- Light interest rows on open showcase briefs (DEMO_MODE also seeds at runtime).
+-- Light interest rows on open showcase briefs (DEMO_SEED_INTERESTS also seeds at runtime).
 insert into brief_interests (brief_id, professional_id, created_at)
 values
   ('d0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001', now() - interval '20 hours'),

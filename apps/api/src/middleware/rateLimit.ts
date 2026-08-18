@@ -1,5 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
+import type { AuthSession } from '@inyalink/shared';
 import { AppError } from './errors.js';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type RateLimitOptions = {
   /** Unique bucket name (e.g. brief-create, ai, message-send). */
@@ -8,6 +11,12 @@ export type RateLimitOptions = {
   windowMs: number;
   /** Max requests per key within the window. */
   max: number;
+  /**
+   * Optional second, longer ceiling on top of the burst window — e.g. a
+   * per-key daily cap so a caller sitting just under `max` every window
+   * can't sustain that indefinitely. Checked over a rolling 24h.
+   */
+  dailyMax?: number;
 };
 
 type Bucket = {
@@ -17,28 +26,37 @@ type Bucket = {
 /** In-memory sliding-window store. Fine for a single API instance. */
 const buckets = new Map<string, Bucket>();
 
+type OptionallyAuthedRequest = Request & { auth?: AuthSession };
+
+/**
+ * Key by the identity a session middleware already validated — a real
+ * Supabase user, or an explicitly-recognised demo identity (see
+ * attachSession / attachOptionalSession in middleware/requireAuth.ts).
+ *
+ * Deliberately never reads X-Demo-User-Id (or any other client-supplied
+ * identity header) directly: doing so let a caller mint an unlimited number
+ * of fresh buckets simply by changing the header value per request. Routers
+ * that never attach a session (e.g. auth.routes.ts's pre-login OTP
+ * endpoints) have no req.auth to key off, so those fall back to the raw
+ * bearer text, then to IP — same as before.
+ */
 function clientKey(req: Request): string {
-  const auth = req.headers.authorization?.trim() ?? '';
-  const demoHeader = req.headers['x-demo-user-id'];
-  const demo =
-    typeof demoHeader === 'string'
-      ? demoHeader
-      : Array.isArray(demoHeader)
-        ? (demoHeader[0] ?? '')
-        : '';
+  const auth = (req as OptionallyAuthedRequest).auth;
+  if (auth?.userId) return `user:${auth.userId}`;
+
+  const bearer = req.headers.authorization?.trim() ?? '';
+  if (bearer.length > 0) return `auth:${bearer.slice(0, 48)}`;
+
   const ip =
     req.ip ||
     (typeof req.socket?.remoteAddress === 'string'
       ? req.socket.remoteAddress
       : '') ||
     'unknown';
-  // Prefer identity material when present; fall back to IP.
-  if (auth.length > 0) return `auth:${auth.slice(0, 48)}`;
-  if (demo.length > 0) return `demo:${demo}`;
   return `ip:${ip}`;
 }
 
-function prune(bucket: Bucket, cutoff: number): void {
+function pruneBefore(bucket: Bucket, cutoff: number): void {
   let i = 0;
   while (i < bucket.timestamps.length && bucket.timestamps[i]! <= cutoff) {
     i += 1;
@@ -46,16 +64,27 @@ function prune(bucket: Bucket, cutoff: number): void {
   if (i > 0) bucket.timestamps.splice(0, i);
 }
 
+/** Count entries after `cutoff`. Timestamps are append-order, so ascending. */
+function countSince(bucket: Bucket, cutoff: number): number {
+  let count = 0;
+  for (let i = bucket.timestamps.length - 1; i >= 0; i -= 1) {
+    if (bucket.timestamps[i]! <= cutoff) break;
+    count += 1;
+  }
+  return count;
+}
+
 /**
  * Sliding-window rate limiter. Returns 429 RATE_LIMITED when exceeded.
  * No external dependency — keeps the API bundle small for Myanmar 3G.
  */
 export function rateLimit(options: RateLimitOptions) {
-  const { keyPrefix, windowMs, max } = options;
+  const { keyPrefix, windowMs, max, dailyMax } = options;
+  const retentionMs =
+    dailyMax !== undefined ? Math.max(windowMs, DAY_MS) : windowMs;
 
   return (req: Request, _res: Response, next: NextFunction): void => {
     const now = Date.now();
-    const cutoff = now - windowMs;
     const key = `${keyPrefix}:${clientKey(req)}`;
 
     let bucket = buckets.get(key);
@@ -64,14 +93,25 @@ export function rateLimit(options: RateLimitOptions) {
       buckets.set(key, bucket);
     }
 
-    prune(bucket, cutoff);
+    pruneBefore(bucket, now - retentionMs);
 
-    if (bucket.timestamps.length >= max) {
+    if (countSince(bucket, now - windowMs) >= max) {
       next(
         new AppError(
           429,
           'RATE_LIMITED',
           'Too many requests. Please wait a moment and try again.',
+        ),
+      );
+      return;
+    }
+
+    if (dailyMax !== undefined && countSince(bucket, now - DAY_MS) >= dailyMax) {
+      next(
+        new AppError(
+          429,
+          'RATE_LIMITED',
+          "You've reached today's limit. Please try again tomorrow.",
         ),
       );
       return;
@@ -94,10 +134,15 @@ export const briefCreateRateLimit = rateLimit({
   max: 20,
 });
 
+/**
+ * 40/15min guards bursts; 150/day guards a slow drip that stays under the
+ * burst window all day and would otherwise run up Groq usage unnoticed.
+ */
 export const aiRateLimit = rateLimit({
   keyPrefix: 'ai',
   windowMs: 15 * 60 * 1000,
   max: 40,
+  dailyMax: 150,
 });
 
 export const messageSendRateLimit = rateLimit({

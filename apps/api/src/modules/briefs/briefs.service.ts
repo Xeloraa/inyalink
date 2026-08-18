@@ -210,9 +210,9 @@ export async function submitBrief(
     throw new AppError(404, 'BRIEF_NOT_FOUND', 'Brief not found');
   }
 
-  // Partner-direct and DEMO_MODE resolve immediately so the stage path
-  // never dead-ends on a waiting screen.
-  if (urgent || config.demoMode) {
+  // Partner-direct and DEMO_SEED_INTERESTS resolve immediately so the stage
+  // path never dead-ends on a waiting screen.
+  if (urgent || config.demoSeedInterests) {
     await matchingService.resolveBriefMatching(id);
   }
 

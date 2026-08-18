@@ -57,7 +57,8 @@ type DemoFlowValue = DemoFlowState & {
   markConverseComplete: () => void;
   setMatches: (matches: MatchCandidate[] | null) => void;
   setRoadmap: (args: {
-    id: string;
+    /** Absent for anonymous callers — the roadmap wasn't persisted server-side. */
+    id?: string;
     steps: RoadmapStep[];
     disclaimer: string;
   }) => void;
@@ -211,10 +212,10 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setRoadmap = useCallback(
-    (args: { id: string; steps: RoadmapStep[]; disclaimer: string }) => {
+    (args: { id?: string; steps: RoadmapStep[]; disclaimer: string }) => {
       setState((s) => ({
         ...s,
-        roadmapId: args.id,
+        roadmapId: args.id ?? null,
         roadmapSteps: args.steps,
         roadmapDisclaimer: args.disclaimer,
       }));

@@ -317,7 +317,7 @@ export function FloatingChat() {
         setNotice(result.notice ?? t('rateLimit.body'));
         return;
       }
-      if (!result.id || !result.steps || !result.disclaimer) {
+      if (!result.steps || !result.disclaimer) {
         roadmapBootRef.current = null;
         setNotice(t('rateLimit.body'));
         return;

@@ -5,13 +5,24 @@ import {
 } from '@inyalink/shared';
 import { validateBody } from '../../middleware/validate.js';
 import { aiRateLimit } from '../../middleware/rateLimit.js';
-import { attachSession, getAuth } from '../../middleware/requireAuth.js';
+import { aiDailyCap } from '../../middleware/aiDailyCap.js';
+import {
+  attachOptionalSession,
+  getOptionalAuth,
+} from '../../middleware/requireAuth.js';
 import * as aiService from './ai.service.js';
 
 export const aiRouter = Router();
 
-aiRouter.use(attachSession);
+/**
+ * Anonymous is a first-class caller here, not an error case: describing a
+ * problem and getting a roadmap/matches must work with no account — sign-in
+ * is only required later, to message someone. See ai.service.ts's
+ * createRoadmap for what "no identity" means for persistence.
+ */
+aiRouter.use(attachOptionalSession);
 aiRouter.use(aiRateLimit);
+aiRouter.use(aiDailyCap);
 
 aiRouter.post(
   '/brief/converse',
@@ -33,7 +44,8 @@ aiRouter.post(
   async (req, res, next) => {
     try {
       const body = GenerateRoadmapInputSchema.parse(req.body);
-      const result = await aiService.createRoadmap(body, getAuth(req).userId);
+      const userId = getOptionalAuth(req)?.userId ?? null;
+      const result = await aiService.createRoadmap(body, userId);
       res.status(result.retryable ? 200 : 201).json(result);
     } catch (err) {
       next(err);

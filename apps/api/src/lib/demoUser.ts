@@ -3,8 +3,8 @@ import type { AuthSession } from '@inyalink/shared';
 import { config } from './config.js';
 
 /**
- * Demo sessions for local/scripts and DEMO_MODE when no Bearer token is
- * present. Real Google sign-in always wins via `attachSession` /
+ * Demo sessions for local/scripts and DEMO_SHARED_USER when no Bearer token
+ * is present. Real Google sign-in always wins via `attachSession` /
  * `requireAuth` in middleware/requireAuth.ts.
  */
 
@@ -71,11 +71,28 @@ export const DEMO_SESSION: AuthSession = toDemoSession(DEMO_CLIENT_ID, {
   locale: 'en',
 });
 
-/** Resolve demo identity from optional `X-Demo-User-Id` when DEMO_MODE is on. */
+/** Resolve demo identity from optional `X-Demo-User-Id` when DEMO_SHARED_USER is on. */
 export function resolveDemoSession(req: Request): AuthSession {
-  if (!config.demoMode) return DEMO_SESSION;
+  if (!config.demoSharedUser) return DEMO_SESSION;
   const header = req.header('x-demo-user-id')?.trim();
   if (!header || !DEMO_USERS[header]) return DEMO_SESSION;
+  return toDemoSession(header, DEMO_USERS[header]!);
+}
+
+/**
+ * Like `resolveDemoSession`, but only ever returns an identity the caller
+ * explicitly and correctly asked for — an unset or unrecognised header
+ * yields `null` instead of silently falling back to the shared demo client.
+ *
+ * Used where "no identity" must stay a distinct, first-class outcome (the
+ * AI endpoints' anonymous path via `attachOptionalSession`, and rate-limit
+ * keying) rather than being folded into one shared bucket that every real
+ * anonymous visitor would otherwise collide into.
+ */
+export function resolveExplicitDemoSession(req: Request): AuthSession | null {
+  if (!config.demoSharedUser) return null;
+  const header = req.header('x-demo-user-id')?.trim();
+  if (!header || !DEMO_USERS[header]) return null;
   return toDemoSession(header, DEMO_USERS[header]!);
 }
 

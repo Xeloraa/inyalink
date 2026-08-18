@@ -282,8 +282,8 @@ export async function applyAsProfessional(
       : null,
   });
 
-  // DEMO_MODE auto-approves so stage demos reach the interest feed immediately.
-  const status = config.demoMode ? 'approved' : 'pending';
+  // DEMO_AUTO_APPROVE_PROS auto-approves so stage demos reach the interest feed immediately.
+  const status = config.demoAutoApprovePros ? 'approved' : 'pending';
 
   const optionalText = (value: string | undefined): string | null => {
     if (!value || !value.trim()) return null;

@@ -8,7 +8,7 @@ vi.mock('../../ai/features/explainMatch.js', () => ({
 }));
 
 vi.mock('../../lib/config.js', () => ({
-  config: { demoMode: true, aiProvider: 'groq' },
+  config: { demoSeedInterests: true, aiProvider: 'groq' },
 }));
 
 vi.mock('./matching.repo.js', () => ({
