@@ -1,0 +1,64 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "Instagram page စီမံပေးမယ့်သူ လိုချင်ပါတယ်",
+  "aliases": [
+    "Instagram စီမံခန့်ခွဲမှု လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "Instagram page စီမံပေးမယ့်သူ လိုချင်တာ မှတ်ထားပါပြီ။ Instagram တစ်ခုတည်းလား၊ Facebook ပါ တွဲစီမံစေချင်ပါသလား။",
+    "Instagram တစ်ခုတည်းပေါ့ — မှတ်ထားပါပြီ။ သင့်လုပ်ငန်းနာမည်နဲ့ တစ်ပတ်ကို ပို့စ် ဘယ်နှစ်ခုလောက် လိုချင်ပါသလဲ။",
+    "Shwe Thread အတွက် တစ်ပတ် ၃ ခုပေါ့ — မှတ်ထားပါပြီ။ လစဉ် ဆက်လုပ်မှာလား၊ budget ကော ဘယ်လောက်လောက် ထားမလဲ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Instagram management",
+      "description": "Instagram page စီမံခန့်ခွဲမှု",
+      "requirements": ["platform: Instagram"],
+      "ai_confidence": 0.5,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Instagram management",
+      "description": "Instagram page စီမံခန့်ခွဲမှု — Instagram only",
+      "requirements": ["platform: Instagram only"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Shwe Thread Instagram management",
+      "description": "Shwe Thread အတွက် Instagram စီမံခန့်ခွဲမှု — တစ်ပတ် ပို့စ် ၃ ခု",
+      "requirements": [
+        "လုပ်ငန်းနာမည်: Shwe Thread",
+        "platform: Instagram only",
+        "ပို့စ်: တစ်ပတ် 3 ခု"
+      ],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "social-media-marketing",
+    "title": "Shwe Thread Instagram management",
+    "description": "Shwe Thread အတွက် လစဉ် Instagram စီမံခန့်ခွဲမှု — တစ်ပတ် ပို့စ် ၃ ခု",
+    "requirements": [
+      "လုပ်ငန်းနာမည်: Shwe Thread",
+      "platform: Instagram only",
+      "ပို့စ်: တစ်ပတ် 3 ခု",
+      "လစဉ် ဆက်လက်လုပ်ဆောင်မည်"
+    ],
+    "budget_min_mmk": 120000,
+    "budget_max_mmk": 200000,
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

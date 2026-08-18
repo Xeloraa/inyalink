@@ -1080,7 +1080,7 @@ input,textarea,select{font:inherit;color:inherit}
 
 </div>
 
-<div style="position:fixed;right:16px;bottom:16px;z-index:90;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+<div style="{{ switcherWrap }}">
   <div style="display:flex;gap:3px;background:rgba(16,22,19,.86);backdrop-filter:blur(10px);border-radius:999px;padding:4px">
     <button onClick="{{ setOwner }}" style="{{ rOwner }}">{{ t.roleOwner }}</button>
     <button onClick="{{ setProView }}" style="{{ rPro }}">{{ t.roleProL }}</button>
@@ -1388,6 +1388,9 @@ class Component extends DCLogic {
       enBtn:`padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap;overflow-wrap:normal;${en?(dk?'background:#4FD08C;color:#04241A':'background:#0E8256;color:#fff'):(dk?'color:rgba(255,255,255,.6)':'color:#6B7770')}`,
       dBtn:`padding:7px 14px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap;${mob?'color:rgba(255,255,255,.6)':'background:#fff;color:#101613'}`,
       mBtn:`padding:7px 14px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap;${mob?'background:#fff;color:#101613':'color:rgba(255,255,255,.6)'}`,
+      switcherWrap: mob
+        ? 'position:static;margin:16px 0 28px;display:flex;flex-direction:column;align-items:center;gap:6px'
+        : 'position:fixed;right:16px;bottom:16px;z-index:90;display:flex;flex-direction:column;align-items:flex-end;gap:6px',
       tabHome:this.tab('home'),tabBrowse:this.tab('browse'),tabMsg:this.tab('messages'),tabMe:this.tab('me'),
       rOwner:this.roleBtn('owner'),rPro:this.roleBtn('pro'),rAdmin:this.roleBtn('admin'),
       setOwner:()=>this.setState({role:'owner',screen:'home',proOpen:false,chat:false}),

@@ -1,0 +1,27 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for completely unrelated openings. Redirects once, briefly and warmly. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "အချစ်ရေး အကြံပေးပါ",
+  "aliases": [
+    "စာမေးပွဲ အဖြေ ပြောပေးပါ",
+    "ရာသီဥတု ဘယ်လိုလဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "ဒါက ဒီမှာ ကူညီပေးတဲ့ အပိုင်း မဟုတ်ပါဘူး။ logo၊ website၊ photography၊ social media ငှားမယ်၊ ဒါမှမဟုတ် ဆိုင်ဖွင့်မယ့် plan လိုချင်ရင် လုပ်နေတာ ပြောပေးပါ။",
+    "လုပ်ငန်းအတွက် ငှားရမ်းစရာ ဒါမှမဟုတ် plan လိုအပ်ရင် ကူညီပေးနိုင်ပါတယ်။ ဘာအလုပ် လိုအပ်နေပါသလဲ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my"
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "needs_human_review": true
+  }
+}

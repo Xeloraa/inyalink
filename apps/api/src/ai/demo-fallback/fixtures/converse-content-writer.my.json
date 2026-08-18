@@ -1,0 +1,57 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "content writer လိုချင်ပါတယ်",
+  "aliases": [
+    "article ရေးပေးမယ့်သူ လိုချင်ပါတယ်",
+    "စာရေးပေးမယ့်သူ လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "content writer လိုချင်တာ မှတ်ထားပါပြီ။ ဘာပုံစံ content လဲ — article၊ product page၊ ဒါမှမဟုတ် script လား၊ အကြောင်းအရာကော ဘာလဲ။",
+    "ကော်ဖီအကြောင်း article ပေါ့ — မှတ်ထားပါပြီ။ ဘယ်နှစ်ပုဒ်လောက် လိုအပ်မလဲ၊ တစ်ပုဒ်ကို စာလုံး ဘယ်လောက်လောက်လဲ။",
+    "တစ်လကို ၄ ပုဒ်ပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ ဘယ်တော့ စချင်ပါသလဲ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "content-writing-burmese",
+      "title": "Burmese content writing",
+      "description": "Burmese content writing",
+      "requirements": [],
+      "ai_confidence": 0.45,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "content-writing-burmese",
+      "title": "ကော်ဖီ article",
+      "description": "ကော်ဖီအကြောင်း Burmese article",
+      "requirements": ["format: article", "topic: ကော်ဖီ"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "content-writing-burmese",
+      "title": "ကော်ဖီ article",
+      "description": "ကော်ဖီအကြောင်း Burmese article — တစ်လ ၄ ပုဒ်",
+      "requirements": ["format: article", "topic: ကော်ဖီ", "အရေအတွက်: တစ်လ 4 ပုဒ်"],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "content-writing-burmese",
+    "title": "ကော်ဖီ article",
+    "description": "ကော်ဖီအကြောင်း Burmese article — တစ်လ ၄ ပုဒ်",
+    "requirements": ["format: article", "topic: ကော်ဖီ", "အရေအတွက်: တစ်လ 4 ပုဒ်"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 200000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

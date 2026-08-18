@@ -1,0 +1,52 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — recorded from live groq structureBrief. Served when the live provider rate-limits or errors.",
+  "kind": "converse",
+  "matchInput": "Facebook page လုပ်ပေးချင်ပါတယ်",
+  "aliases": [],
+  "locale": "my",
+  "questions": [
+    "Facebook page ကို တည်ဆောက်ပေးချင်တာလား၊ ဒါမှမဟုတ် စီမံခန့်ခွဲမှု၊ ပို့စ်များ အစီအစဉ်အတွက် လုပ်ဆောင်ချင်ပါသလား။",
+    "Facebook နဲ့ Instagram စာမျက်နှာများကို ဖန်တီးပေးချင်တာကို မှတ်ထားပါပြီ။ စီးပွားရေးအမည်ကို ပြောပြနိုင်မလား။",
+    "ပို့စ်များကို တစ်လလျှင် မည်မျှ လုပ်ချင်ပါသလဲ၊ အစီအစဉ်တစ်ခုတည်းလား၊ အစဉ်အလာတစ်လအလိုက် စီမံခန့်ခွဲချင်ပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Facebook page creation",
+      "description": "Create a Facebook page for the business",
+      "ai_confidence": 1
+    },
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Facebook and Instagram page creation",
+      "description": "Create Facebook and Instagram pages for the business",
+      "ai_confidence": 1
+    },
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Facebook and Instagram page creation",
+      "description": "Create Facebook and Instagram pages for the business Inya Cafe",
+      "ai_confidence": 1,
+      "requirements": [
+        "Facebook page creation",
+        "Instagram page creation"
+      ]
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "social-media-marketing",
+    "title": "Facebook and Instagram page creation",
+    "description": "Create Facebook and Instagram pages for the business Inya Cafe",
+    "ai_confidence": 1,
+    "requirements": [
+      "Facebook page creation",
+      "Instagram page creation"
+    ],
+    "needs_human_review": true
+  }
+}

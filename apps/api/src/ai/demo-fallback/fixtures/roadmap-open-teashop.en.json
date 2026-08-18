@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "I want to open a teashop",
+  "aliases": [
+    "I want to open a tea shop"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a graphic designer for the teashop's logo and signage",
+      "why": "The name and logo get reused on signage, the menu, and social media, so brand work comes first to avoid re-doing anything.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for the shop and food shots",
+      "why": "Photos of the space and what you serve are the base assets for the Facebook page. One shoot after the brand is set covers everything.",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a social media manager for the Facebook page",
+      "why": "Facebook is the most effective channel for reaching local customers. Regular posts around opening and daily promotions need a monthly plan.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "Engage a company-registration specialist for legal setup",
+      "why": "Registration and licensing paperwork should be handled with an appropriate professional. This step names the professional type only — it is not advice.",
+      "category_slug": "other",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

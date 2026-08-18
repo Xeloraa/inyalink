@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "ဘာသာပြန်ခ ဘယ်လောက်ကျမလဲ",
+  "aliases": [
+    "translation ဈေးနှုန်း ဘယ်လောက်လဲ",
+    "ဘာသာပြန် ဈေး ဘယ်လောက်လဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "translation က များသောအားဖြင့် စကားလုံးတစ်လုံးကို 20 ကနေ 80 ကျပ်ခန့် ဒါမှမဟုတ် package စျေးနှုန်းနဲ့ ရှိတတ်ပါတယ်။ စာရွက်စာတမ်း အမျိုးအစားနဲ့ ပမာဏပေါ် မူတည်ပါတယ် — အကျယ်အဝန်း သတ်မှတ်ဖို့ ကူညီပေးနိုင်ပါတယ်။",
+    "စိတ်ဝင်စားတာ မှတ်ထားပါပြီ။ မြန်မာကနေ English လား၊ English ကနေ မြန်မာလား၊ ဘာအမျိုးအစား စာရွက်စာတမ်းလဲ။",
+    "မြန်မာကနေ English၊ website စာသားပေါ့ — မှတ်ထားပါပြီ။ စာမျက်နှာ ဒါမှမဟုတ် စကားလုံး အရေအတွက် ခန့်မှန်းပြောပေးနိုင်ပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my",
+      "category": "translation",
+      "title": "ဘာသာပြန်",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "my",
+      "category": "translation",
+      "title": "Website ဘာသာပြန်",
+      "description": "Website စာသားကို မြန်မာကနေ English ဘာသာပြန်",
+      "requirements": ["language pair: my → en", "type: website"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "translation",
+    "title": "Website ဘာသာပြန်",
+    "description": "Website စာမျက်နှာ ၅ ခုကို မြန်မာကနေ English ဘာသာပြန်",
+    "requirements": ["language pair: my → en", "scope: စာမျက်နှာ 5 ခု"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 250000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

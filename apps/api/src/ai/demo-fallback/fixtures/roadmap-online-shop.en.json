@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "I want to start an online shop",
+  "aliases": [
+    "I want to sell online",
+    "starting an online store"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a graphic designer for logo and brand identity",
+      "why": "Online, customers meet your brand through images first. A consistent logo and look builds the trust needed to buy from a page.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for product photos",
+      "why": "Online buyers can't hold the product, so photo quality carries most of the decision. Shooting after the brand is set keeps the look consistent.",
+      "category_slug": "photography",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a social media manager for Facebook and Instagram",
+      "why": "Most Myanmar online shops start selling through Facebook. Regular posting and customer replies need a monthly plan.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "Hire a web developer for a basic online store",
+      "why": "As orders grow, an e-commerce page takes them in an organised way instead of only through chat.",
+      "category_slug": "web-development",
+      "est_min_mmk": 400000,
+      "est_max_mmk": 1000000
+    },
+    {
+      "order": 5,
+      "title": "Hire a virtual assistant for orders and inbox",
+      "why": "Once sales pick up, inbox replies and order tracking take the most time. A VA can own that part of the work.",
+      "category_slug": "virtual-assistant",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

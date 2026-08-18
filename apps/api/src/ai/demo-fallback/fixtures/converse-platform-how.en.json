@@ -1,0 +1,27 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for platform questions (vetting / how it works). Matched on opening input. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "how does this work",
+  "aliases": [
+    "how do you vet professionals",
+    "how does vetting work"
+  ],
+  "locale": "en",
+  "questions": [
+    "You describe a goal or a hire, I help structure a brief or a hiring plan, and then you can be matched with vetted professionals on InyaLink. Everyone listed on the platform is vetted. What are you working on?",
+    "Got it. What does your business need first — a logo, website, photos, or social media?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en"
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "needs_human_review": true
+  }
+}

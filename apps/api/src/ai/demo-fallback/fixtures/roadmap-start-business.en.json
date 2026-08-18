@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "I want to start a business",
+  "aliases": [
+    "I want to start my own business",
+    "starting a business"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Engage a company-registration specialist for legal setup",
+      "why": "Registration and tax paperwork should be handled with an appropriate professional from the start. This step names the professional type only — it is not advice.",
+      "category_slug": "other",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "Hire a graphic designer for logo and brand identity",
+      "why": "The brand comes before photos and web work so nothing has to be redone. The logo gets reused across signage, packaging, and social media.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 3,
+      "title": "Hire a photographer for product or premises photos",
+      "why": "Quality photos are the base assets for the website and social channels, and one shoot after the brand is set covers both.",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 4,
+      "title": "Hire a web developer for a basic website",
+      "why": "A simple site gives customers a way to find and trust the business, using the brand and photos already created.",
+      "category_slug": "web-development",
+      "est_min_mmk": 250000,
+      "est_max_mmk": 800000
+    },
+    {
+      "order": 5,
+      "title": "Hire a social media manager for Facebook and Instagram",
+      "why": "Consistent posting builds an audience from launch. Starting after brand and photos are ready makes the feed coherent from day one.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    }
+  ]
+}

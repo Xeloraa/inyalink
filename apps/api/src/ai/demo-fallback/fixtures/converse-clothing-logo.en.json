@@ -1,0 +1,77 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I need a logo for my clothing brand",
+  "aliases": [
+    "logo for a clothing brand",
+    "I want a logo for my fashion brand"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — a logo for your clothing brand. Does the brand have a name yet?",
+    "Shwe Thread — got it. Is it just the logo, or do you need tag and packaging versions as well?",
+    "Tag and packaging too — noted. Is the rough style closer to minimal, modern, or traditional? Most people include source files in the agreement; worth confirming upfront.",
+    "Modern — noted. What budget range in kyat should we plan for, and when do you need it by?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Clothing brand logo",
+      "description": "Logo design for a clothing brand",
+      "requirements": ["logo"],
+      "ai_confidence": 0.45,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread logo",
+      "description": "Logo design for the Shwe Thread clothing brand",
+      "requirements": ["Brand name: Shwe Thread"],
+      "ai_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread logo",
+      "description": "Logo, tag, and packaging design for Shwe Thread",
+      "requirements": ["Brand name: Shwe Thread", "scope: logo + tag + packaging"],
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread logo",
+      "description": "Modern-style logo, tag, and packaging design for Shwe Thread",
+      "requirements": [
+        "Brand name: Shwe Thread",
+        "scope: logo + tag + packaging",
+        "rough style: modern",
+        "Deliverable: source file"
+      ],
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "graphic-design",
+    "title": "Shwe Thread logo",
+    "description": "Modern-style logo, tag, and packaging design for the Shwe Thread clothing brand; source files required.",
+    "requirements": [
+      "Brand name: Shwe Thread",
+      "scope: logo + tag + packaging",
+      "rough style: modern",
+      "Deliverable: source file"
+    ],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 500000,
+    "deadline": "2026-10-31",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

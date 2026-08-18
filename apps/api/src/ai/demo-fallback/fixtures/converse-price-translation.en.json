@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "how much does translation cost",
+  "aliases": [
+    "translation price",
+    "how much for a translator"
+  ],
+  "locale": "en",
+  "questions": [
+    "Translation usually runs around 20 to 80 kyat per word equivalent, or package quotes, depending on document type and volume. I can help you scope the job if you'd like.",
+    "Got it. Which direction — Myanmar to English or English to Myanmar — and what kind of document is it?",
+    "Myanmar to English, website copy — noted. Roughly how many pages or words is it?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en",
+      "category": "translation",
+      "title": "Translation",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "en",
+      "category": "translation",
+      "title": "Website translation",
+      "description": "Translate website copy from Myanmar to English",
+      "requirements": ["language pair: my → en", "type: website"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "translation",
+    "title": "Website translation",
+    "description": "Translate 5 website pages from Myanmar to English",
+    "requirements": ["language pair: my → en", "scope: 5 pages"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 250000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

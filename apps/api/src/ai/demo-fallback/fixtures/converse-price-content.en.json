@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "how much does content writing cost",
+  "aliases": [
+    "content writing price",
+    "how much for a content writer"
+  ],
+  "locale": "en",
+  "questions": [
+    "Burmese content writing usually runs around 50,000 to 200,000+ kyat per piece or package, depending on format and volume. I can help you scope the job if you'd like.",
+    "Got it. What format do you need — articles, product pages, or scripts?",
+    "Product pages — noted. Roughly how many pieces, and do you have a deadline in mind?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en",
+      "category": "content-writing-burmese",
+      "title": "Burmese content writing",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "en",
+      "category": "content-writing-burmese",
+      "title": "Product page content",
+      "description": "Burmese content for product pages",
+      "requirements": ["format: product page"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "content-writing-burmese",
+    "title": "Product page content",
+    "description": "Burmese content for 10 product pages",
+    "requirements": ["format: product page", "count: 10"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 200000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

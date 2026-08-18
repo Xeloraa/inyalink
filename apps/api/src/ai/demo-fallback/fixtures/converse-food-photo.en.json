@@ -1,0 +1,57 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I need food photography",
+  "aliases": [
+    "I need photos for my menu",
+    "food photos for my restaurant"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — you need food photography. What's the business name, and is this for the menu or for social media?",
+    "Inya Cafe, for the menu — got it. Roughly how many dishes need to be shot?",
+    "Twenty dishes — noted. What budget range in kyat should we plan for, and do you have a shoot date in mind?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "photography",
+      "title": "Food photography",
+      "description": "Food photography for a restaurant",
+      "requirements": ["food photography"],
+      "ai_confidence": 0.45,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "photography",
+      "title": "Inya Cafe menu photos",
+      "description": "Food photography for the Inya Cafe menu",
+      "requirements": ["Business name: Inya Cafe", "use: menu"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "photography",
+      "title": "Inya Cafe menu photos",
+      "description": "Food photography of 20 dishes for the Inya Cafe menu",
+      "requirements": ["Business name: Inya Cafe", "use: menu", "dish count: 20"],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "photography",
+    "title": "Inya Cafe menu photos",
+    "description": "Food photography of 20 dishes for the Inya Cafe menu",
+    "requirements": ["Business name: Inya Cafe", "use: menu", "dish count: 20"],
+    "budget_min_mmk": 150000,
+    "budget_max_mmk": 250000,
+    "deadline": "2026-09-15",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

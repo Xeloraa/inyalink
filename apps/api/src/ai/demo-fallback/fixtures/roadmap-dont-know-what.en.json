@@ -1,0 +1,47 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture for a general 'don't know what I need' opening. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "I don't know what I need",
+  "aliases": [
+    "not sure what I need",
+    "I have no idea where to begin"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Start with a logo and brand identity",
+      "why": "For almost any small business, brand work is the sensible first hire. A consistent logo and look makes every later step easier and avoids re-work.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for product or premises photos",
+      "why": "Photo quality is the base asset reused everywhere online, so it comes early.",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a social media manager for Facebook and Instagram",
+      "why": "Most Myanmar customers are on Facebook, so regular posting under a monthly plan is where visibility starts.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "Add a basic website when things settle",
+      "why": "Once the business is steady, a simple site helps customers find and trust you beyond social channels.",
+      "category_slug": "web-development",
+      "est_min_mmk": 250000,
+      "est_max_mmk": 800000
+    }
+  ]
+}

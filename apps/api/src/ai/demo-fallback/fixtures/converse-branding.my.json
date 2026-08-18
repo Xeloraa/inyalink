@@ -1,0 +1,77 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "branding လုပ်ချင်ပါတယ်",
+  "aliases": [
+    "brand identity လိုချင်ပါတယ်",
+    "brand တည်ဆောက်ချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "branding လုပ်ချင်တာ မှတ်ထားပါပြီ။ သင့်လုပ်ငန်းက ဘာလုပ်ငန်းလဲ၊ နာမည်ကော ရှိပါပြီလား။",
+    "Shwe Thread အထည်လုပ်ငန်းပေါ့ — မှတ်ထားပါပြီ။ logo တစ်ခုတည်းလား၊ packaging နဲ့ social media graphics အထိ လိုအပ်ပါသလား။",
+    "Logo နဲ့ packaging ပေါ့ — မှတ်ထားပါပြီ။ rough style က minimal၊ modern၊ ဒါမှမဟုတ် traditional ဘက် ပိုနီးစပ်ပါသလား။ အများစုက source file ကို သဘောတူချက်ထဲ ထည့်ကြပါတယ်။",
+    "Modern ပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Brand identity",
+      "description": "လုပ်ငန်းအတွက် branding",
+      "requirements": ["branding"],
+      "ai_confidence": 0.4,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Shwe Thread brand identity",
+      "description": "Shwe Thread အထည်လုပ်ငန်းအတွက် brand identity",
+      "requirements": ["လုပ်ငန်းနာမည်: Shwe Thread"],
+      "ai_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Shwe Thread brand identity",
+      "description": "Shwe Thread အတွက် logo နဲ့ packaging ပါဝင်တဲ့ brand identity",
+      "requirements": ["လုပ်ငန်းနာမည်: Shwe Thread", "scope: logo + packaging"],
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Shwe Thread brand identity",
+      "description": "Shwe Thread အတွက် modern style logo နဲ့ packaging brand identity",
+      "requirements": [
+        "လုပ်ငန်းနာမည်: Shwe Thread",
+        "scope: logo + packaging",
+        "rough style: modern",
+        "ဖိုင်: source file"
+      ],
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "graphic-design",
+    "title": "Shwe Thread brand identity",
+    "description": "Shwe Thread အထည်လုပ်ငန်းအတွက် modern style logo နဲ့ packaging brand identity — source file လိုအပ်သည်။",
+    "requirements": [
+      "လုပ်ငန်းနာမည်: Shwe Thread",
+      "scope: logo + packaging",
+      "rough style: modern",
+      "ဖိုင်: source file"
+    ],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 600000,
+    "deadline": "2026-10-31",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

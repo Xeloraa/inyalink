@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "စားသောက်ဆိုင် ဖွင့်ချင်ပါတယ်",
+  "aliases": [
+    "ထမင်းဆိုင် ဖွင့်ချင်ပါတယ်",
+    "restaurant ဖွင့်ချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် စီမံကိန်းနှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ် မဟုတ်ပါ။ လိုအပ်ပါက သက်ဆိုင်ရာ လိုင်စင်ရ ပညာရှင်ကို ငှားရမ်းပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "စားသောက်ဆိုင် logo နဲ့ brand identity",
+      "why": "ဆိုင်နာမည်နဲ့ logo က signage၊ မီနူးနဲ့ social media မှာ ပြန်သုံးရမှာမို့ အရင်ဆုံး လုပ်ထားသင့်ပါတယ်။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 500000
+    },
+    {
+      "order": 2,
+      "title": "ဟင်းပွဲနဲ့ ဆိုင်အတွင်း ဓာတ်ပုံ",
+      "why": "မီနူးနဲ့ Facebook/Instagram အတွက် ဟင်းပွဲ ဓာတ်ပုံ အရည်အသွေးက ဖောက်သည် ဆုံးဖြတ်ချက်ကို သက်ရောက်ပါတယ်။ brand ပြီးမှ ရိုက်ရင် တစ်ခါတည်း ပြီးပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "မီနူးနဲ့ တည်နေရာပါတဲ့ အခြေခံ website",
+      "why": "မီနူး၊ ဖွင့်ချိန်နဲ့ တည်နေရာကို ဖောက်သည်များ လွယ်လွယ် ရှာတွေ့နိုင်ဖို့ အခြေခံ website တစ်ခု လိုအပ်ပါတယ်။",
+      "category_slug": "web-development",
+      "est_min_mmk": 250000,
+      "est_max_mmk": 800000
+    },
+    {
+      "order": 4,
+      "title": "Facebook / Instagram စီမံခန့်ခွဲမှု",
+      "why": "ဖွင့်ပွဲ၊ မီနူးအသစ်နဲ့ ပရိုမိုးရှင်းများကို ပုံမှန် မျှဝေဖို့ လစဉ် content အစီအစဉ် လိုအပ်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 5,
+      "title": "မှတ်ပုံတင်အတွက် company registration specialist ငှားရန်",
+      "why": "လုပ်ငန်း မှတ်ပုံတင်နဲ့ လိုင်စင်ဆိုင်ရာ ကိစ္စများကို သက်ဆိုင်ရာ ပညာရှင်နဲ့ ဆောင်ရွက်ပါ။ ဤအဆင့်သည် ငှားရမ်းရမယ့် ပညာရှင် အမျိုးအစားကိုသာ ဖော်ပြပါသည်။",
+      "category_slug": "other",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

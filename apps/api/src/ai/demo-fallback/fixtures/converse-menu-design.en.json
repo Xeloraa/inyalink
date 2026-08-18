@@ -1,0 +1,56 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I need a menu design",
+  "aliases": [
+    "I need a menu designed for my cafe"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — you need a menu design. What's the business name, and roughly how many items will the menu have?",
+    "Inya Cafe with about 30 items — got it. Is this a printed menu, a digital / QR menu, or both?",
+    "Print and QR — noted. What budget range in kyat should we plan for, and do you have a deadline?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Menu design",
+      "description": "Menu design for a cafe",
+      "requirements": ["menu design"],
+      "ai_confidence": 0.5,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Inya Cafe menu design",
+      "description": "Menu design for Inya Cafe with around 30 items",
+      "requirements": ["Business name: Inya Cafe", "items: 30"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Inya Cafe menu design",
+      "description": "Print and QR digital menu design for Inya Cafe, around 30 items",
+      "requirements": ["Business name: Inya Cafe", "items: 30", "format: print + QR digital"],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "graphic-design",
+    "title": "Inya Cafe menu design",
+    "description": "Print and QR digital menu design for Inya Cafe, around 30 items",
+    "requirements": ["Business name: Inya Cafe", "items: 30", "format: print + QR digital"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 250000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

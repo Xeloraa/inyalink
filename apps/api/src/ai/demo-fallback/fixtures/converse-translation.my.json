@@ -1,0 +1,57 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "ဘာသာပြန် လိုချင်ပါတယ်",
+  "aliases": [
+    "translation လိုချင်ပါတယ်",
+    "စာရွက်စာတမ်း ဘာသာပြန်ပေးမယ့်သူ လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "ဘာသာပြန် လိုချင်တာ မှတ်ထားပါပြီ။ မြန်မာကနေ English လား၊ English ကနေ မြန်မာလား ပြောပေးနိုင်ပါသလား။",
+    "မြန်မာကနေ English ပေါ့ — မှတ်ထားပါပြီ။ ဘာအမျိုးအစား စာရွက်စာတမ်းလဲ၊ စာမျက်နှာ ဒါမှမဟုတ် စကားလုံး အရေအတွက် ခန့်မှန်း ပြောပေးနိုင်ပါသလား။",
+    "Website စာသား စာမျက်နှာ ငါးခုပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "translation",
+      "title": "ဘာသာပြန်",
+      "description": "ဘာသာပြန် ဝန်ဆောင်မှု",
+      "requirements": [],
+      "ai_confidence": 0.4,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "translation",
+      "title": "မြန်မာ–English ဘာသာပြန်",
+      "description": "မြန်မာကနေ English ဘာသာပြန်",
+      "requirements": ["language pair: my → en"],
+      "ai_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "translation",
+      "title": "Website စာသား ဘာသာပြန်",
+      "description": "Website စာသား စာမျက်နှာ ၅ ခုကို မြန်မာကနေ English ဘာသာပြန်",
+      "requirements": ["language pair: my → en", "scope: website စာမျက်နှာ 5 ခု"],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "translation",
+    "title": "Website စာသား ဘာသာပြန်",
+    "description": "Website စာသား စာမျက်နှာ ၅ ခုကို မြန်မာကနေ English ဘာသာပြန်",
+    "requirements": ["language pair: my → en", "scope: website စာမျက်နှာ 5 ခု"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 250000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

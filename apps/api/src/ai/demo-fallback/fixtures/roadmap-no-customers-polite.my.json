@@ -1,0 +1,47 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture for the no-customers problem, Burmese variant with polite opening phrasing. Plans hires only. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "ဆိုင်မှာ ဖောက်သည် မရပါဘူး",
+  "aliases": [
+    "ဖောက်သည် အသစ် မရပါဘူး",
+    "ဖောက်သည် နည်းနေပါတယ်"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် ငှားရမ်းရန် အကြံပြုချက်နှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ရလဒ် အာမခံချက် မဟုတ်ပါ။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ်လည်း မဟုတ်ပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Social media specialist နဲ့ ဖောက်သည်ရောက်လမ်း စီစဉ်ရန်",
+      "why": "ဖောက်သည် အသစ်မရတဲ့အခါ လူတွေ ဆိုင်ကို ဘယ်ကနေ တွေ့ရမလဲ ဆိုတဲ့ လမ်းကြောင်းက အဓိကပါ။ specialist က Facebook / Instagram content အစီအစဉ်ကို စနစ်တကျ တည်ဆောက်ပေးနိုင်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 2,
+      "title": "Product နဲ့ ဆိုင် ဓာတ်ပုံ ရိုက်ရန်",
+      "why": "Online မှာ ဆိုင်ကို ပထမဆုံး တွေ့တဲ့သူတွေအတွက် ဓာတ်ပုံက ပထမ အထင်အမြင်ပါ။ အရည်အသွေးမြင့် ပုံတစ်သုတ်က ပို့စ်တိုင်းကို အားကောင်းစေပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Burmese content writer နဲ့ caption ပုံမှန်ရေးရန်",
+      "why": "ဈေးနှုန်း ကြေညာချည်း တင်နေတဲ့ ပို့စ်တွေထက် ဖောက်သည်အကြောင်း ပြောတဲ့ စာသားက ပိုဆွဲဆောင်ပါတယ်။",
+      "category_slug": "content-writing-burmese",
+      "est_min_mmk": 50000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "အခြေခံ website ဒါမှမဟုတ် landing page",
+      "why": "တည်နေရာ၊ ဖွင့်ချိန်နဲ့ ရောင်းတဲ့ ပစ္စည်းကို ရှာဖွေသူတွေ တွေ့နိုင်ဖို့ အခြေခံ page တစ်ခု ရှိသင့်ပါတယ်။",
+      "category_slug": "web-development",
+      "est_min_mmk": 250000,
+      "est_max_mmk": 600000
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "website က ဘယ်လောက်ကျမလဲ",
+  "aliases": [
+    "website ဈေးနှုန်း ဘယ်လောက်လဲ",
+    "ဝက်ဘ်ဆိုက် ဈေး ဘယ်လောက်လဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "website က များသောအားဖြင့် 250,000 ကနေ 800,000 ကျပ်အထိ ရှိတတ်ပြီး online store ဆိုရင် ပိုများနိုင်ပါတယ်။ အလုပ်အကျယ်အဝန်းပေါ် မူတည်ပါတယ် — အကျယ်အဝန်း သတ်မှတ်ဖို့ ကူညီပေးနိုင်ပါတယ်။",
+    "website လိုချင်တာ မှတ်ထားပါပြီ။ သင့်လုပ်ငန်းနာမည်နဲ့ ဘယ်စာမျက်နှာတွေ လိုအပ်မလဲ ပြောပေးနိုင်ပါသလား။",
+    "Inya Cafe အတွက် Home၊ Menu၊ Contact ပေါ့ — မှတ်ထားပါပြီ။ online ordering လိုအပ်ပါသလား၊ budget ကော ဘယ်လောက်လောက် ထားမလဲ။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my",
+      "category": "web-development",
+      "title": "Website development",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "my",
+      "category": "web-development",
+      "title": "Inya Cafe website",
+      "description": "Inya Cafe အတွက် website — Home, Menu, Contact",
+      "requirements": ["pages: Home, Menu, Contact"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "web-development",
+    "title": "Inya Cafe website",
+    "description": "Inya Cafe အတွက် website — Home, Menu, Contact၊ online ordering မလိုအပ်ပါ။",
+    "requirements": ["pages: Home, Menu, Contact", "online ordering: မလိုအပ်"],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 600000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

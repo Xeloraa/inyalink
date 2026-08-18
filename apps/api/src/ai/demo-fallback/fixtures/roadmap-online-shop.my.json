@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "online shop ဖွင့်ချင်ပါတယ်",
+  "aliases": [
+    "အွန်လိုင်းဆိုင် ဖွင့်ချင်ပါတယ်",
+    "online စရောင်းချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် စီမံကိန်းနှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ် မဟုတ်ပါ။ လိုအပ်ပါက သက်ဆိုင်ရာ လိုင်စင်ရ ပညာရှင်ကို ငှားရမ်းပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Online shop အတွက် logo နဲ့ brand identity",
+      "why": "Online မှာ ဖောက်သည်က brand ကို ပုံနဲ့ပဲ အရင် တွေ့ရပါတယ်။ logo နဲ့ ပုံစံ တစ်သမတ်တည်း ရှိမှ ယုံကြည်မှု တည်ဆောက်နိုင်ပါတယ်။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "Product ဓာတ်ပုံ",
+      "why": "Online ရောင်းတဲ့အခါ ဖောက်သည်က ပစ္စည်းကို ကိုင်ကြည့်လို့ မရတဲ့အတွက် ဓာတ်ပုံ အရည်အသွေးက ဆုံးဖြတ်ချက်ကို အများဆုံး သက်ရောက်ပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Facebook / Instagram စီမံခန့်ခွဲမှု",
+      "why": "မြန်မာ online shop အများစုက Facebook ကနေ စရောင်းကြပါတယ်။ ပုံမှန် ပို့စ်နဲ့ ဖောက်သည် စာပြန်မှုအတွက် လစဉ် အစီအစဉ် လိုအပ်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "အခြေခံ online store website",
+      "why": "Order တွေ များလာရင် chat ထဲမှာချည်း လက်ခံနေတာထက် e-commerce page နဲ့ စနစ်တကျ လက်ခံနိုင်ပါတယ်။",
+      "category_slug": "web-development",
+      "est_min_mmk": 400000,
+      "est_max_mmk": 1000000
+    },
+    {
+      "order": 5,
+      "title": "Virtual assistant နဲ့ order နဲ့ inbox စီမံရန်",
+      "why": "အရောင်း တိုးလာရင် inbox စာပြန်တာနဲ့ order မှတ်တမ်းက အချိန် အများဆုံး ယူပါတယ်။ VA တစ်ဦးက အဲဒီအပိုင်းကို တာဝန်ယူပေးနိုင်ပါတယ်။",
+      "category_slug": "virtual-assistant",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

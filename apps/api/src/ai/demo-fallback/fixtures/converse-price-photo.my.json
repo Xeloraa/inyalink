@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "ဓာတ်ပုံရိုက်တာ ဘယ်လောက်ကျမလဲ",
+  "aliases": [
+    "photography ဈေးနှုန်း ဘယ်လောက်လဲ",
+    "ဓာတ်ပုံ ဈေး ဘယ်လောက်လဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "photography က တစ်ကြိမ်ကို များသောအားဖြင့် 100,000 ကနေ 250,000 ကျပ်အထက် ရှိတတ်ပါတယ်။ ရိုက်မယ့် အမျိုးအစားနဲ့ ပုံအရေအတွက်ပေါ် မူတည်ပါတယ် — အကျယ်အဝန်း သတ်မှတ်ဖို့ ကူညီပေးနိုင်ပါတယ်။",
+    "စိတ်ဝင်စားတာ မှတ်ထားပါပြီ။ ဘာရိုက်မှာလဲ — product၊ အစားအသောက်၊ ဆိုင်အတွင်းပိုင်း၊ ဒါမှမဟုတ် အခမ်းအနားလား။",
+    "Product ဓာတ်ပုံပေါ့ — မှတ်ထားပါပြီ။ ပုံ ဘယ်နှစ်ပုံလောက် လိုအပ်မလဲ၊ ရိုက်မယ့်ရက်ကော သတ်မှတ်ထားပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my",
+      "category": "photography",
+      "title": "Photography",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "my",
+      "category": "photography",
+      "title": "Product ဓာတ်ပုံ",
+      "description": "Product photography",
+      "requirements": ["type: product"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "photography",
+    "title": "Product ဓာတ်ပုံ",
+    "description": "Product photography — ပုံ ၃၀ ခန့်",
+    "requirements": ["type: product", "ပုံအရေအတွက်: 30 ခန့်"],
+    "budget_min_mmk": 120000,
+    "budget_max_mmk": 250000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

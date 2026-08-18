@@ -1,0 +1,77 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I need branding for my business",
+  "aliases": [
+    "I need a brand identity",
+    "I want branding"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — you need branding. What does the business do, and does it have a name yet?",
+    "Shwe Thread, a clothing business — got it. Do you need just the logo, or packaging and social media graphics as well?",
+    "Logo and packaging — noted. Is the rough style closer to minimal, modern, or traditional? Most people include source files in the agreement; worth confirming upfront.",
+    "Modern — noted. What budget range in kyat should we plan for, and when do you need it by?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Brand identity",
+      "description": "Branding for a business",
+      "requirements": ["branding"],
+      "ai_confidence": 0.4,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread brand identity",
+      "description": "Brand identity for Shwe Thread, a clothing business",
+      "requirements": ["Business name: Shwe Thread"],
+      "ai_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread brand identity",
+      "description": "Brand identity covering logo and packaging for Shwe Thread",
+      "requirements": ["Business name: Shwe Thread", "scope: logo + packaging"],
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread brand identity",
+      "description": "Modern-style logo and packaging brand identity for Shwe Thread",
+      "requirements": [
+        "Business name: Shwe Thread",
+        "scope: logo + packaging",
+        "rough style: modern",
+        "Deliverable: source file"
+      ],
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "graphic-design",
+    "title": "Shwe Thread brand identity",
+    "description": "Modern-style logo and packaging brand identity for Shwe Thread, a clothing business; source files required.",
+    "requirements": [
+      "Business name: Shwe Thread",
+      "scope: logo + packaging",
+      "rough style: modern",
+      "Deliverable: source file"
+    ],
+    "budget_min_mmk": 300000,
+    "budget_max_mmk": 600000,
+    "deadline": "2026-10-31",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

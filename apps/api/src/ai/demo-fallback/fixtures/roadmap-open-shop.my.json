@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "ဆိုင် ဖွင့်ချင်ပါတယ်",
+  "aliases": [
+    "ဆိုင်တစ်ဆိုင် ဖွင့်ချင်ပါတယ်",
+    "ဆိုင်ဖွင့်ချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် စီမံကိန်းနှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ် မဟုတ်ပါ။ လိုအပ်ပါက သက်ဆိုင်ရာ လိုင်စင်ရ ပညာရှင်ကို ငှားရမ်းပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "ဆိုင်အတွက် logo နဲ့ brand identity",
+      "why": "ဆိုင်ဖွင့်ဖို့ ပထမဆုံး လိုအပ်တာက brand ပါ။ logo ကို signage၊ packaging နဲ့ social media မှာ ပြန်သုံးနိုင်လို့ အရင်ဆုံး လုပ်ထားရင် နောက်အဆင့်တွေမှာ ထပ်မလုပ်ရပါဘူး။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 500000
+    },
+    {
+      "order": 2,
+      "title": "ဆိုင်နဲ့ ပစ္စည်း ဓာတ်ပုံ",
+      "why": "ဆိုင်ခန်းနဲ့ ရောင်းမယ့် ပစ္စည်း ဓာတ်ပုံတွေက website နဲ့ Facebook/Instagram အတွက် အခြေခံ လိုအပ်ချက် ဖြစ်ပါတယ်။ brand ပြီးမှ ရိုက်ရင် နှစ်ခါ မရိုက်ရတော့ပါဘူး။",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "အခြေခံ website ဒါမှမဟုတ် landing page",
+      "why": "တည်နေရာ၊ ဖွင့်ချိန်နဲ့ ရောင်းတဲ့ ပစ္စည်းတွေကို ဖောက်သည်များ ရှာဖွေတွေ့ရှိနိုင်အောင် အခြေခံ website တစ်ခု လိုအပ်ပါတယ်။",
+      "category_slug": "web-development",
+      "est_min_mmk": 250000,
+      "est_max_mmk": 800000
+    },
+    {
+      "order": 4,
+      "title": "Facebook / Instagram စီမံခန့်ခွဲမှု",
+      "why": "ဖွင့်ပွဲနဲ့ ပရိုမိုးရှင်းများကို ပုံမှန် မျှဝေဖို့ လစဉ် content အစီအစဉ် လိုအပ်ပါတယ်။ ဓာတ်ပုံနဲ့ brand ရှိပြီးမှ စရင် ပိုထိရောက်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 5,
+      "title": "မှတ်ပုံတင်အတွက် company registration specialist ငှားရန်",
+      "why": "လုပ်ငန်း မှတ်ပုံတင်နဲ့ အခွန်ဆိုင်ရာ ကိစ္စများကို သက်ဆိုင်ရာ ပညာရှင်နဲ့ ဆောင်ရွက်ပါ။ ဤအဆင့်သည် အကြံဉာဏ် မဟုတ်ပါ — ငှားရမ်းရမယ့် ပညာရှင် အမျိုးအစားကိုသာ ဖော်ပြပါသည်။",
+      "category_slug": "other",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

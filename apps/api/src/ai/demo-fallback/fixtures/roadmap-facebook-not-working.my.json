@@ -1,0 +1,47 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture for the Facebook-page-not-working problem. Plans hires only; no diagnosis or promised results. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "Facebook page က အလုပ်မဖြစ်ဘူး",
+  "aliases": [
+    "Facebook page က မထိရောက်ဘူး",
+    "page က engagement မရဘူး"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် ငှားရမ်းရန် အကြံပြုချက်နှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ရလဒ် အာမခံချက် မဟုတ်ပါ။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ်လည်း မဟုတ်ပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Social media specialist နဲ့ page ကို ပြန်စီစဉ်ရန်",
+      "why": "Facebook page အလုပ်မဖြစ်တဲ့အခါ content အစီအစဉ်နဲ့ ပို့စ် ပုံမှန်မှုကို ပြန်ကြည့်ဖို့ လိုတတ်ပါတယ်။ specialist တစ်ဦးက ပို့စ် အချိန်ဇယားနဲ့ caption ပုံစံကို စနစ်တကျ စီစဉ်ပေးနိုင်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 2,
+      "title": "Product / ဆိုင် ဓာတ်ပုံ အသစ်ရိုက်ရန်",
+      "why": "ပုံအရည်အသွေးက page ရဲ့ ပထမဆုံး အထင်အမြင်ပါ။ အရည်အသွေးမြင့် ဓာတ်ပုံ အသစ်တွေက ပို့စ်တိုင်းကို ပိုအသုံးဝင်စေပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Caption နဲ့ content အတွက် Burmese content writer",
+      "why": "ပစ္စည်းအကြောင်းချည်း ပြောနေတဲ့ caption တွေထက် ဖောက်သည်ကို ဆွဲဆောင်နိုင်တဲ့ စာသား လိုအပ်ပါတယ်။ content writer က ပုံမှန် ရေးပေးနိုင်ပါတယ်။",
+      "category_slug": "content-writing-burmese",
+      "est_min_mmk": 50000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "TikTok / Reels short-form video စမ်းသပ်ရန်",
+      "why": "ပုံသက်သက် ပို့စ်တွေထက် short-form video က ပရိသတ် ပိုရောက်တတ်ပါတယ်။ အသုတ်ငယ်တစ်ခုနဲ့ စစမ်းကြည့်နိုင်ပါတယ်။",
+      "category_slug": "video-tiktok-content",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 300000
+    }
+  ]
+}

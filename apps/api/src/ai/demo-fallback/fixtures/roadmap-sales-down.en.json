@@ -1,0 +1,47 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture for the sales-down problem. Plans hires only; no diagnosis or promised results. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "sales are down",
+  "aliases": [
+    "my sales are dropping",
+    "sales have gone down"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a hiring plan and cost estimate only, not a guarantee of results. It is not legal, tax, or regulatory advice.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a social media specialist to rework the online channel",
+      "why": "When sales dip, the channel that brings in new customers is the first place worth professional attention. A specialist can restructure the Facebook / Instagram content plan systematically.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for a fresh product photo batch",
+      "why": "Old photos stop feeling new to your audience. A fresh batch lifts every piece of marketing that uses them.",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a copywriter to rewrite ads and promotions",
+      "why": "Ad and promotion copy carries a lot of the selling. A copywriter can produce text that speaks to the customer rather than just announcing the product.",
+      "category_slug": "copywriting",
+      "est_min_mmk": 50000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 4,
+      "title": "Trial TikTok / Reels video content",
+      "why": "Short-form video is an effective way to reach new audiences. A small starter batch lets you test without a big commitment.",
+      "category_slug": "video-tiktok-content",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 300000
+    }
+  ]
+}

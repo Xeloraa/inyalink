@@ -1,0 +1,32 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for greeting openings. Matched on opening input; serves conversational turns then a minimal draft. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "မင်္ဂလာပါ",
+  "aliases": [
+    "ဟယ်လို",
+    "hello ခင်ဗျာ",
+    "မင်္ဂလာပါ ရှင်"
+  ],
+  "locale": "my",
+  "questions": [
+    "မင်္ဂလာပါ။ ဘာအလုပ်အတွက် ကူညီပေးရမလဲ — logo၊ website၊ photography၊ social media လား၊ ဒါမှမဟုတ် လုပ်ငန်းစတင်ဖို့ plan လိုချင်ပါသလား။",
+    "မှတ်ထားပါပြီ။ သင့်လုပ်ငန်းအကြောင်း နည်းနည်း ပြောပြပေးနိုင်ပါသလား — ဘာလုပ်ငန်းလဲ၊ နာမည်ကော ရှိပါပြီလား။",
+    "မှတ်ထားပါပြီ။ အခု ဘာကို အရင်ဆုံး လိုအပ်နေပါသလဲ — design၊ ဓာတ်ပုံ၊ website၊ ဒါမှမဟုတ် marketing အပိုင်းလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my"
+    },
+    {
+      "language": "my"
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "needs_human_review": true
+  }
+}

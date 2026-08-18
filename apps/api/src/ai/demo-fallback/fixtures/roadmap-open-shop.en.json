@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "I want to open a shop",
+  "aliases": [
+    "I want to open a store",
+    "opening a shop"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a graphic designer for the shop's logo and brand identity",
+      "why": "A clear brand comes first because the logo gets reused on signage, packaging, and social media. Doing it early avoids re-work in every later step.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 500000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for shopfront and product photos",
+      "why": "Product and shopfront photos are the base assets for your website and Facebook page. Shooting after the brand is set means you only shoot once.",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a web developer for a basic website or landing page",
+      "why": "A simple site with location, hours, and what you sell helps customers find and trust the shop before they visit.",
+      "category_slug": "web-development",
+      "est_min_mmk": 250000,
+      "est_max_mmk": 800000
+    },
+    {
+      "order": 4,
+      "title": "Hire a social media manager for Facebook and Instagram",
+      "why": "Regular posting around the opening builds an audience and keeps promotions visible. Starting after photos and brand are ready makes the feed consistent from day one.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 5,
+      "title": "Engage a company-registration specialist for legal setup",
+      "why": "Registration and tax paperwork should be handled by an appropriate professional. This step names the professional type only — it is not advice.",
+      "category_slug": "other",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

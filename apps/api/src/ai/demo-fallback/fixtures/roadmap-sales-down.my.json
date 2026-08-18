@@ -1,0 +1,47 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture for the sales-down problem. Plans hires only; no diagnosis or promised results. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "အရောင်း ကျနေပါတယ်",
+  "aliases": [
+    "အရောင်း လျော့နေပါတယ်",
+    "ရောင်းအား ကျနေတယ်"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် ငှားရမ်းရန် အကြံပြုချက်နှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ရလဒ် အာမခံချက် မဟုတ်ပါ။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ်လည်း မဟုတ်ပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Social media specialist နဲ့ online ရောင်းအား လမ်းကြောင်း ပြန်စီစဉ်ရန်",
+      "why": "အရောင်းကျတဲ့အခါ ဖောက်သည် အသစ်ရောက်တဲ့ လမ်းကြောင်းကို အရင် ပြန်ကြည့်တတ်ကြပါတယ်။ specialist က Facebook / Instagram content အစီအစဉ်ကို စနစ်တကျ ပြန်စီစဉ်ပေးနိုင်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 2,
+      "title": "Product ဓာတ်ပုံ အသစ်ရိုက်ရန်",
+      "why": "ကြာပြီဖြစ်တဲ့ ပုံတွေက ပရိသတ်အတွက် အသစ်အဆန်း မရှိတော့ပါဘူး။ ဓာတ်ပုံ အသစ်တစ်သုတ်က marketing အားလုံးကို ပြန်လန်းစေပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Copywriter နဲ့ ကြော်ငြာစာသား ပြန်ရေးရန်",
+      "why": "ရောင်းအားအတွက် ကြော်ငြာနဲ့ promotion စာသားက အရေးကြီးပါတယ်။ copywriter က ဖောက်သည်ကို ဆွဲဆောင်နိုင်တဲ့ စာသား ရေးပေးနိုင်ပါတယ်။",
+      "category_slug": "copywriting",
+      "est_min_mmk": 50000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 4,
+      "title": "TikTok / Reels video content စမ်းသပ်ရန်",
+      "why": "ပရိသတ်အသစ် ရောက်ဖို့ short-form video က ထိရောက်တဲ့ လမ်းကြောင်း ဖြစ်ပါတယ်။ အသုတ်ငယ်နဲ့ စစမ်းနိုင်ပါတယ်။",
+      "category_slug": "video-tiktok-content",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 300000
+    }
+  ]
+}

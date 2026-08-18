@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "how much does photography cost",
+  "aliases": [
+    "photography price",
+    "how much for a photo shoot"
+  ],
+  "locale": "en",
+  "questions": [
+    "Photography usually runs around 100,000 to 250,000+ kyat per job, depending on what's being shot and how many photos you need. I can help you scope the job if you'd like.",
+    "Got it. What would be photographed — products, food, the shop, or an event?",
+    "Product photos — noted. Roughly how many shots do you need, and do you have a date in mind?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en",
+      "category": "photography",
+      "title": "Photography",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "en",
+      "category": "photography",
+      "title": "Product photography",
+      "description": "Product photography",
+      "requirements": ["type: product"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "photography",
+    "title": "Product photography",
+    "description": "Product photography, around 30 shots",
+    "requirements": ["type: product", "shot count: ~30"],
+    "budget_min_mmk": 120000,
+    "budget_max_mmk": 250000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

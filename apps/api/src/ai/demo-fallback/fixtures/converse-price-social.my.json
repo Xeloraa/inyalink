@@ -1,0 +1,50 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "social media management က ဘယ်လောက်ကျမလဲ",
+  "aliases": [
+    "Facebook page စီမံခန့်ခွဲမှု ဘယ်လောက်ကျမလဲ",
+    "social media ဈေးနှုန်း ဘယ်လောက်လဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "social media management က များသောအားဖြင့် တစ်လကို 120,000 ကနေ 200,000 ကျပ်အထက် ရှိတတ်ပါတယ်။ platform အရေအတွက်နဲ့ ပို့စ် အကြိမ်ရေပေါ် မူတည်ပါတယ် — အကျယ်အဝန်း သတ်မှတ်ဖို့ ကူညီပေးနိုင်ပါတယ်။",
+    "စိတ်ဝင်စားတာ မှတ်ထားပါပြီ။ ဘယ် platform တွေအတွက်လဲ၊ Facebook တစ်ခုတည်းလား၊ Instagram ပါလား။",
+    "Facebook နဲ့ Instagram ပေါ့ — မှတ်ထားပါပြီ။ တစ်ပတ်ကို ပို့စ် ဘယ်နှစ်ခုလောက် လိုချင်ပါသလဲ၊ လစဉ် ဆက်လုပ်မှာလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Social media management",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "my",
+      "category": "social-media-marketing",
+      "title": "Facebook / Instagram management",
+      "description": "Facebook နဲ့ Instagram စီမံခန့်ခွဲမှု",
+      "requirements": ["platforms: Facebook, Instagram"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "social-media-marketing",
+    "title": "Facebook / Instagram management",
+    "description": "Facebook နဲ့ Instagram လစဉ် စီမံခန့်ခွဲမှု — တစ်ပတ် ပို့စ် ၃ ခု",
+    "requirements": [
+      "platforms: Facebook, Instagram",
+      "ပို့စ်: တစ်ပတ် 3 ခု",
+      "လစဉ် ဆက်လက်လုပ်ဆောင်မည်"
+    ],
+    "budget_min_mmk": 150000,
+    "budget_max_mmk": 200000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

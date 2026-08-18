@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "I want to start a clothing brand",
+  "aliases": [
+    "I want to launch a clothing brand",
+    "starting a fashion brand"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a planning outline and cost estimate only. It is not legal, tax, or regulatory advice. Hire an appropriate licensed professional for compliance matters.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a graphic designer for brand identity — logo, tags, and packaging",
+      "why": "For a clothing brand, the logo, tags, and packaging come first. Shooting product photos before the brand is set usually means shooting twice.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 200000,
+      "est_max_mmk": 500000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for product photos",
+      "why": "Photo quality sells clothing. These shots become the base assets for Facebook, Instagram, and any online store.",
+      "category_slug": "photography",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a social media manager for Facebook and Instagram",
+      "why": "Most Myanmar clothing brands start selling through Facebook and Instagram. Consistent posting needs a monthly content plan.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "Hire a video creator for TikTok / Reels content",
+      "why": "Short-form video is the fastest way for a new clothing brand to reach an audience. Filming alongside the photo shoot keeps costs down.",
+      "category_slug": "video-tiktok-content",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 300000
+    },
+    {
+      "order": 5,
+      "title": "Hire a web developer for a basic online store",
+      "why": "Once sales grow, a simple e-commerce page helps you take orders in an organised way instead of only through chat.",
+      "category_slug": "web-development",
+      "est_min_mmk": 400000,
+      "est_max_mmk": 1000000
+    }
+  ]
+}

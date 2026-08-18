@@ -1,0 +1,27 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for platform questions (is it free). Matched on opening input. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "is it free",
+  "aliases": [
+    "is this free to use",
+    "do I have to pay you"
+  ],
+  "locale": "en",
+  "questions": [
+    "Browsing professionals is free, and expressing interest on an open brief is free too. Pricing is shown when you actually hire. What are you working on at the moment?",
+    "Got it. What does your business need first — a logo, website, photos, or social media?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en"
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "needs_human_review": true
+  }
+}

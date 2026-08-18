@@ -1,0 +1,65 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "online store တစ်ခု ဆောက်ချင်ပါတယ်",
+  "aliases": [
+    "e-commerce website လိုချင်ပါတယ်",
+    "online ရောင်းဖို့ website လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "online store ဆောက်ချင်တာ မှတ်ထားပါပြီ။ သင့်လုပ်ငန်းနာမည်နဲ့ ဘာတွေ ရောင်းမှာလဲ ပြောပေးနိုင်ပါသလား။",
+    "Shwe Thread အထည်ပေါ့ — မှတ်ထားပါပြီ။ ပစ္စည်း ဘယ်နှစ်မျိုးလောက် တင်မှာလဲ၊ online ငွေပေးချေမှုကော လိုအပ်ပါသလား။",
+    "ပစ္စည်း ၅၀ လောက်နဲ့ ငွေပေးချေမှုပါပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "web-development",
+      "title": "Online store",
+      "description": "အခြေခံ online store website",
+      "requirements": ["e-commerce"],
+      "ai_confidence": 0.5,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "web-development",
+      "title": "Shwe Thread online store",
+      "description": "Shwe Thread အထည်များ ရောင်းရန် online store",
+      "requirements": ["လုပ်ငန်းနာမည်: Shwe Thread", "products: အထည်"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "web-development",
+      "title": "Shwe Thread online store",
+      "description": "Shwe Thread အတွက် ပစ္စည်း ၅၀ ခန့်နဲ့ online ငွေပေးချေမှုပါတဲ့ online store",
+      "requirements": [
+        "လုပ်ငန်းနာမည်: Shwe Thread",
+        "products: အထည် 50 ခန့်",
+        "online payment: လိုအပ်"
+      ],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "web-development",
+    "title": "Shwe Thread online store",
+    "description": "Shwe Thread အထည်လုပ်ငန်းအတွက် ပစ္စည်း ၅၀ ခန့်နဲ့ online ငွေပေးချေမှုပါတဲ့ online store",
+    "requirements": [
+      "လုပ်ငန်းနာမည်: Shwe Thread",
+      "products: အထည် 50 ခန့်",
+      "online payment: လိုအပ်"
+    ],
+    "budget_min_mmk": 500000,
+    "budget_max_mmk": 1000000,
+    "deadline": "2026-11-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

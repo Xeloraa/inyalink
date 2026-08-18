@@ -1,0 +1,27 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for out-of-scope openings (business advice). Redirects briefly without answering the advice question. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "what business should I start",
+  "aliases": [
+    "is my business idea good",
+    "will my business succeed"
+  ],
+  "locale": "en",
+  "questions": [
+    "I can't advise on what business to start or whether an idea will succeed. If you have something in mind, I can show what it takes to launch and who you'd need to hire — what are you considering?",
+    "Got it. I can put together a hiring plan for launching that — would you like to see one?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en"
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "needs_human_review": true
+  }
+}

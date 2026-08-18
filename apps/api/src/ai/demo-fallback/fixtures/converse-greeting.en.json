@@ -1,0 +1,32 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for greeting openings. Matched on opening input; serves conversational turns then a minimal draft. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "hello",
+  "aliases": [
+    "hi",
+    "hey",
+    "good morning"
+  ],
+  "locale": "en",
+  "questions": [
+    "Hello! What are you working on — a logo, website, photography, social media, or a plan to launch something?",
+    "Got it. Could you tell me a bit about the business — what it does, and whether it has a name yet?",
+    "Noted. What do you need first — design, photos, a website, or the marketing side?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en"
+    },
+    {
+      "language": "en"
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "needs_human_review": true
+  }
+}

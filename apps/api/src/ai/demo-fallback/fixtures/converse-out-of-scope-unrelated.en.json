@@ -1,0 +1,27 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for completely unrelated openings. Redirects once, briefly and warmly. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "can you help me with my homework",
+  "aliases": [
+    "give me dating advice",
+    "what's the weather like"
+  ],
+  "locale": "en",
+  "questions": [
+    "That's outside what I help with here. If you're hiring for a logo, website, photography, or social media — or planning a shop launch — say what you're working on.",
+    "If you need to hire someone or plan a launch for a business, I can help with that. What do you need?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en"
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "needs_human_review": true
+  }
+}

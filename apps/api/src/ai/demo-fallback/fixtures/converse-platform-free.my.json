@@ -1,0 +1,27 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for platform questions (is it free). Matched on opening input. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "ဒါက အခမဲ့လား",
+  "aliases": [
+    "အခမဲ့ သုံးလို့ရလား",
+    "ပိုက်ဆံပေးရမလား"
+  ],
+  "locale": "my",
+  "questions": [
+    "ပရော်ဖက်ရှင်နယ်များကို ကြည့်ရှုတာနဲ့ brief တစ်ခုမှာ စိတ်ဝင်စားကြောင်း ဖော်ပြတာ အခမဲ့ပါ။ ငှားရမ်းချိန်မှာ ဈေးနှုန်းကို platform ပေါ်မှာ ဖော်ပြပေးပါမယ်။ အခု ဘာအလုပ်အတွက် စဉ်းစားနေပါသလဲ။",
+    "မှတ်ထားပါပြီ။ သင့်လုပ်ငန်းအတွက် ဘာကို အရင် လိုအပ်နေပါသလဲ — logo၊ website၊ ဓာတ်ပုံ၊ ဒါမှမဟုတ် social media လား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my"
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "needs_human_review": true
+  }
+}

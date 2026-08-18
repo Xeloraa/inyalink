@@ -1,0 +1,57 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "အစားအသောက် ဓာတ်ပုံ ရိုက်ချင်ပါတယ်",
+  "aliases": [
+    "food photography လိုချင်ပါတယ်",
+    "မီနူးအတွက် ဓာတ်ပုံ လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "အစားအသောက် ဓာတ်ပုံ လိုချင်တာ မှတ်ထားပါပြီ။ သင့်ဆိုင်နာမည်နဲ့ မီနူးအတွက်လား၊ social media အတွက်လား ပြောပေးနိုင်ပါသလား။",
+    "Inya Cafe မီနူးအတွက်ပေါ့ — မှတ်ထားပါပြီ။ ဟင်းပွဲ ဘယ်နှစ်ပွဲလောက် ရိုက်ဖို့ လိုအပ်မလဲ။",
+    "ဟင်းပွဲ ၂၀ ပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ ရိုက်မယ့်ရက်ကော သတ်မှတ်ထားပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "photography",
+      "title": "အစားအသောက် ဓာတ်ပုံ",
+      "description": "အစားအသောက် photography",
+      "requirements": ["food photography"],
+      "ai_confidence": 0.45,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "photography",
+      "title": "Inya Cafe မီနူး ဓာတ်ပုံ",
+      "description": "Inya Cafe မီနူးအတွက် food photography",
+      "requirements": ["ဆိုင်နာမည်: Inya Cafe", "use: menu"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "photography",
+      "title": "Inya Cafe မီနူး ဓာတ်ပုံ",
+      "description": "Inya Cafe မီနူးအတွက် ဟင်းပွဲ ၂၀ food photography",
+      "requirements": ["ဆိုင်နာမည်: Inya Cafe", "use: menu", "ဟင်းပွဲ အရေအတွက်: 20"],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "photography",
+    "title": "Inya Cafe မီနူး ဓာတ်ပုံ",
+    "description": "Inya Cafe မီနူးအတွက် ဟင်းပွဲ ၂၀ food photography",
+    "requirements": ["ဆိုင်နာမည်: Inya Cafe", "use: menu", "ဟင်းပွဲ အရေအတွက်: 20"],
+    "budget_min_mmk": 150000,
+    "budget_max_mmk": 250000,
+    "deadline": "2026-09-15",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

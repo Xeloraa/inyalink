@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "video ရိုက်တာ ဘယ်လောက်ကျမလဲ",
+  "aliases": [
+    "TikTok video ဈေးနှုန်း ဘယ်လောက်လဲ",
+    "video ဈေး ဘယ်လောက်ကျမလဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "video / TikTok content က တစ်အသုတ်ကို များသောအားဖြင့် 80,000 ကနေ 300,000 ကျပ်အထက် ရှိတတ်ပါတယ်။ ရိုက်ကူးမှုပါလား၊ clip အရေအတွက်ပေါ် မူတည်ပါတယ် — အကျယ်အဝန်း သတ်မှတ်ဖို့ ကူညီပေးနိုင်ပါတယ်။",
+    "စိတ်ဝင်စားတာ မှတ်ထားပါပြီ။ ရိုက်ကူးမှုပါ လိုအပ်ပါသလား၊ edit အပိုင်းပဲလား။",
+    "ရိုက်ကူး + edit ပေါ့ — မှတ်ထားပါပြီ။ clip ဘယ်နှစ်ခုလောက် လိုအပ်မလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my",
+      "category": "video-tiktok-content",
+      "title": "TikTok video content",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "my",
+      "category": "video-tiktok-content",
+      "title": "TikTok video content",
+      "description": "ရိုက်ကူး + edit short-form video",
+      "requirements": ["scope: shoot + edit"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "video-tiktok-content",
+    "title": "TikTok video content",
+    "description": "ရိုက်ကူး + edit short-form video clip ၅ ခု",
+    "requirements": ["scope: shoot + edit", "clip အရေအတွက်: 5"],
+    "budget_min_mmk": 150000,
+    "budget_max_mmk": 300000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

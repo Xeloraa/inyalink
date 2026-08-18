@@ -1,0 +1,45 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "how much does packaging design cost",
+  "aliases": [
+    "packaging design price"
+  ],
+  "locale": "en",
+  "questions": [
+    "Packaging design falls under graphic design and usually runs around 80,000 to 500,000+ kyat, depending on how many pieces are involved. I can help you scope the job if you'd like.",
+    "Got it. What product is it for, and do you need just a label or box and bag pieces as well?",
+    "Label and bag for ground coffee — noted. What budget range in kyat should we plan for, and do you have a deadline?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Packaging design",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Coffee packaging design",
+      "description": "Label and bag packaging design for a ground coffee product",
+      "requirements": ["product: ground coffee", "pieces: label, bag"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "graphic-design",
+    "title": "Coffee packaging design",
+    "description": "Label and bag packaging design for a ground coffee product",
+    "requirements": ["product: ground coffee", "pieces: label, bag"],
+    "budget_min_mmk": 200000,
+    "budget_max_mmk": 400000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

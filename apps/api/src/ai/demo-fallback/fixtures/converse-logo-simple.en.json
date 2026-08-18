@@ -1,0 +1,77 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I need a logo",
+  "aliases": [
+    "I want a logo",
+    "logo design please"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — you need a logo. What's the business, and does it have a name yet?",
+    "Shwe Thread — got it. Is it just the logo, or do you need signage or packaging versions as well?",
+    "Just the logo — noted. Is the rough style closer to minimal, modern, or traditional? Most people include source files in the agreement; worth confirming upfront.",
+    "Minimalist — noted. What budget range in kyat should we plan for, and when do you need it by?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Logo design",
+      "description": "Logo design for a business",
+      "requirements": ["logo"],
+      "ai_confidence": 0.4,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread logo",
+      "description": "Logo design for Shwe Thread",
+      "requirements": ["Business name: Shwe Thread"],
+      "ai_confidence": 0.55,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread logo",
+      "description": "Logo design for Shwe Thread, logo only",
+      "requirements": ["Business name: Shwe Thread", "scope: logo only"],
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "graphic-design",
+      "title": "Shwe Thread logo",
+      "description": "Minimalist logo design for Shwe Thread",
+      "requirements": [
+        "Business name: Shwe Thread",
+        "scope: logo only",
+        "rough style: Minimalist",
+        "Deliverable: source file"
+      ],
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "graphic-design",
+    "title": "Shwe Thread logo",
+    "description": "Minimalist logo design for Shwe Thread; source files required.",
+    "requirements": [
+      "Business name: Shwe Thread",
+      "scope: logo only",
+      "rough style: Minimalist",
+      "Deliverable: source file"
+    ],
+    "budget_min_mmk": 200000,
+    "budget_max_mmk": 400000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

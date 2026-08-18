@@ -1,0 +1,75 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I need TikTok videos",
+  "aliases": [
+    "I need someone to make TikTok videos",
+    "I want short videos for TikTok"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — you need TikTok videos. Do you need shooting as well, or editing only from footage you already have?",
+    "Shoot and edit — got it. What's the business name, and what product or place are we filming?",
+    "Inya Cafe — noted. Roughly how many clips do you need in the first batch?",
+    "Five clips — noted. What budget range in kyat should we plan for, and when do you need them by?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "video-tiktok-content",
+      "title": "TikTok video content",
+      "description": "Short-form videos for TikTok",
+      "requirements": ["TikTok video"],
+      "ai_confidence": 0.45,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "video-tiktok-content",
+      "title": "TikTok video content",
+      "description": "Shoot and edit short-form videos for TikTok",
+      "requirements": ["scope: shoot + edit"],
+      "ai_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "video-tiktok-content",
+      "title": "Inya Cafe TikTok videos",
+      "description": "Shoot and edit short-form TikTok videos for Inya Cafe",
+      "requirements": ["Business name: Inya Cafe", "scope: shoot + edit"],
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "video-tiktok-content",
+      "title": "Inya Cafe TikTok videos",
+      "description": "Shoot and edit 5 short-form TikTok clips for Inya Cafe",
+      "requirements": [
+        "Business name: Inya Cafe",
+        "scope: shoot + edit",
+        "clip count: 5"
+      ],
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "video-tiktok-content",
+    "title": "Inya Cafe TikTok videos",
+    "description": "Shoot and edit 5 short-form TikTok clips for Inya Cafe",
+    "requirements": [
+      "Business name: Inya Cafe",
+      "scope: shoot + edit",
+      "clip count: 5"
+    ],
+    "budget_min_mmk": 150000,
+    "budget_max_mmk": 300000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "content writing က ဘယ်လောက်ကျမလဲ",
+  "aliases": [
+    "content ရေးတာ ဈေးနှုန်း ဘယ်လောက်လဲ",
+    "စာရေးခ ဘယ်လောက်ကျမလဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "Burmese content writing က တစ်ပုဒ် ဒါမှမဟုတ် package တစ်ခုကို များသောအားဖြင့် 50,000 ကနေ 200,000 ကျပ်အထက် ရှိတတ်ပါတယ်။ ပုံစံနဲ့ အရေအတွက်ပေါ် မူတည်ပါတယ် — အကျယ်အဝန်း သတ်မှတ်ဖို့ ကူညီပေးနိုင်ပါတယ်။",
+    "စိတ်ဝင်စားတာ မှတ်ထားပါပြီ။ ဘာပုံစံ content လဲ — article၊ product page၊ ဒါမှမဟုတ် script လား။",
+    "Product page ပေါ့ — မှတ်ထားပါပြီ။ ဘယ်နှစ်ပုဒ်လောက် လိုအပ်မလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my",
+      "category": "content-writing-burmese",
+      "title": "Burmese content writing",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "my",
+      "category": "content-writing-burmese",
+      "title": "Product page content",
+      "description": "Product page အတွက် Burmese content",
+      "requirements": ["format: product page"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "content-writing-burmese",
+    "title": "Product page content",
+    "description": "Product page ၁၀ ပုဒ်အတွက် Burmese content",
+    "requirements": ["format: product page", "အရေအတွက်: 10"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 200000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

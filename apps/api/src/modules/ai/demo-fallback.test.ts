@@ -12,11 +12,11 @@ import {
 describe('demo AI fallback cache', () => {
   it('loads ~25 fixtures covering demo openings', () => {
     const counts = demoFixtureCounts();
-    expect(counts.total).toBeGreaterThanOrEqual(20);
-    expect(counts.converse).toBeGreaterThanOrEqual(10);
-    expect(counts.roadmap).toBeGreaterThanOrEqual(6);
-    expect(DEMO_CONVERSE_ALIASES.length).toBeGreaterThanOrEqual(10);
-    expect(DEMO_ROADMAP_ALIASES.length).toBeGreaterThanOrEqual(6);
+    expect(counts.total).toBeGreaterThanOrEqual(24);
+    expect(counts.converse).toBeGreaterThanOrEqual(14);
+    expect(counts.roadmap).toBeGreaterThanOrEqual(8);
+    expect(DEMO_CONVERSE_ALIASES.length).toBeGreaterThanOrEqual(14);
+    expect(DEMO_ROADMAP_ALIASES.length).toBeGreaterThanOrEqual(8);
   });
 
   it('serves the cafe-open roadmap for the exact demo goal', () => {
@@ -189,26 +189,36 @@ describe('demo AI fallback cache', () => {
 
   it('serves converse for website / photo / price demo openings', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
-    const openings = [
-      { text: 'I need a website for my shop', locale: 'en' as const },
-      { text: 'I need photography for my shop', locale: 'en' as const },
-      { text: 'how much does a logo cost', locale: 'en' as const },
-      { text: 'ဆိုင်အတွက် website လိုချင်ပါတယ်', locale: 'my' as const },
-      { text: 'I need social media management', locale: 'en' as const },
-      { text: 'Facebook page လုပ်ပေးချင်ပါတယ်', locale: 'my' as const },
-    ];
-    const hits = openings.filter(
-      (o) =>
-        lookupConverseDemoFallback(
-          [{ role: 'user', content: o.text }],
-          o.locale,
-        )?.nextQuestion,
-    );
-    // At least the core website/photo fixtures must be present.
-    expect(hits.length).toBeGreaterThanOrEqual(2);
     expect(
-      hits.some((h) => /website|photography|ဓာတ်ပုံ|ဝက်ဘ်/i.test(h.text)),
-    ).toBe(true);
+      lookupConverseDemoFallback(
+        [{ role: 'user', content: 'I need a website for my shop' }],
+        'en',
+      )?.nextQuestion,
+    ).toBeTruthy();
+    expect(
+      lookupConverseDemoFallback(
+        [{ role: 'user', content: 'I need photography for my shop' }],
+        'en',
+      )?.nextQuestion,
+    ).toBeTruthy();
+    expect(
+      lookupConverseDemoFallback(
+        [{ role: 'user', content: 'how much does a logo cost' }],
+        'en',
+      )?.nextQuestion,
+    ).toBeTruthy();
+    expect(
+      lookupConverseDemoFallback(
+        [{ role: 'user', content: 'ဆိုင်အတွက် website လိုချင်ပါတယ်' }],
+        'my',
+      )?.nextQuestion,
+    ).toBeTruthy();
+    expect(
+      lookupConverseDemoFallback(
+        [{ role: 'user', content: 'I need social media management' }],
+        'en',
+      )?.nextQuestion,
+    ).toBeTruthy();
     log.mockRestore();
   });
 

@@ -1,0 +1,47 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture for the Facebook-page-not-working problem. Plans hires only; no diagnosis or promised results. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "my Facebook page isn't working",
+  "aliases": [
+    "my Facebook page gets no engagement",
+    "my page isn't getting reach"
+  ],
+  "locale": "en",
+  "language": "en",
+  "disclaimer": "This is a hiring plan and cost estimate only, not a guarantee of results. It is not legal, tax, or regulatory advice.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Hire a social media specialist to restructure the page",
+      "why": "When a Facebook page stalls, the content plan and posting rhythm are the first things worth a professional look. A specialist can set up a schedule and caption approach systematically.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 2,
+      "title": "Hire a photographer for fresh product or shop photos",
+      "why": "Image quality is the page's first impression. A batch of high-quality photos makes every post after it stronger.",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Hire a Burmese content writer for captions",
+      "why": "Captions that only announce the product rarely hold attention. A content writer can produce copy that speaks to the customer regularly.",
+      "category_slug": "content-writing-burmese",
+      "est_min_mmk": 50000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "Trial a batch of TikTok / Reels short-form video",
+      "why": "Short-form video typically reaches further than static posts. A small starter batch lets you test without a big commitment.",
+      "category_slug": "video-tiktok-content",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 300000
+    }
+  ]
+}

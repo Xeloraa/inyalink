@@ -1,0 +1,64 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I need someone to manage my Instagram",
+  "aliases": [
+    "I need Instagram management"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — you need Instagram management. Is it Instagram only, or should Facebook be managed together with it?",
+    "Instagram only — got it. What's the business name, and roughly how many posts per week do you want?",
+    "Shwe Thread, three per week — noted. Is this ongoing monthly work, and what budget range in kyat should we plan for?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "social-media-marketing",
+      "title": "Instagram management",
+      "description": "Instagram page management",
+      "requirements": ["platform: Instagram"],
+      "ai_confidence": 0.5,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "social-media-marketing",
+      "title": "Instagram management",
+      "description": "Instagram-only page management",
+      "requirements": ["platform: Instagram only"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "social-media-marketing",
+      "title": "Shwe Thread Instagram management",
+      "description": "Instagram management for Shwe Thread, 3 posts per week",
+      "requirements": [
+        "Business name: Shwe Thread",
+        "platform: Instagram only",
+        "posting: 3 per week"
+      ],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "social-media-marketing",
+    "title": "Shwe Thread Instagram management",
+    "description": "Ongoing monthly Instagram management for Shwe Thread, 3 posts per week",
+    "requirements": [
+      "Business name: Shwe Thread",
+      "platform: Instagram only",
+      "posting: 3 per week",
+      "ongoing monthly"
+    ],
+    "budget_min_mmk": 120000,
+    "budget_max_mmk": 200000,
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

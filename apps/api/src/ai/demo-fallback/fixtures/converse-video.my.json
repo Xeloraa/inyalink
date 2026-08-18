@@ -1,0 +1,75 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "TikTok video လိုချင်ပါတယ်",
+  "aliases": [
+    "TikTok အတွက် video ရိုက်ပေးမယ့်သူ လိုချင်ပါတယ်",
+    "video content လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "TikTok video လိုချင်တာ မှတ်ထားပါပြီ။ ရိုက်ကူးမှုပါ လိုအပ်ပါသလား၊ ဒါမှမဟုတ် edit အပိုင်းပဲ လိုအပ်ပါသလား။",
+    "ရိုက်ကူးမှုပါ လိုအပ်တာ မှတ်ထားပါပြီ။ သင့်လုပ်ငန်းနာမည်နဲ့ ဘာ product အတွက်လဲ ပြောပေးနိုင်ပါသလား။",
+    "Inya Cafe အတွက်ပေါ့ — မှတ်ထားပါပြီ။ ပထမအသုတ်မှာ clip ဘယ်နှစ်ခုလောက် လိုအပ်မလဲ။",
+    "Clip ငါးခုပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "video-tiktok-content",
+      "title": "TikTok video content",
+      "description": "TikTok အတွက် short-form video",
+      "requirements": ["TikTok video"],
+      "ai_confidence": 0.45,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "video-tiktok-content",
+      "title": "TikTok video content",
+      "description": "TikTok အတွက် ရိုက်ကူး + edit short-form video",
+      "requirements": ["scope: shoot + edit"],
+      "ai_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "video-tiktok-content",
+      "title": "Inya Cafe TikTok video",
+      "description": "Inya Cafe အတွက် TikTok ရိုက်ကူး + edit short-form video",
+      "requirements": ["လုပ်ငန်းနာမည်: Inya Cafe", "scope: shoot + edit"],
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "video-tiktok-content",
+      "title": "Inya Cafe TikTok video",
+      "description": "Inya Cafe အတွက် TikTok ရိုက်ကူး + edit short-form video clip ၅ ခု",
+      "requirements": [
+        "လုပ်ငန်းနာမည်: Inya Cafe",
+        "scope: shoot + edit",
+        "clip အရေအတွက်: 5"
+      ],
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "video-tiktok-content",
+    "title": "Inya Cafe TikTok video",
+    "description": "Inya Cafe အတွက် TikTok ရိုက်ကူး + edit short-form video clip ၅ ခု",
+    "requirements": [
+      "လုပ်ငန်းနာမည်: Inya Cafe",
+      "scope: shoot + edit",
+      "clip အရေအတွက်: 5"
+    ],
+    "budget_min_mmk": 150000,
+    "budget_max_mmk": 300000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

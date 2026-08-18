@@ -1,0 +1,27 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for out-of-scope openings (business advice). Redirects briefly without answering the advice question. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "ဘာစီးပွားရေး လုပ်သင့်လဲ",
+  "aliases": [
+    "ငါ့ idea ကောင်းလား",
+    "ဒီလုပ်ငန်း အောင်မြင်မလား"
+  ],
+  "locale": "my",
+  "questions": [
+    "ဘယ်စီးပွားရေး လုပ်သင့်လဲ၊ အောင်မြင်မလား ဆိုတာကိုတော့ အကြံပေးလို့ မရပါဘူး။ စိတ်ကူးထားတာ ရှိရင် ဘာတွေ လိုအပ်မလဲ၊ ဘယ်သူတွေ ငှားရမလဲ ဆိုတာ ပြသပေးနိုင်ပါတယ် — ဘာလုပ်ငန်း စဉ်းစားနေပါသလဲ။",
+    "မှတ်ထားပါပြီ။ အဲဒီလုပ်ငန်းအတွက် စတင်ဖို့ hiring plan တစ်ခု စီစဉ်ပေးနိုင်ပါတယ် — ကြည့်ချင်ပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my"
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "needs_human_review": true
+  }
+}

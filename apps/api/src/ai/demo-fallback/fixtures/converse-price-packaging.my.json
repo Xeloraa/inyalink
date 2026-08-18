@@ -1,0 +1,45 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "packaging design က ဘယ်လောက်ကျမလဲ",
+  "aliases": [
+    "packaging ဈေးနှုန်း ဘယ်လောက်လဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "packaging design က graphic design အုပ်စုထဲမှာ ပါဝင်ပြီး များသောအားဖြင့် 80,000 ကနေ 500,000 ကျပ်အထက် ရှိတတ်ပါတယ်။ ပါဝင်မယ့် piece အရေအတွက်ပေါ် မူတည်ပါတယ် — အကျယ်အဝန်း သတ်မှတ်ဖို့ ကူညီပေးနိုင်ပါတယ်။",
+    "စိတ်ဝင်စားတာ မှတ်ထားပါပြီ။ ဘာ product အတွက်လဲ၊ label တစ်ခုတည်းလား၊ box နဲ့ bag ပါ လိုအပ်ပါသလား။",
+    "ကော်ဖီမှုန့်အတွက် label နဲ့ bag ပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Packaging design",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "ကော်ဖီမှုန့် packaging design",
+      "description": "ကော်ဖီမှုန့် product အတွက် label နဲ့ bag packaging design",
+      "requirements": ["product: ကော်ဖီမှုန့်", "pieces: label, bag"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "graphic-design",
+    "title": "ကော်ဖီမှုန့် packaging design",
+    "description": "ကော်ဖီမှုန့် product အတွက် label နဲ့ bag packaging design",
+    "requirements": ["product: ကော်ဖီမှုန့်", "pieces: label, bag"],
+    "budget_min_mmk": 200000,
+    "budget_max_mmk": 400000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

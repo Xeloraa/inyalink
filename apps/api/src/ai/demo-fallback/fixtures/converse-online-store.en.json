@@ -1,0 +1,65 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I want to build an online store",
+  "aliases": [
+    "I need an e-commerce website",
+    "I need an online store"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — you want an online store. What's the business name, and what will you be selling?",
+    "Shwe Thread, clothing — got it. Roughly how many products will be listed, and do you need online payment?",
+    "Around 50 products with payment — noted. What budget range in kyat should we plan for, and do you have a deadline?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "web-development",
+      "title": "Online store",
+      "description": "Basic online store website",
+      "requirements": ["e-commerce"],
+      "ai_confidence": 0.5,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "web-development",
+      "title": "Shwe Thread online store",
+      "description": "Online store for Shwe Thread clothing",
+      "requirements": ["Business name: Shwe Thread", "products: clothing"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "web-development",
+      "title": "Shwe Thread online store",
+      "description": "Online store for Shwe Thread with around 50 products and online payment",
+      "requirements": [
+        "Business name: Shwe Thread",
+        "products: ~50 clothing items",
+        "online payment: required"
+      ],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "web-development",
+    "title": "Shwe Thread online store",
+    "description": "Online store for the Shwe Thread clothing business with around 50 products and online payment",
+    "requirements": [
+      "Business name: Shwe Thread",
+      "products: ~50 clothing items",
+      "online payment: required"
+    ],
+    "budget_min_mmk": 500000,
+    "budget_max_mmk": 1000000,
+    "deadline": "2026-11-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

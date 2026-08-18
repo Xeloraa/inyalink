@@ -1,0 +1,27 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script for platform questions (vetting / how it works). Matched on opening input. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "ဒီ platform က ဘယ်လို အလုပ်လုပ်လဲ",
+  "aliases": [
+    "ပရော်ဖက်ရှင်နယ်တွေကို ဘယ်လို စစ်ဆေးလဲ",
+    "ဘယ်လို သုံးရမလဲ"
+  ],
+  "locale": "my",
+  "questions": [
+    "သင့်ရည်မှန်းချက် ဒါမှမဟုတ် လိုအပ်တဲ့ အလုပ်ကို ပြောပြရင် brief ဒါမှမဟုတ် hiring plan တစ်ခု စီစဉ်ပေးပြီး စစ်ဆေးပြီးသား ပရော်ဖက်ရှင်နယ်များနဲ့ ချိတ်ဆက်ပေးပါမယ်။ platform ပေါ်က ပရော်ဖက်ရှင်နယ်များအားလုံး စစ်ဆေးပြီးသားပါ။ အခု ဘာအလုပ်အတွက် စဉ်းစားနေပါသလဲ။",
+    "မှတ်ထားပါပြီ။ သင့်လုပ်ငန်းအတွက် ဘာကို အရင် လိုအပ်နေပါသလဲ — logo၊ website၊ ဓာတ်ပုံ၊ ဒါမှမဟုတ် social media လား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my"
+    },
+    {
+      "language": "my"
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "needs_human_review": true
+  }
+}

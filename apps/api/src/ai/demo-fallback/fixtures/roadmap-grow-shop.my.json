@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture for shop growth. Plans hires only; no diagnosis or promised results. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "ဆိုင်ကို ချဲ့ချင်ပါတယ်",
+  "aliases": [
+    "လုပ်ငန်း တိုးချဲ့ချင်ပါတယ်",
+    "ဆိုင် ကြီးထွားချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် ငှားရမ်းရန် အကြံပြုချက်နှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ရလဒ် အာမခံချက် မဟုတ်ပါ။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ်လည်း မဟုတ်ပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Brand ကို ပြန်လည် သန့်စင်ရန် — logo နဲ့ visual identity",
+      "why": "ဆိုင် ချဲ့မယ်ဆိုရင် brand ပုံရိပ် တစ်သမတ်တည်း ရှိဖို့ အရေးကြီးပါတယ်။ လက်ရှိ logo ကို ပြန်သုံးသပ်ပြီး လိုအပ်ရင် မွမ်းမံနိုင်ပါတယ်။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "Product နဲ့ ဆိုင် ဓာတ်ပုံ အသစ်",
+      "why": "ချဲ့ထွင်မယ့် marketing အားလုံးအတွက် ဓာတ်ပုံ အသစ်တစ်သုတ် လိုအပ်ပါတယ်။ website နဲ့ social media နှစ်ခုလုံးမှာ ပြန်သုံးနိုင်ပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "အခြေခံ website ဒါမှမဟုတ် online store",
+      "why": "ဖောက်သည် အသစ်တွေ ရှာတွေ့နိုင်ဖို့နဲ့ order စနစ်တကျ လက်ခံနိုင်ဖို့ website က ချဲ့ထွင်မှုရဲ့ အခြေခံ ဖြစ်ပါတယ်။",
+      "category_slug": "web-development",
+      "est_min_mmk": 250000,
+      "est_max_mmk": 800000
+    },
+    {
+      "order": 4,
+      "title": "Facebook / Instagram လစဉ် စီမံခန့်ခွဲမှု",
+      "why": "ပရိသတ် တိုးဖို့ ပုံမှန် content တင်တာက အဓိကပါ။ specialist တစ်ဦးက ပို့စ် အစီအစဉ်နဲ့ ကြော်ငြာကို စနစ်တကျ ကိုင်တွယ်ပေးနိုင်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 5,
+      "title": "Virtual assistant နဲ့ နေ့စဉ် အလုပ်များ လွှဲရန်",
+      "why": "ချဲ့ထွင်ချိန်မှာ inbox၊ order နဲ့ schedule တွေက အချိန် အများဆုံး ယူပါတယ်။ VA တစ်ဦးက အဲဒီအပိုင်း တာဝန်ယူရင် ပိုင်ရှင်က အဓိက အလုပ်ကို အာရုံစိုက်နိုင်ပါတယ်။",
+      "category_slug": "virtual-assistant",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 400000
+    }
+  ]
+}

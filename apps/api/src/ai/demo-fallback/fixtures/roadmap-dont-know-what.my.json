@@ -1,0 +1,47 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture for a general 'don't know what I need' opening. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "ဘာလုပ်ရမှန်း မသိပါဘူး",
+  "aliases": [
+    "ဘယ်ကစရမလဲ မသိပါဘူး",
+    "ဘာ လိုအပ်လဲ မသိပါဘူး"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် စီမံကိန်းနှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ် မဟုတ်ပါ။ လိုအပ်ပါက သက်ဆိုင်ရာ လိုင်စင်ရ ပညာရှင်ကို ငှားရမ်းပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Logo နဲ့ brand identity ကနေ စတင်ရန်",
+      "why": "ဘယ်လုပ်ငန်းမျိုးမဆို ပထမဆုံး ငှားလေ့ရှိတာက brand အလုပ်ပါ။ logo နဲ့ ပုံစံ တစ်သမတ်တည်း ရှိမှ နောက်အဆင့်တွေ အားလုံး အဆင်ပြေပါတယ်။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "Product ဒါမှမဟုတ် ဆိုင် ဓာတ်ပုံ",
+      "why": "ဓာတ်ပုံ အရည်အသွေးက online ရှိသမျှ နေရာတိုင်းမှာ ပြန်သုံးရမယ့် အခြေခံ asset ပါ။",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Facebook / Instagram စီမံခန့်ခွဲမှု",
+      "why": "မြန်မာ ဖောက်သည် အများစုက Facebook ပေါ်မှာ ရှိတာမို့ ပုံမှန် content တင်ဖို့ လစဉ် အစီအစဉ် လိုအပ်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "အခြေခံ website",
+      "why": "လုပ်ငန်း တည်ငြိမ်လာရင် ဖောက်သည်တွေ ရှာတွေ့နိုင်ဖို့ အခြေခံ website တစ်ခု ထည့်သွင်း စဉ်းစားနိုင်ပါတယ်။",
+      "category_slug": "web-development",
+      "est_min_mmk": 250000,
+      "est_max_mmk": 800000
+    }
+  ]
+}

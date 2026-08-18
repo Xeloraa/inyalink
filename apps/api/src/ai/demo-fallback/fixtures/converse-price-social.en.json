@@ -1,0 +1,50 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "how much does social media management cost",
+  "aliases": [
+    "social media management price",
+    "how much for social media management"
+  ],
+  "locale": "en",
+  "questions": [
+    "Social media management usually runs around 120,000 to 200,000+ kyat per month for ongoing work, depending on platforms and posting frequency. I can help you scope the job if you'd like.",
+    "Got it. Which platforms are you thinking of — Facebook only, or Instagram as well?",
+    "Facebook and Instagram — noted. Roughly how many posts per week, and is this ongoing monthly work?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en",
+      "category": "social-media-marketing",
+      "title": "Social media management",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "en",
+      "category": "social-media-marketing",
+      "title": "Facebook / Instagram management",
+      "description": "Facebook and Instagram page management",
+      "requirements": ["platforms: Facebook, Instagram"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "social-media-marketing",
+    "title": "Facebook / Instagram management",
+    "description": "Ongoing monthly Facebook and Instagram management, 3 posts per week",
+    "requirements": [
+      "platforms: Facebook, Instagram",
+      "posting: 3 per week",
+      "ongoing monthly"
+    ],
+    "budget_min_mmk": 150000,
+    "budget_max_mmk": 200000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

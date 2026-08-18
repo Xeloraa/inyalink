@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "how much do TikTok videos cost",
+  "aliases": [
+    "video price",
+    "how much for video content"
+  ],
+  "locale": "en",
+  "questions": [
+    "Video / TikTok content usually runs around 80,000 to 300,000+ kyat per batch, depending on whether shooting is included and how many clips you need. I can help you scope the job if you'd like.",
+    "Got it. Do you need shooting as well, or editing only?",
+    "Shoot and edit — noted. Roughly how many clips, and do you have a deadline in mind?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en"
+    },
+    {
+      "language": "en",
+      "category": "video-tiktok-content",
+      "title": "TikTok video content",
+      "ai_confidence": 0.5
+    },
+    {
+      "language": "en",
+      "category": "video-tiktok-content",
+      "title": "TikTok video content",
+      "description": "Shoot and edit short-form video",
+      "requirements": ["scope: shoot + edit"],
+      "ai_confidence": 0.75
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "video-tiktok-content",
+    "title": "TikTok video content",
+    "description": "Shoot and edit 5 short-form video clips",
+    "requirements": ["scope: shoot + edit", "clip count: 5"],
+    "budget_min_mmk": 150000,
+    "budget_max_mmk": 300000,
+    "ai_confidence": 0.85,
+    "needs_human_review": true
+  }
+}

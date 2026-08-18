@@ -1,0 +1,57 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "I need a translator",
+  "aliases": [
+    "I need translation",
+    "I need something translated"
+  ],
+  "locale": "en",
+  "questions": [
+    "Noted — you need translation. Which direction is it, Myanmar to English or English to Myanmar?",
+    "Myanmar to English — got it. What kind of document is it, and roughly how many pages or words?",
+    "Five website pages — noted. What budget range in kyat should we plan for, and when do you need it by?"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "en",
+      "category": "translation",
+      "title": "Translation",
+      "description": "Translation work",
+      "requirements": [],
+      "ai_confidence": 0.4,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "translation",
+      "title": "Myanmar to English translation",
+      "description": "Translate content from Myanmar to English",
+      "requirements": ["language pair: my → en"],
+      "ai_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "language": "en",
+      "category": "translation",
+      "title": "Website translation",
+      "description": "Translate 5 website pages from Myanmar to English",
+      "requirements": ["language pair: my → en", "scope: 5 website pages"],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "en",
+    "category": "translation",
+    "title": "Website translation",
+    "description": "Translate 5 website pages from Myanmar to English",
+    "requirements": ["language pair: my → en", "scope: 5 website pages"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 250000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

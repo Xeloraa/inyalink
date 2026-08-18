@@ -1,0 +1,55 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "အထည် brand စချင်ပါတယ်",
+  "aliases": [
+    "clothing brand စချင်ပါတယ်",
+    "အဝတ်အထည် လုပ်ငန်း စချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် စီမံကိန်းနှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ် မဟုတ်ပါ။ လိုအပ်ပါက သက်ဆိုင်ရာ လိုင်စင်ရ ပညာရှင်ကို ငှားရမ်းပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Brand identity — logo၊ tag နဲ့ packaging design",
+      "why": "အထည် brand အတွက် logo၊ tag နဲ့ packaging က ပထမဆုံး လိုအပ်ချက်ပါ။ brand မသတ်မှတ်ရသေးဘဲ ဓာတ်ပုံရိုက်ရင် နောက်ပိုင်း ပြန်ရိုက်ရတတ်ပါတယ်။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 200000,
+      "est_max_mmk": 500000
+    },
+    {
+      "order": 2,
+      "title": "Product ဓာတ်ပုံ",
+      "why": "အဝတ်အထည် ရောင်းဖို့ product ဓာတ်ပုံ အရည်အသွေးက အရေးအကြီးဆုံးပါ။ Facebook၊ Instagram နဲ့ online shop အတွက် အခြေခံ asset ဖြစ်ပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 150000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Facebook / Instagram စီမံခန့်ခွဲမှု",
+      "why": "အထည် brand အများစုက Facebook နဲ့ Instagram ကနေ စရောင်းကြပါတယ်။ ပုံမှန် content တင်ဖို့ လစဉ် အစီအစဉ် လိုအပ်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "TikTok / Reels video content",
+      "why": "Short-form video က အထည် brand အသစ်တွေအတွက် ပရိသတ် အမြန်ဆုံး ရောက်နိုင်တဲ့ လမ်းပါ။ ဓာတ်ပုံရိုက်တဲ့ အချိန်မှာပဲ တွဲရိုက်ရင် ကုန်ကျစရိတ် သက်သာပါတယ်။",
+      "category_slug": "video-tiktok-content",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 300000
+    },
+    {
+      "order": 5,
+      "title": "အခြေခံ online store",
+      "why": "အရောင်း တိုးလာရင် order တွေကို စနစ်တကျ လက်ခံနိုင်ဖို့ အခြေခံ e-commerce page တစ်ခု လိုအပ်ပါတယ်။",
+      "category_slug": "web-development",
+      "est_min_mmk": 400000,
+      "est_max_mmk": 1000000
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "မီနူး design လုပ်ချင်ပါတယ်",
+  "aliases": [
+    "menu design လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "မီနူး design လိုချင်တာ မှတ်ထားပါပြီ။ သင့်ဆိုင်နာမည်နဲ့ ဟင်းပွဲ ဒါမှမဟုတ် ဖျော်ရည် ဘယ်နှစ်မျိုးလောက် ပါမှာလဲ။",
+    "Inya Cafe အတွက် ၃၀ မျိုးပေါ့ — မှတ်ထားပါပြီ။ ပုံနှိပ်မီနူးလား၊ digital / QR မီနူးလား၊ နှစ်မျိုးလုံးလား။",
+    "ပုံနှိပ်ရော QR ပါပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Menu design",
+      "description": "ဆိုင်အတွက် မီနူး design",
+      "requirements": ["menu design"],
+      "ai_confidence": 0.5,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Inya Cafe menu design",
+      "description": "Inya Cafe အတွက် အမယ် ၃၀ ပါ မီနူး design",
+      "requirements": ["ဆိုင်နာမည်: Inya Cafe", "items: 30"],
+      "ai_confidence": 0.65,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Inya Cafe menu design",
+      "description": "Inya Cafe အတွက် ပုံနှိပ်နဲ့ QR digital မီနူး design — အမယ် ၃၀",
+      "requirements": ["ဆိုင်နာမည်: Inya Cafe", "items: 30", "format: print + QR digital"],
+      "ai_confidence": 0.8,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "graphic-design",
+    "title": "Inya Cafe menu design",
+    "description": "Inya Cafe အတွက် ပုံနှိပ်နဲ့ QR digital မီနူး design — အမယ် ၃၀",
+    "requirements": ["ဆိုင်နာမည်: Inya Cafe", "items: 30", "format: print + QR digital"],
+    "budget_min_mmk": 100000,
+    "budget_max_mmk": 250000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

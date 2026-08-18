@@ -1,0 +1,75 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored demo script. Matched on opening input; any failed turn serves the next question in sequence, then finalBrief. Do not treat as live model output.",
+  "kind": "converse",
+  "matchInput": "packaging design လိုချင်ပါတယ်",
+  "aliases": [
+    "product packaging လုပ်ချင်ပါတယ်",
+    "ထုပ်ပိုး design လိုချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "questions": [
+    "packaging design လိုချင်တာ မှတ်ထားပါပြီ။ ဘာ product အတွက်လဲ ပြောပေးနိုင်ပါသလား။",
+    "ကော်ဖီမှုန့် product ပေါ့ — မှတ်ထားပါပြီ။ label တစ်ခုတည်းလား၊ box နဲ့ bag ပါ လိုအပ်ပါသလား။",
+    "Label နဲ့ bag ပေါ့ — မှတ်ထားပါပြီ။ rough style က minimal၊ modern၊ ဒါမှမဟုတ် traditional ဘက် ပိုနီးစပ်ပါသလား။",
+    "Traditional ပေါ့ — မှတ်ထားပါပြီ။ budget က ဘယ်လောက်လောက် ထားမလဲ၊ deadline ကော ရှိပါသလား။"
+  ],
+  "draftsAfterUserTurn": [
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "Packaging design",
+      "description": "Product packaging design",
+      "requirements": ["packaging"],
+      "ai_confidence": 0.45,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "ကော်ဖီမှုန့် packaging design",
+      "description": "ကော်ဖီမှုန့် product အတွက် packaging design",
+      "requirements": ["product: ကော်ဖီမှုန့်"],
+      "ai_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "ကော်ဖီမှုန့် packaging design",
+      "description": "ကော်ဖီမှုန့် product အတွက် label နဲ့ bag packaging design",
+      "requirements": ["product: ကော်ဖီမှုန့်", "pieces: label, bag"],
+      "ai_confidence": 0.7,
+      "needs_human_review": false
+    },
+    {
+      "language": "my",
+      "category": "graphic-design",
+      "title": "ကော်ဖီမှုန့် packaging design",
+      "description": "ကော်ဖီမှုန့် product အတွက် traditional style label နဲ့ bag packaging design",
+      "requirements": [
+        "product: ကော်ဖီမှုန့်",
+        "pieces: label, bag",
+        "rough style: traditional"
+      ],
+      "ai_confidence": 0.85,
+      "needs_human_review": false
+    }
+  ],
+  "finalBrief": {
+    "language": "my",
+    "category": "graphic-design",
+    "title": "ကော်ဖီမှုန့် packaging design",
+    "description": "ကော်ဖီမှုန့် product အတွက် traditional style label နဲ့ bag packaging design",
+    "requirements": [
+      "product: ကော်ဖီမှုန့်",
+      "pieces: label, bag",
+      "rough style: traditional"
+    ],
+    "budget_min_mmk": 200000,
+    "budget_max_mmk": 400000,
+    "deadline": "2026-09-30",
+    "ai_confidence": 0.9,
+    "needs_human_review": false
+  }
+}

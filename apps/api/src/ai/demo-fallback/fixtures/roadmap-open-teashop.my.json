@@ -1,0 +1,46 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — hand-authored roadmap fixture. Served when the live provider rate-limits or errors. Do not treat as live model output.",
+  "kind": "roadmap",
+  "matchInput": "လက်ဖက်ရည်ဆိုင် ဖွင့်ချင်ပါတယ်",
+  "aliases": [
+    "teashop ဖွင့်ချင်ပါတယ်"
+  ],
+  "locale": "my",
+  "language": "my",
+  "disclaimer": "ဤအစီအစဉ်သည် စီမံကိန်းနှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ် မဟုတ်ပါ။ လိုအပ်ပါက သက်ဆိုင်ရာ လိုင်စင်ရ ပညာရှင်ကို ငှားရမ်းပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "လက်ဖက်ရည်ဆိုင် logo နဲ့ signage design",
+      "why": "ဆိုင်နာမည်နဲ့ logo ကို signage၊ မီနူးနဲ့ social media မှာ ပြန်သုံးရမှာမို့ အရင်ဆုံး လုပ်ထားသင့်ပါတယ်။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    },
+    {
+      "order": 2,
+      "title": "ဆိုင်နဲ့ စားသောက်ဖွယ် ဓာတ်ပုံ",
+      "why": "ဆိုင်လေထုနဲ့ ရောင်းတဲ့ စားသောက်ဖွယ်ကို ပြသဖို့ ဓာတ်ပုံတစ်သုတ် လိုအပ်ပါတယ်။ brand ပြီးမှ ရိုက်ရင် တစ်ခါတည်း ပြီးပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    },
+    {
+      "order": 3,
+      "title": "Facebook page စီမံခန့်ခွဲမှု",
+      "why": "ဒေသတွင်း ဖောက်သည်များ ရောက်ဖို့ Facebook က အထိရောက်ဆုံး လမ်းကြောင်းပါ။ ဖွင့်ပွဲနဲ့ နေ့စဉ် ပရိုမိုးရှင်းကို ပုံမှန် တင်နိုင်ဖို့ လစဉ် အစီအစဉ် လိုအပ်ပါတယ်။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 120000,
+      "est_max_mmk": 200000
+    },
+    {
+      "order": 4,
+      "title": "မှတ်ပုံတင်အတွက် company registration specialist ငှားရန်",
+      "why": "လုပ်ငန်း မှတ်ပုံတင်နဲ့ လိုင်စင်ကိစ္စများကို သက်ဆိုင်ရာ ပညာရှင်နဲ့ ဆောင်ရွက်ပါ။ ဤအဆင့်သည် ငှားရမ်းရမယ့် ပညာရှင် အမျိုးအစားကိုသာ ဖော်ပြပါသည်။",
+      "category_slug": "other",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 400000
+    }
+  ]
+}
