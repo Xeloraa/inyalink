@@ -397,6 +397,8 @@ alter table notifications enable row level security;
 alter table categories      enable row level security;
 alter table ai_calls        enable row level security;
 alter table audit_log       enable row level security;
+alter table brief_interests        enable row level security;
+alter table brief_match_candidates enable row level security;
 
 -- Owned by the API migrate runner; documented here so RLS stays in sync.
 create table if not exists schema_migrations (
@@ -446,6 +448,21 @@ create policy matched_pro_reads_brief on briefs
 
 create policy own_roadmaps on roadmaps
   for all using (user_id = auth.uid());
+
+-- Full interested pool is never exposed to the client — only the
+-- professional who expressed interest reads their own row.
+create policy own_interest on brief_interests
+  for all using (professional_id = auth.uid());
+
+-- Surfaced top-3 only. Read-only: algorithm-generated, never a user write.
+create policy match_candidate_participants on brief_match_candidates
+  for select using (
+    professional_id = auth.uid()
+    or exists (
+      select 1 from briefs b
+      where b.id = brief_match_candidates.brief_id and b.client_id = auth.uid()
+    )
+  );
 
 create policy engagement_participants on engagements
   for select using (
