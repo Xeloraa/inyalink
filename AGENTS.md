@@ -47,6 +47,8 @@ modules/<name>/
 
 **Database:** raw SQL via the repo layer. No ORM. Schema changes require a numbered migration in `db/migrations/` **and** an update to `db/schema.sql`. Both, always.
 
+**RLS:** every migration that creates a table enables row level security **in that same migration**, with policies (or a documented default-deny). Never defer it to a later hardening pass — two tables did that once and sat exposed to the anon key for three days before anyone caught it. A dedicated sweep is not a reliable safety net; the migration that creates the table is.
+
 **Frontend:** `features/` mirrors API `modules/`. TanStack Query for server state. React Hook Form + Zod resolver for forms. No Redux, no Zustand unless asked.
 
 **Money:** `bigint` kyat. Never float. Format only via `packages/shared/src/money.ts`.

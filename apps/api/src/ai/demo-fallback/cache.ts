@@ -142,7 +142,38 @@ export function normalizeDemoInput(text: string): string {
     .trim()
     .replace(/\s+/g, ' ')
     .replace(/[?？.。!！]+$/u, '')
-    .trim();
+    .trim()
+    .toLowerCase();
+}
+
+// \p{M} (combining marks) is essential here, not optional: Burmese vowel
+// signs and medial consonants are Marks, not Letters, in Unicode. Without
+// it, a syllable like "လိုချင်ပါတယ်" fragments into single-character
+// tokens at every vowel sign / medial boundary — silently turning keyword
+// matching for the entire Burmese corpus into character-soup.
+const TOKEN_PATTERN = /[\p{L}\p{M}\p{N}]+/gu;
+
+/**
+ * Grammatical filler that says nothing about *topic* — "i", "need", "a",
+ * "လိုချင်ပါတယ်" (a generic "I want/need ___") appear in nearly every
+ * fixture regardless of what it's about, so letting them count toward a
+ * keyword-overlap match makes almost any two inputs "match" on filler
+ * alone. Deliberately short: only words confirmed near-universal across
+ * the actual fixture corpus (see .tmp-verify diagnostics during
+ * development), not a general-purpose stopword list.
+ */
+const STOPWORDS = new Set([
+  'i', 'me', 'my', 'you', 'your', 'a', 'an', 'the', 'to', 'of', 'in', 'on',
+  'at', 'for', 'and', 'or', 'is', 'it', 'am', 'are', 'be', 'do', 'have',
+  'has', 'want', 'need', 'please', 'hi', 'hello', 'there', 'with', 'this',
+  'that', 'can', 'could', 'would', 'about', 'some',
+  'လိုချင်ပါတယ်', 'လိုပါတယ်', 'ချင်ပါတယ်',
+]);
+
+/** Significant words in a string, normalized, lowercased, filler removed. */
+function tokenize(text: string): string[] {
+  const words = normalizeDemoInput(text).match(TOKEN_PATTERN) ?? [];
+  return words.filter((w) => !STOPWORDS.has(w));
 }
 
 function omitNulls(draft: Record<string, unknown>): BriefDraft {
@@ -176,6 +207,98 @@ function fixtureAliases(fixture: {
   return [fixture.matchInput, ...(fixture.aliases ?? [])];
 }
 
+function keywordSet(fixture: { matchInput: string; aliases?: string[] }): Set<string> {
+  return new Set(fixtureAliases(fixture).flatMap((alias) => tokenize(alias)));
+}
+
+/**
+ * Inverse document frequency over one fixture corpus: a word shared by many
+ * fixtures counts for little; a word only a couple of fixtures use ("cafe",
+ * "tiktok", "packaging") counts for a lot. Purely for ranking/tie-breaking
+ * between candidates that already cleared MIN_KEYWORD_MATCHES real (non-
+ * filler) words — see tokenize's STOPWORDS for why raw frequency alone
+ * isn't a safe gate. Computed once at module load.
+ */
+function buildIdf<T>(
+  fixtures: T[],
+  keywordsByFixture: Map<T, Set<string>>,
+): Map<string, number> {
+  const documentFrequency = new Map<string, number>();
+  for (const fixture of fixtures) {
+    for (const word of keywordsByFixture.get(fixture)!) {
+      documentFrequency.set(word, (documentFrequency.get(word) ?? 0) + 1);
+    }
+  }
+  const total = fixtures.length;
+  const idf = new Map<string, number>();
+  for (const [word, count] of documentFrequency) {
+    idf.set(word, Math.log((total + 1) / (count + 1)) + 1);
+  }
+  return idf;
+}
+
+const converseKeywords = new Map(
+  converseFixtures.map((f) => [f, keywordSet(f)] as const),
+);
+const roadmapKeywords = new Map(
+  roadmapFixtures.map((f) => [f, keywordSet(f)] as const),
+);
+const converseIdf = buildIdf(converseFixtures, converseKeywords);
+const roadmapIdf = buildIdf(roadmapFixtures, roadmapKeywords);
+
+/** One shared word is too weak a signal — require at least two, or all of a fixture's own keywords if it has fewer. Filler words never reach this count at all (tokenize strips them). */
+const MIN_KEYWORD_MATCHES = 2;
+
+/**
+ * Fuzzy fallback for when nothing matches exactly: score every fixture in
+ * `pool` by IDF-weighted keyword overlap against `inputTokens` and return
+ * the best one, provided it clears MIN_KEYWORD_MATCHES.
+ *
+ * Ranked by score × coverage-ratio, not raw score alone: raw score lets a
+ * long fixture that only partially overlaps (2 of its 6 keywords, both
+ * happening to be somewhat rare) outrank a short fixture the input fully
+ * matches (2 of its 2 keywords) whenever the partial match's two words are
+ * individually rarer. E.g. "I need a website for my coffee shop" sharing
+ * {coffee, shop} with a 4-keyword cafe/logo fixture must not beat sharing
+ * {website, shop} — all of it — with a 2-keyword website fixture. Coverage
+ * ratio is what tells those apart; raw score alone can't.
+ */
+function findBestKeywordMatch<T>(
+  inputTokens: Set<string>,
+  pool: T[],
+  keywordsByFixture: Map<T, Set<string>>,
+  idf: Map<string, number>,
+): T | null {
+  let best: T | null = null;
+  let bestRank = 0;
+
+  for (const fixture of pool) {
+    const keywords = keywordsByFixture.get(fixture)!;
+    if (keywords.size === 0) continue;
+
+    let score = 0;
+    let matchCount = 0;
+    for (const word of keywords) {
+      if (inputTokens.has(word)) {
+        score += idf.get(word) ?? 1;
+        matchCount += 1;
+      }
+    }
+
+    const required = Math.min(MIN_KEYWORD_MATCHES, keywords.size);
+    if (matchCount < required) continue;
+
+    const ratio = matchCount / keywords.size;
+    const rank = score * ratio;
+    if (rank > bestRank) {
+      best = fixture;
+      bestRank = rank;
+    }
+  }
+
+  return best;
+}
+
 function findConverseFixture(
   normalizedOpening: string,
   locale: UiLocale,
@@ -196,7 +319,14 @@ function findConverseFixture(
       if (normalizedOpening === normalizeDemoInput(alias)) return fixture;
     }
   }
-  return null;
+
+  // Fuzzy fallback: keyword overlap when nothing matched exactly.
+  const inputTokens = new Set(tokenize(normalizedOpening));
+  if (inputTokens.size === 0) return null;
+  return (
+    findBestKeywordMatch(inputTokens, pool, converseKeywords, converseIdf) ??
+    findBestKeywordMatch(inputTokens, converseFixtures, converseKeywords, converseIdf)
+  );
 }
 
 function findRoadmapFixture(
@@ -218,7 +348,14 @@ function findRoadmapFixture(
       if (normalizedGoal === normalizeDemoInput(alias)) return fixture;
     }
   }
-  return null;
+
+  // Fuzzy fallback: keyword overlap when nothing matched exactly.
+  const inputTokens = new Set(tokenize(normalizedGoal));
+  if (inputTokens.size === 0) return null;
+  return (
+    findBestKeywordMatch(inputTokens, pool, roadmapKeywords, roadmapIdf) ??
+    findBestKeywordMatch(inputTokens, roadmapFixtures, roadmapKeywords, roadmapIdf)
+  );
 }
 
 /** Opening user message for converse matching (first user turn). */

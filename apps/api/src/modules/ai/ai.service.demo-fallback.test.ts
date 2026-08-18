@@ -378,4 +378,65 @@ describe('ai.service demo fallback', () => {
     expect(result.disclaimer).toBeTruthy();
     expect(insertRoadmap).not.toHaveBeenCalled();
   });
+
+  it('serves a generic retry notice, not a blank response, when the provider fails and no fixture matches', async () => {
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await converseBrief({
+      messages: [
+        {
+          role: 'user',
+          content: 'I need a bespoke calligraphy commission for a wedding invitation',
+        },
+      ],
+      locale: 'en',
+    });
+
+    expect(result.retryable).toBe(true);
+    expect(result.notice).toBeTruthy();
+    expect(result.notice).toMatch(/rephrasing/i);
+    expect(result.briefDraft).toBeDefined();
+  });
+
+  it('serves the generic retry notice in Burmese when the response locale is my', async () => {
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await converseBrief({
+      messages: [
+        {
+          role: 'user',
+          content: 'ငါးရှုံ့ရုပ်တု ပုံဖော်ခြင်းလုပ်ငန်း တစ်ခု ငှားချင်ပါတယ်',
+        },
+      ],
+      locale: 'my',
+    });
+
+    expect(result.retryable).toBe(true);
+    expect(result.notice).toBeTruthy();
+    expect(result.notice).toMatch(/[က-႟]/);
+  });
+
+  it('serves a generic retry notice for roadmap when the provider fails and no fixture matches', async () => {
+    complete.mockResolvedValue({
+      ok: false,
+      error: { code: 'AI_RATE_LIMIT', message: 'busy' },
+    });
+
+    const result = await createRoadmap(
+      { goal: 'help me plan a deep-sea submarine tour company', locale: 'en' },
+      null,
+    );
+
+    expect(result.retryable).toBe(true);
+    expect(result.notice).toBeTruthy();
+    expect(result.notice).toMatch(/rephrasing/i);
+    expect(result.steps).toBeUndefined();
+    expect(insertRoadmap).not.toHaveBeenCalled();
+  });
 });

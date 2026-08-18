@@ -53,6 +53,17 @@ function pickUnrelatedReply(locale: UiLocale): string {
   return options[Math.floor(Math.random() * options.length)] ?? options[0]!;
 }
 
+/**
+ * Provider down AND no fixture matched (exact or fuzzy) — the true
+ * worst case. Better than the empty `{needs_human_review: true}` draft
+ * this used to fall through to: tells the user something, in their
+ * language, and invites another try rather than looking broken.
+ */
+const GENERIC_RETRY_NOTICE: Record<UiLocale, string> = {
+  en: "One moment — I couldn't quite match that. Could you try rephrasing what you need?",
+  my: 'ခဏစောင့်ပါ — ရှင်းရှင်း နားမလည်လိုက်ပါဘူး။ တခြားစကားလုံးတွေနဲ့ ပြန်ပြောပြပေးနိုင်ပါသလား။',
+};
+
 /** Response language from the most recent user message (not the UI toggle). */
 function converseResponseLocale(
   messages: ConverseBriefInput['messages'],
@@ -127,6 +138,7 @@ async function serveConverseFallback(
   messages: ConverseBriefInput['messages'],
   locale: ConverseBriefInput['locale'],
   providerErrorKind: string,
+  briefDraft: ConverseBriefResponse['briefDraft'] = {},
 ): Promise<ConverseBriefResponse | null> {
   if (!config.demoAiFallback) {
     console.log('[demo-only] AI fallback cache skipped (DEMO_AI_FALLBACK=false)', {
@@ -150,7 +162,7 @@ async function serveConverseFallback(
   });
   const cached = lookupConverseDemoFallback(messages, locale);
   if (!cached) {
-    console.log('[demo-only] AI fallback cache miss — not serving fixture', {
+    console.log('[demo-only] AI fallback cache miss — serving generic retry notice', {
       feature: 'structure_brief',
       providerErrorKind,
       locale,
@@ -158,7 +170,12 @@ async function serveConverseFallback(
       latestUser,
       assistantQuestionsAsked: asked,
     });
-    return null;
+    return ConverseBriefResponseSchema.parse({
+      briefDraft,
+      complete: false,
+      retryable: true,
+      notice: GENERIC_RETRY_NOTICE[locale],
+    });
   }
 
   console.log('[demo-only] AI fallback cache firing', {
@@ -203,7 +220,17 @@ async function serveRoadmapFallback(
     locale,
   });
   const cached = lookupRoadmapDemoFallback(goal, locale);
-  if (!cached) return null;
+  if (!cached) {
+    console.log('[demo-only] AI fallback cache miss — serving generic retry notice', {
+      feature: 'roadmap',
+      providerErrorKind,
+      locale,
+    });
+    return GenerateRoadmapResponseSchema.parse({
+      retryable: true,
+      notice: GENERIC_RETRY_NOTICE[locale],
+    });
+  }
 
   console.log('[demo-only] AI fallback cache firing', {
     feature: 'roadmap',
@@ -301,6 +328,7 @@ export async function converseBrief(
       normalized.messages,
       responseLocale,
       'AI_NOT_CONFIGURED',
+      normalized.briefDraft ?? {},
     );
     if (cached) return cached;
     throw new AppError(503, 'AI_NOT_CONFIGURED', 'AI provider is not configured');
@@ -325,6 +353,7 @@ export async function converseBrief(
       normalized.messages,
       responseLocale,
       'AI_UNAVAILABLE',
+      normalized.briefDraft ?? {},
     );
     if (cached) return cached;
     throw err;
@@ -335,6 +364,7 @@ export async function converseBrief(
       normalized.messages,
       responseLocale,
       raw.providerErrorKind ?? 'unknown',
+      raw.briefDraft ?? normalized.briefDraft ?? {},
     );
     if (cached) return cached;
   }

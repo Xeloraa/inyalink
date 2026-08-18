@@ -239,4 +239,79 @@ describe('demo AI fallback cache', () => {
     );
     log.mockRestore();
   });
+
+  describe('fuzzy matching', () => {
+    it('is case-insensitive on an otherwise exact match', () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+      expect(
+        lookupConverseDemoFallback(
+          [{ role: 'user', content: 'I NEED A WEBSITE FOR MY SHOP' }],
+          'en',
+        )?.nextQuestion,
+      ).toBeTruthy();
+      log.mockRestore();
+    });
+
+    it('hits on keyword overlap with extra surrounding words ("logo" + "cafe")', () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+      const result = lookupConverseDemoFallback(
+        [
+          {
+            role: 'user',
+            content: "hi there, I'm opening a small cafe soon and need a logo made for it",
+          },
+        ],
+        'en',
+      );
+      expect(result?.nextQuestion).toBeTruthy();
+      expect(result?.briefDraft.category).toBe('graphic-design');
+      log.mockRestore();
+    });
+
+    it('hits a near-miss that previously missed exact matching (one extra word)', () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+      const result = lookupConverseDemoFallback(
+        [{ role: 'user', content: 'I need a website for my coffee shop' }],
+        'en',
+      );
+      expect(result?.nextQuestion).toBeTruthy();
+      expect(result?.briefDraft.category).toBe('web-development');
+      log.mockRestore();
+    });
+
+    it('hits a Burmese near-miss with an inserted word', () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+      const result = lookupConverseDemoFallback(
+        [{ role: 'user', content: 'ကော်ဖီဆိုင်အတွက် logo တစ်ခု လိုချင်ပါတယ်' }],
+        'my',
+      );
+      expect(result?.nextQuestion).toBeTruthy();
+      expect(result?.briefDraft.category).toBe('graphic-design');
+      log.mockRestore();
+    });
+
+    it('still misses input sharing only common words with the corpus, not a real topic', () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+      expect(
+        lookupConverseDemoFallback(
+          [{ role: 'user', content: 'I want a pet hamster' }],
+          'en',
+        ),
+      ).toBeNull();
+      expect(
+        lookupRoadmapDemoFallback('open a bakery in Mars', 'my'),
+      ).toBeNull();
+      log.mockRestore();
+    });
+
+    it('hits a roadmap fuzzy match on distinctive keyword overlap', () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+      const result = lookupRoadmapDemoFallback(
+        'thinking about opening a small cafe downtown, not sure how to begin',
+        'en',
+      );
+      expect(result?.steps?.length).toBeGreaterThanOrEqual(4);
+      log.mockRestore();
+    });
+  });
 });
