@@ -537,7 +537,19 @@ export function FloatingChat() {
         ]);
         return;
       }
-      // Don't echo the reply as a stray bubble — prompt already sits under the cards.
+      // Didn't match a step and wasn't clearly goal/service/unrelated —
+      // still acknowledge it instead of silently discarding the message
+      // (the input already cleared above, so a no-op here reads as the
+      // panel not responding). Nudge back to picking a step by number.
+      const nudge = translateIn(
+        detectResponseLocale(text),
+        'roadmap.stepFollowUpUnclear',
+      );
+      setMessages([
+        ...messages,
+        { role: 'user', content: text },
+        { role: 'assistant', content: nudge },
+      ]);
       return;
     }
 

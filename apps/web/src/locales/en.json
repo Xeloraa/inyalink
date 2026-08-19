@@ -205,6 +205,7 @@
   "roadmap.disclaimer": "Note",
   "roadmap.budget": "Estimated cost",
   "roadmap.pickStep": "Which step do you want to start with?",
+  "roadmap.stepFollowUpUnclear": "I didn't catch which step you mean — reply with the step number, or tell me what you'd like to do instead.",
   "header.login": "Log in",
   "header.signOut": "Sign out",
   "header.proJoin": "Are you a professional?",
