@@ -1,4 +1,4 @@
-/** 15-image pool for the landing hero. One is visible at a time. */
+/** 15-image pool for the landing hero grid. Four are visible at a time. */
 export const HERO_IMAGES = [
   '/images/hero/hero-01.webp',
   '/images/hero/hero-02.webp',
@@ -17,21 +17,30 @@ export const HERO_IMAGES = [
   '/images/hero/hero-15.webp',
 ] as const;
 
-export const HERO_INTERVAL_MS = 6000;
-export const HERO_FADE_MS = 600;
+export const HERO_TILE_COUNT = 4;
+export const HERO_TILE_INTERVAL_MS = 6000;
+export const HERO_TILE_FADE_MS = 600;
+/** Spread the four swaps across one interval so they never fire together. */
+export const HERO_TILE_STAGGER_MS = HERO_TILE_INTERVAL_MS / HERO_TILE_COUNT;
 
 export type HeroImageSrc = (typeof HERO_IMAGES)[number];
 
-/** Next image from the pool, never repeating the one currently on screen. */
+/**
+ * Choose a pool image that is not currently on screen (or fading in).
+ * With 15 images and 4 tiles this always has candidates.
+ */
 export function pickNextHeroImage(
   pool: readonly string[],
-  current: string,
+  occupied: readonly string[],
   random: () => number = Math.random,
 ): string {
-  const available = pool.filter((src) => src !== current);
-  if (available.length === 0) return current;
+  const used = new Set(occupied);
+  const available = pool.filter((src) => !used.has(src));
+  if (available.length === 0) {
+    return pool.find((src) => src !== occupied[0]) ?? pool[0] ?? '';
+  }
   const index = Math.floor(random() * available.length);
-  return available[index] ?? available[0] ?? current;
+  return available[index] ?? available[0] ?? '';
 }
 
 export function preloadImage(src: string): Promise<void> {

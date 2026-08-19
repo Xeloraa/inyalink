@@ -94,8 +94,8 @@
   transform-origin: center;
 }
 
-/* Hero photo crossfade — 600ms. Jade dissolves across the middle of the frame. */
-.hero-stage-img {
+/* Hero mosaic crossfade — 600ms. Jade dissolves across the copy/grid seam. */
+.hero-grid-tile img {
   transition: opacity 600ms var(--ease-out);
 }
 
@@ -114,9 +114,9 @@
     background: linear-gradient(
       to right,
       var(--jade-900) 0%,
-      rgba(7, 56, 37, 0.88) 18%,
-      rgba(7, 56, 37, 0.42) 42%,
-      rgba(7, 56, 37, 0.08) 68%,
+      rgba(7, 56, 37, 0.82) 22%,
+      rgba(7, 56, 37, 0.35) 48%,
+      rgba(7, 56, 37, 0.08) 72%,
       rgba(7, 56, 37, 0) 100%
     );
   }
@@ -152,7 +152,7 @@
     animation: none;
   }
 
-  .hero-stage-img {
+  .hero-grid-tile img {
     transition: none;
   }
 }

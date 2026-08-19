@@ -1,76 +1,108 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  HERO_FADE_MS,
-  HERO_INTERVAL_MS,
+  HERO_TILE_COUNT,
+  HERO_TILE_FADE_MS,
+  HERO_TILE_INTERVAL_MS,
+  HERO_TILE_STAGGER_MS,
   pickNextHeroImage,
   preloadImage,
 } from './heroImages';
 
-export type HeroSlide = {
+export type HeroTile = {
   srcs: [string, string];
   active: 0 | 1;
 };
+
+function initialTiles(pool: readonly string[]): HeroTile[] {
+  return Array.from({ length: HERO_TILE_COUNT }, (_, i) => {
+    const src = pool[i] ?? pool[0] ?? '';
+    return { srcs: [src, src], active: 0 };
+  });
+}
+
+function occupiedSrcs(
+  tiles: readonly HeroTile[],
+  inflight: readonly (string | null)[],
+): string[] {
+  const seen = new Set<string>();
+  for (const tile of tiles) {
+    seen.add(tile.srcs[tile.active]);
+  }
+  for (const src of inflight) {
+    if (src) seen.add(src);
+  }
+  return [...seen];
+}
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 /**
- * One photo at a time: preload, then crossfade. Pauses on hover;
- * does not rotate under prefers-reduced-motion.
+ * Independently crossfades each of four tiles through a shared image pool.
+ * Pauses while `paused` is true; does not rotate under prefers-reduced-motion.
  */
 export function useHeroRotation(pool: readonly string[]) {
-  const first = pool[0] ?? '';
-  const [slide, setSlide] = useState<HeroSlide>({
-    srcs: [first, first],
-    active: 0,
-  });
+  const [tiles, setTiles] = useState(() => initialTiles(pool));
   const [paused, setPaused] = useState(false);
 
-  const slideRef = useRef(slide);
-  slideRef.current = slide;
+  const tilesRef = useRef(tiles);
+  tilesRef.current = tiles;
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
-  const inflightRef = useRef<string | null>(null);
-  const rotatingRef = useRef(false);
+  const inflightRef = useRef<(string | null)[]>([null, null, null, null]);
+  const rotatingRef = useRef([false, false, false, false]);
   const cancelledRef = useRef(false);
 
-  const stillThisSwap = useCallback((next: string) => {
-    return !cancelledRef.current && inflightRef.current === next;
+  const stillThisSwap = useCallback((index: number, next: string) => {
+    return !cancelledRef.current && inflightRef.current[index] === next;
   }, []);
 
-  const rotate = useCallback(
-    async (next: string) => {
-      rotatingRef.current = true;
-      inflightRef.current = next;
+  const rotateTile = useCallback(
+    async (index: number, next: string) => {
+      rotatingRef.current[index] = true;
+      inflightRef.current[index] = next;
       await preloadImage(next);
-      while (pausedRef.current && stillThisSwap(next)) {
+      while (pausedRef.current && stillThisSwap(index, next)) {
         await new Promise((resolve) => setTimeout(resolve, 120));
       }
-      if (!stillThisSwap(next)) {
-        rotatingRef.current = false;
+      if (!stillThisSwap(index, next)) {
+        rotatingRef.current[index] = false;
         return;
       }
 
-      const inactive = (1 - slideRef.current.active) as 0 | 1;
-      setSlide((prev) => {
-        const srcs: [string, string] = [...prev.srcs];
+      const inactive = (1 - (tilesRef.current[index]?.active ?? 0)) as 0 | 1;
+      setTiles((prev) => {
+        const tile = prev[index];
+        if (!tile) return prev;
+        const srcs: [string, string] = [...tile.srcs];
         srcs[inactive] = next;
-        return { ...prev, srcs };
+        const copy = prev.slice();
+        copy[index] = { ...tile, srcs };
+        return copy;
       });
 
       await new Promise<void>((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
       });
-      if (!stillThisSwap(next)) {
-        rotatingRef.current = false;
+      if (!stillThisSwap(index, next)) {
+        rotatingRef.current[index] = false;
         return;
       }
 
-      setSlide((prev) => ({ ...prev, active: inactive }));
-      await new Promise((resolve) => setTimeout(resolve, HERO_FADE_MS));
-      if (inflightRef.current === next) inflightRef.current = null;
-      rotatingRef.current = false;
+      setTiles((prev) => {
+        const tile = prev[index];
+        if (!tile) return prev;
+        const copy = prev.slice();
+        copy[index] = { ...tile, active: inactive };
+        return copy;
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, HERO_TILE_FADE_MS));
+      if (inflightRef.current[index] === next) {
+        inflightRef.current[index] = null;
+      }
+      rotatingRef.current[index] = false;
     },
     [stillThisSwap],
   );
@@ -80,7 +112,10 @@ export function useHeroRotation(pool: readonly string[]) {
 
     cancelledRef.current = false;
     let timer = 0;
-    let nextAt = performance.now() + HERO_INTERVAL_MS;
+    const nextAt = Array.from(
+      { length: HERO_TILE_COUNT },
+      (_, i) => performance.now() + HERO_TILE_INTERVAL_MS + i * HERO_TILE_STAGGER_MS,
+    );
     let pauseStarted: number | null = null;
 
     const tick = () => {
@@ -94,17 +129,21 @@ export function useHeroRotation(pool: readonly string[]) {
         return;
       }
       if (pauseStarted !== null) {
-        nextAt += now - pauseStarted;
+        const held = now - pauseStarted;
+        for (let i = 0; i < nextAt.length; i++) {
+          nextAt[i] = (nextAt[i] ?? now) + held;
+        }
         pauseStarted = null;
       }
 
-      if (now >= nextAt && !rotatingRef.current) {
-        const current = slideRef.current.srcs[slideRef.current.active] ?? '';
-        const next = pickNextHeroImage(pool, current);
-        if (next && next !== current) {
-          nextAt = now + HERO_INTERVAL_MS;
-          void rotate(next);
-        }
+      const occupied = occupiedSrcs(tilesRef.current, inflightRef.current);
+      for (let i = 0; i < HERO_TILE_COUNT; i++) {
+        if (now < (nextAt[i] ?? 0) || rotatingRef.current[i]) continue;
+        const next = pickNextHeroImage(pool, occupied);
+        if (!next) continue;
+        occupied.push(next);
+        nextAt[i] = now + HERO_TILE_INTERVAL_MS;
+        void rotateTile(i, next);
       }
 
       timer = window.setTimeout(tick, 120);
@@ -122,9 +161,9 @@ export function useHeroRotation(pool: readonly string[]) {
       cancelledRef.current = true;
       window.clearTimeout(timer);
       media.removeEventListener('change', onMotion);
-      inflightRef.current = null;
+      inflightRef.current = [null, null, null, null];
     };
-  }, [pool, rotate]);
+  }, [pool, rotateTile]);
 
-  return { slide, setPaused };
+  return { tiles, setPaused };
 }
