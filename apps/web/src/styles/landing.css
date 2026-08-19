@@ -113,6 +113,11 @@
   transform-origin: center;
 }
 
+/* Hero mosaic crossfade — 600ms, paused visually under reduced motion. */
+.hero-grid-tile img {
+  transition: opacity 600ms var(--ease-out);
+}
+
 /* AI thinking dots in the storyboard. */
 @keyframes dot-fade {
   0%,
@@ -141,5 +146,9 @@
   .animate-ripple,
   .animate-dot {
     animation: none;
+  }
+
+  .hero-grid-tile img {
+    transition: none;
   }
 }
