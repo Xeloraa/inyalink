@@ -36,6 +36,14 @@ type DemoFlowState = {
   roadmapId: string | null;
   roadmapSteps: RoadmapStep[];
   roadmapDisclaimer: string | null;
+  /**
+   * How many entries of `messages` existed before the roadmap appeared.
+   * Messages before this index belong to the chat that led to the roadmap
+   * and render above it; messages from this index on (e.g. a step-hire
+   * follow-up) happened after and render below it. Null when there's no
+   * active roadmap.
+   */
+  roadmapAnchorIndex: number | null;
   converseStarted: boolean;
   converseComplete: boolean;
   /** Inline match cards for the completed brief. null = not loaded yet. */
@@ -93,6 +101,7 @@ const initial: DemoFlowState = {
   roadmapId: null,
   roadmapSteps: [],
   roadmapDisclaimer: null,
+  roadmapAnchorIndex: null,
   converseStarted: false,
   converseComplete: false,
   matches: null,
@@ -218,6 +227,10 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
         roadmapId: args.id ?? null,
         roadmapSteps: args.steps,
         roadmapDisclaimer: args.disclaimer,
+        // Everything currently in `messages` led up to this roadmap —
+        // anchor it there so those messages render above the cards and
+        // anything added afterward renders below.
+        roadmapAnchorIndex: s.messages.length,
       }));
     },
     [],
@@ -229,6 +242,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       roadmapId: null,
       roadmapSteps: [],
       roadmapDisclaimer: null,
+      roadmapAnchorIndex: null,
     }));
   }, []);
 
@@ -251,6 +265,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       roadmapId: null,
       roadmapSteps: [],
       roadmapDisclaimer: null,
+      roadmapAnchorIndex: null,
       matches: null,
       briefId: null,
     }));
@@ -265,6 +280,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       roadmapId: null,
       roadmapSteps: [],
       roadmapDisclaimer: null,
+      roadmapAnchorIndex: null,
       matches: null,
       briefId: null,
     }));
@@ -278,6 +294,10 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       path: 'quick',
       goal: step.title,
       messages: [{ role: 'user', content: step.title }],
+      // messages was just reset to this one entry — anchor at 0 so the
+      // (unchanged, still-visible) roadmap keeps rendering above the new
+      // hire thread instead of the fresh messages jumping above it.
+      roadmapAnchorIndex: 0,
       briefDraft: {
         category: step.category_slug,
         title: step.title,
@@ -304,6 +324,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       roadmapId: null,
       roadmapSteps: [],
       roadmapDisclaimer: null,
+      roadmapAnchorIndex: null,
       converseStarted: true,
       converseComplete: false,
       matches: null,

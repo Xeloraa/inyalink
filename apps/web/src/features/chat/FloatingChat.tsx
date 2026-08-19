@@ -137,6 +137,7 @@ export function FloatingChat() {
     briefId,
     roadmapSteps,
     roadmapDisclaimer,
+    roadmapAnchorIndex,
     matches,
     converseStarted,
     converseComplete,
@@ -719,13 +720,23 @@ export function FloatingChat() {
               {messages.length === 0 ? (
                 <ChatBubble role="assistant">{t('chat.seed')}</ChatBubble>
               ) : null}
-              {messages.map((m, i) => (
-                <ChatBubble key={`${m.role}-${i}`} role={m.role}>
+              {/*
+               * The roadmap isn't always the last thing chronologically —
+               * a step picked from it (beginStepHire) starts a fresh
+               * exchange that happened *after* the roadmap appeared.
+               * roadmapAnchorIndex marks where in `messages` that split
+               * falls, so the roadmap renders between the messages that
+               * led to it and whatever followed, not always after all of
+               * them.
+               */}
+              {(roadmapSteps.length > 0
+                ? messages.slice(0, roadmapAnchorIndex ?? messages.length)
+                : messages
+              ).map((m, i) => (
+                <ChatBubble key={`pre-${m.role}-${i}`} role={m.role}>
                   {m.content}
                 </ChatBubble>
               ))}
-              {busy ? <ThinkingBubble /> : null}
-              {busy ? <RotatingProgress active /> : null}
               {roadmapSteps.length > 0 ? (
                 <RoadmapCards
                   steps={roadmapSteps}
@@ -733,6 +744,15 @@ export function FloatingChat() {
                   showPrompt={planning}
                 />
               ) : null}
+              {roadmapSteps.length > 0
+                ? messages.slice(roadmapAnchorIndex ?? messages.length).map((m, i) => (
+                    <ChatBubble key={`post-${m.role}-${i}`} role={m.role}>
+                      {m.content}
+                    </ChatBubble>
+                  ))
+                : null}
+              {busy ? <ThinkingBubble /> : null}
+              {busy ? <RotatingProgress active /> : null}
               {showBriefCard ? (
                 <BriefSummaryCard
                   draft={briefDraft}
