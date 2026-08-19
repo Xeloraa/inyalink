@@ -55,7 +55,13 @@ export function HeroDawn({
 
               <h1
                 id="hero-heading"
-                className="animate-fade-up delay-1 mt-lg max-w-[9.2em] text-white md:mt-xl"
+                // text-hero-question here isn't for visible text (the spans
+                // below render it all) — it's so max-w-[9.2em] resolves
+                // against the actual 80px display size instead of whatever
+                // small font-size this element would otherwise inherit.
+                // Without it, 9.2em came out to ~138px and forced the
+                // headline to wrap mid-word, one or two letters per line.
+                className="text-hero-question animate-fade-up delay-1 mt-lg max-w-[9.2em] text-white md:mt-xl"
               >
                 <span className="text-hero-question block">
                   {t('landing.headlineBefore')}
@@ -111,7 +117,17 @@ export function HeroDawn({
                 </button>
               </div>
 
-              <p className="animate-fade-in delay-4 mt-lg">
+              {/*
+               * pr-20 below lg: on the single-column mobile/tablet layout
+               * this line runs the full viewport width and its right edge
+               * lands directly under FloatingChat's fixed bottom-5 right-5
+               * h-14 button (~76px footprint), so without clearance the
+               * text is partly hidden behind it. Reserving that width
+               * forces an earlier wrap instead. Desktop's text column is
+               * narrow and left-aligned, nowhere near the button, so this
+               * is a no-op there.
+               */}
+              <p className="animate-fade-in delay-4 mt-lg pr-20 lg:pr-0">
                 <Link
                   to="/browse"
                   className="tap-target inline-flex items-center text-body-sm text-[rgba(255,255,255,0.55)] underline-offset-4 transition-colors duration-fast ease-out hover:text-white hover:underline focus-visible:rounded-sm focus-visible:shadow-focus active:text-jade-100"
