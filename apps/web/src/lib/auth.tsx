@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -32,22 +33,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessTokenGetter(() => token);
   }, []);
 
-  const syncProfile = useCallback(async (token: string | null) => {
-    if (!token) {
-      applyToken(null);
-      setSession(null);
-      return;
+  // Dedup: the mount check, onAuthStateChange (INITIAL_SESSION + SIGNED_IN),
+  // and AuthCallback's own refresh can all observe the same token within
+  // milliseconds of each other. Only the first call for a given token hits
+  // /auth/me; later calls for the same token reuse that in-flight/settled
+  // result instead of firing a redundant round trip. syncedTokenRef tracks
+  // which token the current state reflects (or is being fetched for);
+  // syncInFlightRef holds that fetch's promise while it's pending.
+  const syncedTokenRef = useRef<string | null>(null);
+  const syncInFlightRef = useRef<Promise<void> | null>(null);
+
+  const syncProfile = useCallback(async (token: string | null): Promise<void> => {
+    if (syncedTokenRef.current === token) {
+      return syncInFlightRef.current ?? undefined;
     }
-    // Attach the token only after /me succeeds — a failed verify must not
-    // leave a bad Bearer on later public GETs.
-    try {
-      applyToken(token);
-      const me = await fetchAuthMe();
-      setSession(me.session);
-    } catch {
-      applyToken(null);
-      setSession(null);
-    }
+    syncedTokenRef.current = token;
+
+    const run = async (): Promise<void> => {
+      if (!token) {
+        applyToken(null);
+        setSession(null);
+        return;
+      }
+      // Attach the token only after /me succeeds — a failed verify must not
+      // leave a bad Bearer on later public GETs.
+      try {
+        applyToken(token);
+        const me = await fetchAuthMe();
+        // A newer token may have superseded this one while we awaited —
+        // don't let a stale response clobber a more recent sync's result.
+        if (syncedTokenRef.current !== token) return;
+        setSession(me.session);
+      } catch {
+        if (syncedTokenRef.current !== token) return;
+        applyToken(null);
+        setSession(null);
+      }
+    };
+
+    const promise = run().finally(() => {
+      if (syncInFlightRef.current === promise) {
+        syncInFlightRef.current = null;
+      }
+    });
+    syncInFlightRef.current = promise;
+    return promise;
   }, [applyToken]);
 
   useEffect(() => {
@@ -97,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (isSupabaseConfigured()) {
       await getSupabaseBrowser().auth.signOut();
     }
+    syncedTokenRef.current = null;
     applyToken(null);
     setSession(null);
   }, [accessToken, applyToken]);

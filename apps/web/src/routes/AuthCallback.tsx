@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { takeAuthReturnTo } from '../lib/authReturnTo';
 import { useI18n } from '../lib/i18n';
-import { getSupabaseBrowser, isSupabaseConfigured } from '../lib/supabase';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 /** OAuth redirect target — waits for Supabase session, then goes to /browse. */
 export default function AuthCallback() {
@@ -20,11 +20,11 @@ export default function AuthCallback() {
 
     let cancelled = false;
 
+    // refreshProfile reads the current session itself (and syncProfile
+    // dedupes against whatever AuthProvider's mount check / onAuthStateChange
+    // already fetched) — no need to call getSession() again here first.
     async function finish() {
       try {
-        const supabase = getSupabaseBrowser();
-        const { error: sessionError } = await supabase.auth.getSession();
-        if (sessionError) throw sessionError;
         await refreshProfile();
       } catch {
         if (!cancelled) setError(t('auth.errorGeneric'));
