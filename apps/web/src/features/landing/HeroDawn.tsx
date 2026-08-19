@@ -18,10 +18,10 @@ const CHIP_CLASS =
   'tap-target font-myanmar inline-flex items-center rounded-full bg-[rgba(255,255,255,0.09)] px-md py-sm text-left text-[12.5px] leading-burmese text-[rgba(255,255,255,0.9)] transition-colors duration-fast ease-out hover:bg-[rgba(255,255,255,0.15)] focus-visible:shadow-focus active:bg-[rgba(255,255,255,0.20)]';
 
 /**
- * Full-bleed jade-900 dawn hero. Copy stays on the left, aligned with the
- * header; the mosaic runs to the viewport's right edge and the section's
- * full height. Below `lg` the mosaic collapses to a single row under the
- * input — never a squashed 2×2.
+ * Full-bleed jade-900 dawn hero. Copy stays on the left; one photo at a
+ * time fills the right and feathers into the jade so the middle dissolves
+ * instead of meeting at a hard edge. Below `lg` the photo sits as a single
+ * strip under the input.
  */
 export function HeroDawn({
   goal,
@@ -35,8 +35,8 @@ export function HeroDawn({
   return (
     <section aria-labelledby="hero-heading" className="relative isolate">
       <div className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 bg-jade-900">
-        <div className="flex min-h-[calc(100vh-4.5rem)] flex-col supports-[height:100svh]:min-h-[calc(100svh-4.5rem)] lg:flex-row lg:items-stretch">
-          <div className="relative flex min-w-0 flex-1 flex-col justify-center px-[22px] py-3xl md:py-4xl lg:flex-none lg:w-[min(100%,calc(max(22px,(100vw-1180px)/2+22px)+560px+48px))] lg:pl-[max(22px,calc((100vw-1180px)/2+22px))] lg:pr-3xl">
+        <div className="relative flex min-h-[calc(100vh-4.5rem)] flex-col supports-[height:100svh]:min-h-[calc(100svh-4.5rem)] lg:block lg:min-h-[calc(100vh-4.5rem)] lg:supports-[height:100svh]:min-h-[calc(100svh-4.5rem)]">
+          <div className="relative z-[1] flex min-w-0 flex-1 flex-col justify-center px-[22px] py-3xl md:py-4xl lg:w-[min(100%,calc(max(22px,(100vw-1180px)/2+22px)+760px+32px))] lg:pl-[max(22px,calc((100vw-1180px)/2+22px))] lg:pr-xl">
             <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
               <div className="absolute -left-40 -top-32 opacity-50">
                 <Ripples
@@ -56,13 +56,13 @@ export function HeroDawn({
 
               <h1
                 id="hero-heading"
-                className="animate-fade-up delay-1 mt-lg text-white md:mt-xl"
+                className="animate-fade-up delay-1 mt-lg max-w-[9.2em] text-white md:mt-xl"
               >
                 <span className="text-hero-question block">
                   {t('landing.headlineBefore')}
                 </span>
                 {t('landing.headlineAccent') ? (
-                  <span className="text-hero-directive mt-xs block text-jade-bright">
+                  <span className="text-hero-directive block text-jade-bright">
                     {t('landing.headlineAccent')}
                   </span>
                 ) : null}

@@ -1,23 +1,15 @@
 /* Landing (Morning Water) — display type, scroll reveals, ambient motion. */
 
-/* Question line — quieter lead-in. */
-.text-hero-question {
-  font-family: 'Bricolage Grotesque', 'Noto Sans Myanmar', system-ui, sans-serif;
-  font-size: 28px;
-  font-weight: 500;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
-}
-
-/* Directive — larger, heavier; leads the eye. */
+/* Hero title — one size for the question and "Start here." so they read
+ * as a single oversized headline (color is the only change). */
+.text-hero-question,
 .text-hero-directive {
   font-family: 'Bricolage Grotesque', 'Noto Sans Myanmar', system-ui, sans-serif;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
+  font-size: clamp(34px, 8.4vw, 42px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  overflow-wrap: break-word;
 }
 
 .text-sect {
@@ -29,30 +21,23 @@
 }
 
 @media (min-width: 768px) {
-  .text-hero-question {
-    font-size: 44px;
-    line-height: 1.2;
-  }
-
+  .text-hero-question,
   .text-hero-directive {
-    font-size: 64px;
-    line-height: 1.1;
+    font-size: clamp(56px, 5.8vw, 80px);
+    line-height: 1.04;
   }
 }
 
 /* Burmese stacked diacritics clip below 1.8 — applies at display sizes too.
  * Burmese headlines also run longer than English, so hero type is smaller
  * under :lang(my) to avoid 3-line wraps and overflow. */
-:lang(my) .text-hero-question {
-  font-size: 22px;
-  line-height: 1.8;
-  letter-spacing: 0;
-}
-
+:lang(my) .text-hero-question,
 :lang(my) .text-hero-directive {
-  font-size: 32px;
+  font-size: clamp(22px, 5.4vw, 28px);
+  font-weight: 600;
   line-height: 1.8;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 :lang(my) .text-sect {
@@ -60,13 +45,9 @@
 }
 
 @media (min-width: 768px) {
-  :lang(my) .text-hero-question {
-    font-size: 32px;
-    line-height: 1.8;
-  }
-
+  :lang(my) .text-hero-question,
   :lang(my) .text-hero-directive {
-    font-size: 48px;
+    font-size: clamp(32px, 3.4vw, 48px);
     line-height: 1.8;
   }
 }
@@ -113,9 +94,32 @@
   transform-origin: center;
 }
 
-/* Hero mosaic crossfade — 600ms, paused visually under reduced motion. */
-.hero-grid-tile img {
+/* Hero photo crossfade — 600ms. Jade dissolves across the middle of the frame. */
+.hero-stage-img {
   transition: opacity 600ms var(--ease-out);
+}
+
+.hero-stage-fade {
+  background: linear-gradient(
+    to bottom,
+    var(--jade-900) 0%,
+    rgba(7, 56, 37, 0.55) 28%,
+    rgba(7, 56, 37, 0.12) 62%,
+    rgba(7, 56, 37, 0) 100%
+  );
+}
+
+@media (min-width: 1024px) {
+  .hero-stage-fade {
+    background: linear-gradient(
+      to right,
+      var(--jade-900) 0%,
+      rgba(7, 56, 37, 0.88) 18%,
+      rgba(7, 56, 37, 0.42) 42%,
+      rgba(7, 56, 37, 0.08) 68%,
+      rgba(7, 56, 37, 0) 100%
+    );
+  }
 }
 
 /* AI thinking dots in the storyboard. */
@@ -148,7 +152,7 @@
     animation: none;
   }
 
-  .hero-grid-tile img {
+  .hero-stage-img {
     transition: none;
   }
 }
