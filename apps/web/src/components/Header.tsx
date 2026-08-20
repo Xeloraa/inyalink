@@ -326,16 +326,6 @@ export function Header() {
             {menu}
           </div>
 
-          {!loading && !session ? (
-            <Link
-              to="/login"
-              aria-label={t('header.login')}
-              className={`${PROFILE_ICON_BUTTON} ml-1`}
-            >
-              <ProfileGlyph />
-            </Link>
-          ) : null}
-
           <div className="hidden min-[420px]:block">
             <LanguageToggle
               locale={locale}
@@ -359,6 +349,14 @@ export function Header() {
             />
           ) : mountAccountMenu ? (
             <AccountMenu pro={pro} />
+          ) : !session ? (
+            <Link
+              to="/login"
+              aria-label={t('header.login')}
+              className={`${PROFILE_ICON_BUTTON} ml-1`}
+            >
+              <ProfileGlyph />
+            </Link>
           ) : null}
         </nav>
       </div>
