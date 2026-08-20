@@ -1,11 +1,11 @@
 import { HERO_IMAGES } from './heroImages';
 import { useHeroRotation, type HeroTile } from './useHeroRotation';
 
-const EAGER_SRC = new Set<string>(HERO_IMAGES.slice(0, 4));
+const EAGER_SRC = new Set<string>(HERO_IMAGES.slice(0, 1));
 
 function Tile({ tile, index }: { tile: HeroTile; index: number }) {
   return (
-    <div className="hero-grid-tile relative overflow-hidden bg-jade-800">
+    <div className="hero-grid-tile absolute inset-0 overflow-hidden bg-jade-800">
       {tile.srcs.map((src, layer) => {
         const eager = EAGER_SRC.has(src);
         return (
@@ -13,9 +13,9 @@ function Tile({ tile, index }: { tile: HeroTile; index: number }) {
             key={layer}
             src={src}
             alt=""
-            width={640}
-            height={640}
-            sizes="(min-width: 1024px) 25vw, 25vw"
+            width={1280}
+            height={698}
+            sizes="(min-width: 1024px) 50vw, 100vw"
             loading={eager ? 'eager' : 'lazy'}
             fetchPriority={index === 0 && layer === 0 ? 'high' : 'low'}
             decoding="async"
@@ -31,26 +31,25 @@ function Tile({ tile, index }: { tile: HeroTile; index: number }) {
 }
 
 /**
- * 2×2 mosaic on large screens; a single row of four on smaller ones.
- * Tiles crossfade one at a time. Jade fades in from the copy side.
+ * One large photo filling the full right half of the hero, edge to edge,
+ * full height. Crossfades through the pool one image at a time. Jade
+ * fades in from the copy side.
  */
 export function HeroGrid() {
   const { tiles, setPaused } = useHeroRotation(HERO_IMAGES);
+  const tile = tiles[0];
+  if (!tile) return null;
 
   return (
     <div
       aria-hidden
-      className="relative h-[22vw] min-h-[6.5rem] w-full shrink-0 lg:h-auto lg:min-h-0 lg:flex-1 lg:self-stretch"
+      className="relative h-[46vw] min-h-[11rem] w-full shrink-0 lg:h-auto lg:min-h-0 lg:flex-1 lg:self-stretch"
       onPointerEnter={() => {
         if (window.matchMedia('(hover: hover)').matches) setPaused(true);
       }}
       onPointerLeave={() => setPaused(false)}
     >
-      <div className="grid h-full grid-cols-4 grid-rows-1 gap-px bg-jade-950 lg:grid-cols-2 lg:grid-rows-2">
-        {tiles.map((tile, index) => (
-          <Tile key={index} tile={tile} index={index} />
-        ))}
-      </div>
+      <Tile tile={tile} index={0} />
       <div className="hero-stage-fade pointer-events-none absolute inset-0" />
     </div>
   );

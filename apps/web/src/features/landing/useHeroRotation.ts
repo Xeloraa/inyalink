@@ -39,7 +39,7 @@ function prefersReducedMotion(): boolean {
 }
 
 /**
- * Independently crossfades each of four tiles through a shared image pool.
+ * Independently crossfades each tile through a shared image pool.
  * Pauses while `paused` is true; does not rotate under prefers-reduced-motion.
  */
 export function useHeroRotation(pool: readonly string[]) {
@@ -50,8 +50,10 @@ export function useHeroRotation(pool: readonly string[]) {
   tilesRef.current = tiles;
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
-  const inflightRef = useRef<(string | null)[]>([null, null, null, null]);
-  const rotatingRef = useRef([false, false, false, false]);
+  const inflightRef = useRef<(string | null)[]>(
+    Array.from({ length: HERO_TILE_COUNT }, () => null),
+  );
+  const rotatingRef = useRef(Array.from({ length: HERO_TILE_COUNT }, () => false));
   const cancelledRef = useRef(false);
 
   const stillThisSwap = useCallback((index: number, next: string) => {
@@ -161,7 +163,7 @@ export function useHeroRotation(pool: readonly string[]) {
       cancelledRef.current = true;
       window.clearTimeout(timer);
       media.removeEventListener('change', onMotion);
-      inflightRef.current = [null, null, null, null];
+      inflightRef.current = Array.from({ length: HERO_TILE_COUNT }, () => null);
     };
   }, [pool, rotateTile]);
 

@@ -1,4 +1,4 @@
-/** 15-image pool for the landing hero grid. Four are visible at a time. */
+/** 15-image pool for the landing hero. One is visible at a time, crossfading through the pool. */
 export const HERO_IMAGES = [
   '/images/hero/hero-01.webp',
   '/images/hero/hero-02.webp',
@@ -17,10 +17,10 @@ export const HERO_IMAGES = [
   '/images/hero/hero-15.webp',
 ] as const;
 
-export const HERO_TILE_COUNT = 4;
+export const HERO_TILE_COUNT = 1;
 export const HERO_TILE_INTERVAL_MS = 6000;
 export const HERO_TILE_FADE_MS = 600;
-/** Spread the four swaps across one interval so they never fire together. */
+/** Spread swaps across one interval so simultaneous tiles never fire together. */
 export const HERO_TILE_STAGGER_MS = HERO_TILE_INTERVAL_MS / HERO_TILE_COUNT;
 
 export type HeroImageSrc = (typeof HERO_IMAGES)[number];
