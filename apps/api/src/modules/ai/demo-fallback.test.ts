@@ -72,7 +72,7 @@ describe('demo AI fallback cache', () => {
     log.mockRestore();
   });
 
-  it('advances the cached question sequence by assistant turns already asked', () => {
+  it('serves only the opening question — never a later one that would confirm invented values', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const q1 = lookupConverseDemoFallback(
       [{ role: 'user', content: DEMO_CONVERSE_INPUT }],
@@ -82,7 +82,11 @@ describe('demo AI fallback cache', () => {
     expect(q1?.nextQuestion).toBeTruthy();
     expect(q1?.briefDraft.category).toBeTruthy();
 
-    const q2 = lookupConverseDemoFallback(
+    // Once the real model/provider has been asked at least one question,
+    // a later provider failure must not fall back to scripted questions
+    // (or a scripted "finished brief") that assert facts — budget,
+    // deadline, etc. — the user never actually gave on this turn.
+    const afterOneTurn = lookupConverseDemoFallback(
       [
         { role: 'user', content: DEMO_CONVERSE_INPUT },
         { role: 'assistant', content: q1!.nextQuestion! },
@@ -90,36 +94,9 @@ describe('demo AI fallback cache', () => {
       ],
       'my',
     );
-    expect(q2?.complete).toBe(false);
-    expect(q2?.nextQuestion).toBeTruthy();
+    expect(afterOneTurn).toBeNull();
 
-    const q3 = lookupConverseDemoFallback(
-      [
-        { role: 'user', content: DEMO_CONVERSE_INPUT },
-        { role: 'assistant', content: 'q1' },
-        { role: 'user', content: 'Inya Cafe' },
-        { role: 'assistant', content: 'q2' },
-        { role: 'user', content: 'logo ပဲ' },
-      ],
-      'my',
-    );
-    expect(q3?.nextQuestion).toBeTruthy();
-
-    const q4 = lookupConverseDemoFallback(
-      [
-        { role: 'user', content: DEMO_CONVERSE_INPUT },
-        { role: 'assistant', content: 'q1' },
-        { role: 'user', content: 'Inya Cafe' },
-        { role: 'assistant', content: 'q2' },
-        { role: 'user', content: 'logo ပဲ' },
-        { role: 'assistant', content: 'q3' },
-        { role: 'user', content: 'minimalist' },
-      ],
-      'my',
-    );
-    expect(q4?.nextQuestion).toBeTruthy();
-
-    const done = lookupConverseDemoFallback(
+    const afterFourTurns = lookupConverseDemoFallback(
       [
         { role: 'user', content: DEMO_CONVERSE_INPUT },
         { role: 'assistant', content: 'q1' },
@@ -129,20 +106,15 @@ describe('demo AI fallback cache', () => {
         { role: 'assistant', content: 'q3' },
         { role: 'user', content: 'minimalist' },
         { role: 'assistant', content: 'q4' },
-        { role: 'user', content: '2026-09-30' },
+        { role: 'user', content: '20000' },
       ],
       'my',
     );
-    expect(done?.complete).toBe(true);
-    expect(done?.nextQuestion).toBeUndefined();
-    expect(log).toHaveBeenCalledWith(
-      '[demo-only] AI fallback cache hit',
-      expect.objectContaining({ complete: true }),
-    );
+    expect(afterFourTurns).toBeNull();
     log.mockRestore();
   });
 
-  it('serves converse for the landing quick-hire chip mid-sequence', () => {
+  it('does not serve a scripted reply once the real conversation has moved past the opening', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const chip = DEMO_CONVERSE_ALIASES.find((a) => a.includes('လိုဂို'))!;
     const mid = lookupConverseDemoFallback(
@@ -153,37 +125,25 @@ describe('demo AI fallback cache', () => {
       ],
       'my',
     );
-    expect(mid?.complete).toBe(false);
-    expect(mid?.nextQuestion).toBeTruthy();
+    expect(mid).toBeNull();
     expect(log).toHaveBeenCalledWith(
-      '[demo-only] AI fallback cache hit',
-      expect.objectContaining({
-        nextQuestionIndex: 1,
-      }),
+      '[demo-only] AI fallback cache miss',
+      expect.objectContaining({ reason: 'past_opening_turn' }),
     );
     log.mockRestore();
   });
 
-  it('still advances mid-conversation when the latest reply is free-form', () => {
+  it('does not invent a scripted reply for a bare-number free-form answer mid-conversation', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const mid = lookupConverseDemoFallback(
       [
         { role: 'user', content: DEMO_CONVERSE_INPUT },
         { role: 'assistant', content: 'first question' },
-        { role: 'user', content: 'cafe vex' },
+        { role: 'user', content: '20000' },
       ],
       'en',
     );
-    expect(mid).not.toBeNull();
-    expect(mid?.complete).toBe(false);
-    expect(mid?.nextQuestion).toBeTruthy();
-    expect(log).toHaveBeenCalledWith(
-      '[demo-only] AI fallback cache hit',
-      expect.objectContaining({
-        feature: 'structure_brief',
-        nextQuestionIndex: 1,
-      }),
-    );
+    expect(mid).toBeNull();
     log.mockRestore();
   });
 

@@ -410,12 +410,16 @@ export function lookupRoadmapDemoFallback(
 }
 
 /**
- * Serve the next cached converse turn for a seeded opening.
- * Index = assistant questions already in `messages` (0 on first call).
- * When that index is past the question list, return finalBrief + complete.
- *
- * Follow-up turns match on opening only — free-form mid-script replies still
- * advance the canned sequence so rate limits mid-conversation never stall.
+ * Serve the next cached converse turn for a seeded opening — but only the
+ * very first assistant turn (`asked === 0`). Every question past that one
+ * is scripted to confirm specific budget/deadline/etc. values as if the
+ * user had just given them, indexed purely by turn count — not by what the
+ * user actually typed. A provider failure on a later turn used to still
+ * advance that script, so the reply could confirm figures the user never
+ * said (e.g. inventing a deadline). Past the opening we no longer know the
+ * script still matches the real conversation, so a later failure gets the
+ * generic retry notice instead of a canned — and potentially fabricated —
+ * confirmation.
  */
 export function lookupConverseDemoFallback(
   messages: Array<{ role: string; content: string }>,
@@ -442,6 +446,17 @@ export function lookupConverseDemoFallback(
     return null;
   }
 
+  if (asked > 0) {
+    logFallback('miss', 'structure_brief', {
+      normalizedInput: opening,
+      locale,
+      assistantQuestionsAsked: asked,
+      userMessageCount: userCount,
+      reason: 'past_opening_turn',
+    });
+    return null;
+  }
+
   const fixture = findConverseFixture(opening, locale);
   if (!fixture) {
     logFallback('miss', 'structure_brief', {
@@ -464,41 +479,16 @@ export function lookupConverseDemoFallback(
     return null;
   }
 
-  // Still have a cached question to ask.
-  if (asked < questions.length) {
-    const draftSource =
-      fixture.draftsAfterUserTurn[Math.max(0, userCount - 1)] ??
-      fixture.draftsAfterUserTurn[asked] ??
-      {};
-    const nextQuestion = questions[asked]!;
-    const response = ConverseBriefResponseSchema.parse({
-      nextQuestion,
-      complete: false,
-      briefDraft: {
-        ...omitNulls(draftSource),
-        language: fixture.locale,
-      },
-    });
-
-    logFallback('hit', 'structure_brief', {
-      matchInput: fixture.matchInput,
-      file: fixture.file,
-      normalizedInput: opening,
-      locale,
-      assistantQuestionsAsked: asked,
-      userMessageCount: userCount,
-      nextQuestionIndex: asked,
-      complete: false,
-      demoOnly: true,
-    });
-    return response;
-  }
-
-  // All questions answered → finished brief.
+  // asked === 0 is guaranteed here (the asked > 0 check above already
+  // returned), so this is always the fixture's opening question — never a
+  // later one that would assert values the user hasn't actually given yet.
+  const draftSource = fixture.draftsAfterUserTurn[0] ?? {};
+  const nextQuestion = questions[0]!;
   const response = ConverseBriefResponseSchema.parse({
-    complete: true,
+    nextQuestion,
+    complete: false,
     briefDraft: {
-      ...omitNulls(fixture.finalBrief),
+      ...omitNulls(draftSource),
       language: fixture.locale,
     },
   });
@@ -510,7 +500,8 @@ export function lookupConverseDemoFallback(
     locale,
     assistantQuestionsAsked: asked,
     userMessageCount: userCount,
-    complete: true,
+    nextQuestionIndex: 0,
+    complete: false,
     demoOnly: true,
   });
   return response;

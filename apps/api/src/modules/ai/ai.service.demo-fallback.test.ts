@@ -4,7 +4,6 @@ import {
   DEMO_CONVERSE_INPUT,
   DEMO_ROADMAP_INPUT,
 } from '../../ai/demo-fallback/cache.js';
-import { isBriefDraftComplete } from '@inyalink/shared';
 
 const complete = vi.fn();
 const insertRoadmap = vi.fn();
@@ -100,7 +99,12 @@ describe('ai.service demo fallback', () => {
     expect(result.briefDraft.language).toBe('my');
   });
 
-  it('fires mid-conversation when a later turn rate-limits', async () => {
+  it('gives a generic retry notice, not a scripted reply, when a later turn rate-limits', async () => {
+    // A later-turn provider failure must never fall back to a canned
+    // question/confirmation — that fixture text is indexed by turn count,
+    // not by what the user actually said, and would risk stating back
+    // values (budget, deadline, ...) the user never gave. See the
+    // "past_opening_turn" guard in lookupConverseDemoFallback.
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     complete.mockResolvedValue({
       ok: false,
@@ -116,17 +120,17 @@ describe('ai.service demo fallback', () => {
       locale: 'my',
     });
 
-    expect(result.retryable).toBeUndefined();
+    expect(result.retryable).toBe(true);
+    expect(result.notice).toBeTruthy();
     expect(result.complete).toBe(false);
-    expect(result.nextQuestion).toBeTruthy();
     expect(log).toHaveBeenCalledWith(
-      '[demo-only] AI fallback cache hit',
-      expect.objectContaining({ nextQuestionIndex: 1 }),
+      '[demo-only] AI fallback cache miss',
+      expect.objectContaining({ reason: 'past_opening_turn' }),
     );
     log.mockRestore();
   });
 
-  it('serves fixture mid-conversation even when the reply is free-form', async () => {
+  it('gives a generic retry notice mid-conversation even when the reply is free-form', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     complete.mockResolvedValue({
       ok: false,
@@ -142,68 +146,45 @@ describe('ai.service demo fallback', () => {
       locale: 'en',
     });
 
-    expect(result.retryable).toBeUndefined();
-    expect(result.nextQuestion).toBeTruthy();
-    expect(log).toHaveBeenCalledWith(
-      '[demo-only] AI fallback cache firing',
-      expect.objectContaining({
-        feature: 'structure_brief',
-      }),
-    );
+    expect(result.retryable).toBe(true);
+    expect(result.notice).toBeTruthy();
     log.mockRestore();
   });
 
-  it('completes the full demo converse with the provider always unavailable', async () => {
+  it('serves only the opening fixture question, then a retry notice for every later turn — never invented budget/deadline values', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     complete.mockResolvedValue({
       ok: false,
       error: { code: 'AI_RATE_LIMIT', message: 'busy' },
     });
 
-    const replies = [
-      'Inya Cafe',
-      'just the logo for now',
-      'Minimalist, brown and cream',
-      '300000-500000, deadline 2026-09-30',
-    ];
+    const opening = await converseBrief({
+      messages: [{ role: 'user', content: DEMO_CONVERSE_INPUT }],
+      locale: 'my',
+    });
+    expect(opening.retryable).toBeUndefined();
+    expect(opening.complete).toBe(false);
+    expect(opening.nextQuestion).toBeTruthy();
+    expect(opening.briefDraft.category).toBe('graphic-design');
 
-    let messages: Array<{ role: 'user' | 'assistant'; content: string }> = [
-      { role: 'user', content: DEMO_CONVERSE_INPUT },
-    ];
-    let briefDraft = undefined as
-      | Awaited<ReturnType<typeof converseBrief>>['briefDraft']
-      | undefined;
+    // The user answers with a bare number the opening fixture never asked
+    // about — the reported bug had this produce an invented budget range
+    // and a fabricated deadline. It must now just ask the user to retry.
+    const afterReply = await converseBrief({
+      messages: [
+        { role: 'user', content: DEMO_CONVERSE_INPUT },
+        { role: 'assistant', content: opening.nextQuestion! },
+        { role: 'user', content: '20000' },
+      ],
+      briefDraft: opening.briefDraft,
+      locale: 'my',
+    });
 
-    for (let i = 0; i < 8; i += 1) {
-      const result = await converseBrief({
-        messages,
-        briefDraft,
-        locale: 'my',
-      });
-      expect(result.retryable).toBeUndefined();
-      briefDraft = result.briefDraft;
-
-      if (result.complete) {
-        expect(result.nextQuestion).toBeUndefined();
-        expect(isBriefDraftComplete(result.briefDraft)).toBe(true);
-        expect(result.briefDraft.category).toBe('graphic-design');
-        expect(result.briefDraft.deadline).toBe('2026-09-30');
-        expect(complete.mock.calls.length).toBeGreaterThanOrEqual(5);
-        log.mockRestore();
-        return;
-      }
-
-      expect(result.nextQuestion).toBeTruthy();
-      const reply = replies.shift() ?? 'ok';
-      messages = [
-        ...messages,
-        { role: 'assistant', content: result.nextQuestion! },
-        { role: 'user', content: reply },
-      ];
-    }
-
+    expect(afterReply.retryable).toBe(true);
+    expect(afterReply.complete).toBe(false);
+    expect(afterReply.briefDraft.budget_min_mmk ?? null).not.toBe(300000);
+    expect(afterReply.briefDraft.deadline ?? null).not.toBe('2026-09-30');
     log.mockRestore();
-    throw new Error('demo converse did not complete');
   });
 
   it('completes seeded converse when AI_PROVIDER is unset', async () => {
