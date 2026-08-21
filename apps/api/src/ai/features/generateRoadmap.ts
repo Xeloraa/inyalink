@@ -41,6 +41,25 @@ export type GenerateRoadmapErr = {
 
 export type GenerateRoadmapFeatureResult = GenerateRoadmapOk | GenerateRoadmapErr;
 
+/**
+ * The prompt tells the model this step's category_slug is always "other"
+ * (none of the platform categories are a legal/registration professional),
+ * but it still mistags it as graphic-design often enough — verified live,
+ * not just in theory — that prompt wording alone isn't reliable here. Force
+ * it in code instead, the same way an invalid slug already gets corrected
+ * below, rather than continuing to trust instruction-following for this
+ * specific, compliance-relevant miscategorization.
+ *
+ * "other" is deliberately not gated on the live active-category list here:
+ * it isn't a matchable professional category in the database at all (it
+ * wasn't even in the active list when this was verified), it's a fixed
+ * meta-value meaning "name the professional type, no listed category
+ * fits" — the same value every hand-written fixture already uses for
+ * exactly this kind of step.
+ */
+const REGISTRATION_STEP_PATTERN =
+  /registration|accountant|မှတ်ပုံတင်|စာရင်းကိုင်/i;
+
 function normalizeSteps(
   raw: GenerateRoadmapModelOutput['steps'],
   allowed: Set<string>,
@@ -54,7 +73,11 @@ function normalizeSteps(
     .map((step, index) => {
       const order = index + 1;
       let slug = step.category_slug;
-      if (!allowed.has(slug)) {
+      if (slug !== 'other' && REGISTRATION_STEP_PATTERN.test(step.title)) {
+        remappedSlugs.push({ order, from: slug, to: 'other' });
+        slug = 'other';
+      }
+      if (slug !== 'other' && !allowed.has(slug)) {
         remappedSlugs.push({ order, from: slug, to: fallbackSlug });
         slug = fallbackSlug;
       }

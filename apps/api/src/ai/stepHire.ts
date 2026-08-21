@@ -1,15 +1,17 @@
 /**
- * Seeded step-hire openings (from a roadmap step the client picked) walk a
- * short, deterministic name → style → budget/deadline sequence — the same
- * "never leave it to the model" approach as problemDiagnosisTurn, and for
- * the same reason: a scripted/demo turn that echoes back what the user
- * actually typed must never invent a figure or a date they didn't give.
- * This runs unconditionally (not just as a fallback), so this specific
- * flow has no dependency on the AI provider being up at all.
+ * Seeded step-hire openings (from any roadmap step the client picked) walk
+ * a short, deterministic name → [style, for a graphic-design step] →
+ * budget/deadline sequence — the same "never leave it to the model"
+ * approach as problemDiagnosisTurn, and for the same reason: a turn that
+ * confirms what the user typed must never invent a figure or a date they
+ * didn't give. This runs unconditionally (not just as a fallback), so
+ * every step-hire conversation has no dependency on the AI provider being
+ * up at all.
  *
- * Deliberately scoped to the exact step this is built for — other seeded
- * hires fall through to structureBrief / demo-fallback as before. This is
- * not a general hire-conversation engine.
+ * Deliberately generic across categories rather than matched on exact step
+ * title text: generateRoadmap produces fresh wording on every live call, so
+ * matching one hardcoded phrase only covered a single lucky rehearsal — any
+ * roadmap step the user actually picks must work the same way.
  */
 import { detectResponseLocale } from '@inyalink/burmese';
 import type { BriefDraft, ChatMessage, UiLocale } from '@inyalink/shared';
@@ -20,13 +22,17 @@ export type StepHireTurn = {
   briefDraft: BriefDraft;
 };
 
-/** Roadmap step titles this deterministic flow handles (verbatim, from beginStepHire). */
-const OPENING_TITLES = new Set(['brand နဲ့ logo']);
-
-const NAME_Q: Record<UiLocale, string> = {
-  en: "I'll arrange the logo and brand identity for you. What's your shop's name?",
-  my: 'Logo နှင့် brand identity အတွက် စီစဉ်ပေးပါ့မယ်။ ဆိုင်နာမည်က ဘာလဲ ပြောပြပေးပါ။',
-};
+function nameQuestion(locale: UiLocale, stepTitle: string | undefined): string {
+  const step = stepTitle?.trim();
+  if (locale === 'en') {
+    return step
+      ? `I'll arrange "${step}" for you. What's your shop's name?`
+      : "I'll arrange this for you. What's your shop's name?";
+  }
+  return step
+    ? `${step} အတွက် စီစဉ်ပေးပါ့မယ်။ ဆိုင်နာမည်က ဘာလဲ ပြောပြပေးပါ။`
+    : 'ဒါကို စီစဉ်ပေးပါ့မယ်။ ဆိုင်နာမည်က ဘာလဲ ပြောပြပေးပါ။';
+}
 
 function titleCase(raw: string): string {
   return raw
@@ -59,10 +65,18 @@ const STYLE_LABEL: Record<Style, Record<UiLocale, string>> = {
   traditional: { en: 'Traditional', my: 'ရိုးရာ' },
 };
 
-function budgetDeadlineQuestion(locale: UiLocale, styleLabel: string): string {
-  return locale === 'en'
-    ? `${styleLabel} style — noted. What's your budget, and when do you need it by?`
-    : `${styleLabel} ပုံစံပေါ့ — မှတ်ထားပါပြီ။ ဘတ်ဂျက်နဲ့ လိုအပ်တဲ့ ရက်ကို ပြောပြပေးပါ။`;
+function budgetDeadlineQuestion(
+  locale: UiLocale,
+  leadIn: string | null,
+): string {
+  if (locale === 'en') {
+    return leadIn
+      ? `${leadIn} — noted. What's your budget, and when do you need it by?`
+      : "Noted. What's your budget, and when do you need it by?";
+  }
+  return leadIn
+    ? `${leadIn} ပေါ့ — မှတ်ထားပါပြီ။ ဘတ်ဂျက်နဲ့ လိုအပ်တဲ့ ရက်ကို ပြောပြပေးပါ။`
+    : 'မှတ်ထားပါပြီ။ ဘတ်ဂျက်နဲ့ လိုအပ်တဲ့ ရက်ကို ပြောပြပေးပါ။';
 }
 
 /** Fold Burmese digits (၀-၉) to ASCII so number parsing works on either script. */
@@ -126,61 +140,93 @@ function parseDeadline(raw: string, today: Date): string | null {
   return null;
 }
 
+const NAME_LABEL: Record<UiLocale, string> = { en: 'shop name', my: 'ဆိုင်နာမည်' };
+const STYLE_REQ_LABEL: Record<UiLocale, string> = { en: 'style', my: 'ပုံစံ' };
+
 export function stepHireTurn(
   messages: ChatMessage[],
   _locale: UiLocale,
   seedDraft: BriefDraft,
 ): StepHireTurn | null {
+  // Only seeded step-hires (beginStepHire always sets a category); a
+  // freeform "I need a logo" opening has no seed and keeps using
+  // structureBrief / the demo-fallback fixtures as before.
+  if (!seedDraft.category) return null;
+
   const users = messages.filter((m) => m.role === 'user');
   const assistants = messages.filter((m) => m.role === 'assistant');
   const opening = users[0]?.content.trim();
-  if (!opening || !OPENING_TITLES.has(opening)) return null;
+  if (!opening) return null;
 
   // Locale is sticky to the opening, not re-detected per turn: a short
   // answer like a proper noun ("Daw Mya Cafe") or a bare number is often
   // typed in Latin script even mid-Burmese-conversation, and must not flip
   // the whole reply language.
   const locale = detectResponseLocale(opening);
-
   const asked = assistants.length;
+  const isDesignStep = seedDraft.category === 'graphic-design';
 
   if (asked === 0) {
-    return { nextQuestion: NAME_Q[locale], briefDraft: seedDraft };
+    return { nextQuestion: nameQuestion(locale, seedDraft.title), briefDraft: seedDraft };
   }
 
   const name = titleCase(users[1]?.content ?? '');
+  const nameReq = `${NAME_LABEL[locale]}: ${name}`;
 
   if (asked === 1) {
+    if (isDesignStep) {
+      return {
+        nextQuestion: styleQuestion(locale, name),
+        briefDraft: { ...seedDraft, requirements: [nameReq] },
+      };
+    }
     return {
-      nextQuestion: styleQuestion(locale, name),
-      briefDraft: { ...seedDraft, title: `${name} logo` },
+      nextQuestion: budgetDeadlineQuestion(locale, name),
+      briefDraft: { ...seedDraft, requirements: [nameReq] },
     };
   }
 
-  const style = classifyStyle(users[2]?.content ?? '');
-  const styleLabel = style ? STYLE_LABEL[style][locale] : (users[2]?.content ?? '').trim();
+  if (isDesignStep) {
+    const style = classifyStyle(users[2]?.content ?? '');
+    const styleLabel = style ? STYLE_LABEL[style][locale] : (users[2]?.content ?? '').trim();
+    const styleReq = `${STYLE_REQ_LABEL[locale]}: ${styleLabel}`;
 
+    if (asked === 2) {
+      return {
+        nextQuestion: budgetDeadlineQuestion(locale, styleLabel),
+        briefDraft: { ...seedDraft, requirements: [nameReq, styleReq] },
+      };
+    }
+
+    if (asked === 3) {
+      const latest = users[3]?.content ?? '';
+      const budget = parseBudgetMmk(latest);
+      const deadline = parseDeadline(latest, new Date());
+      return {
+        complete: true,
+        briefDraft: {
+          ...seedDraft,
+          requirements: [nameReq, styleReq],
+          ...(budget !== null ? { budget_min_mmk: budget, budget_max_mmk: budget } : {}),
+          ...(deadline !== null ? { deadline } : {}),
+          ai_confidence: budget !== null && deadline !== null ? 0.9 : 0.5,
+          needs_human_review: budget === null || deadline === null,
+        },
+      };
+    }
+    return null;
+  }
+
+  // Non-design steps skip the style question: name -> budget/deadline -> done.
   if (asked === 2) {
-    return {
-      nextQuestion: budgetDeadlineQuestion(locale, styleLabel),
-      briefDraft: {
-        ...seedDraft,
-        title: `${name} logo`,
-        requirements: [`style: ${styleLabel}`],
-      },
-    };
-  }
-
-  if (asked === 3) {
-    const latest = users[3]?.content ?? '';
+    const latest = users[2]?.content ?? '';
     const budget = parseBudgetMmk(latest);
     const deadline = parseDeadline(latest, new Date());
     return {
       complete: true,
       briefDraft: {
         ...seedDraft,
-        title: `${name} logo`,
-        requirements: [`style: ${styleLabel}`],
+        requirements: [nameReq],
         ...(budget !== null ? { budget_min_mmk: budget, budget_max_mmk: budget } : {}),
         ...(deadline !== null ? { deadline } : {}),
         ai_confidence: budget !== null && deadline !== null ? 0.9 : 0.5,

@@ -29,7 +29,7 @@ Never refuse a goal-shaped request. Never say it is out of scope. Never invent a
 
 Do not invent new slugs. Prefer the best-fit category per step; the same slug may appear more than once if needed.
 
-For legal/tax/registration needs, one step that **names the professional type** (company-registration specialist, accountant) and stops — no substantive advice — is enough; use `other` only when the hire is genuinely off the named list, otherwise pick the closest listed `category_slug`.
+For legal/tax/registration needs, one step that **names the professional type** (company-registration specialist, accountant) and stops — no substantive advice — is enough. This step's `category_slug` is always `other` — none of the other listed categories represent this kind of professional, so never tag it graphic-design, web-development, or anything else on the list.
 
 ## How a good consultant plans
 

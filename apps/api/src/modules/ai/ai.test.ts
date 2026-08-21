@@ -260,7 +260,13 @@ describe('generateRoadmap', () => {
     expect(result.steps).toHaveLength(4);
     expect(result.steps[0]?.order).toBe(1);
     expect(result.disclaimer).toContain('ဥပဒေ');
-    expect(result.remappedSlugs).toEqual([]);
+    // Step 4 ("မှတ်ပုံတင် အကူအညီ ငှားရန်" — registration help) is mocked with
+    // category_slug graphic-design; normalizeSteps corrects known
+    // legal/registration titles to "other" regardless of what the model said.
+    expect(result.steps[3]?.category_slug).toBe('other');
+    expect(result.remappedSlugs).toEqual([
+      { order: 4, from: 'graphic-design', to: 'other' },
+    ]);
     expect(result.usage).toEqual({ tokensIn: 40, tokensOut: 80 });
     expect(log).toHaveBeenCalledWith(
       expect.objectContaining({ feature: 'roadmap', succeeded: true }),
@@ -293,6 +299,7 @@ describe('generateRoadmap', () => {
     expect(result.remappedSlugs).toEqual([
       { order: 1, from: 'not-a-real-slug', to: 'graphic-design' },
       { order: 3, from: 'web-development', to: 'graphic-design' },
+      { order: 4, from: 'graphic-design', to: 'other' },
     ]);
   });
 

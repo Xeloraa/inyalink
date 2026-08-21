@@ -166,6 +166,31 @@ async function serveConverseFallback(
   });
   const cached = lookupConverseDemoFallback(messages, locale);
   if (!cached) {
+    // Last resort before the generic notice — but only when no fixture
+    // governs this conversation's opening at all: a roadmap step's title is
+    // fresh model text every time and was never curated into a script, so
+    // there's nothing else to fall back on. When a fixture DOES own the
+    // opening (e.g. the cafe-logo demo script) and the user goes off-script
+    // mid-conversation, the generic notice below is the right call — we
+    // have no way to coherently continue someone else's authored script.
+    const hired =
+      briefDraft.category && !isDemoConverseOpening(messages)
+        ? stepHireTurn(messages, locale, briefDraft)
+        : null;
+    if (hired) {
+      console.log('[demo-only] deterministic step-hire rescue (no fixture matched)', {
+        feature: 'structure_brief',
+        providerErrorKind,
+        hasQuestion: Boolean(hired.nextQuestion),
+        complete: Boolean(hired.complete),
+      });
+      return ConverseBriefResponseSchema.parse({
+        nextQuestion: hired.nextQuestion,
+        complete: hired.complete ?? false,
+        briefDraft: hired.briefDraft,
+      });
+    }
+
     console.log('[demo-only] AI fallback cache miss — serving generic retry notice', {
       feature: 'structure_brief',
       providerErrorKind,
@@ -344,32 +369,6 @@ export async function converseBrief(
       briefDraft: normalized.briefDraft ?? {},
       complete: false,
     });
-  }
-
-  // Seeded step-hires this deterministic script covers: name → style →
-  // budget/deadline, same "never leave it to the model" approach as the
-  // problem diagnosis below, and for the same reason — a scripted reply
-  // that confirms what the user gave must never invent a figure. Runs
-  // unconditionally (not just as a provider-failure fallback), so this
-  // specific flow has no dependency on the AI provider at all. Other
-  // seeded hires (not one of the handled opening titles) fall through.
-  if (seededHire) {
-    const hired = stepHireTurn(
-      normalized.messages,
-      responseLocale,
-      normalized.briefDraft ?? {},
-    );
-    if (hired) {
-      console.log('[classify] deterministic step-hire turn', {
-        hasQuestion: Boolean(hired.nextQuestion),
-        complete: Boolean(hired.complete),
-      });
-      return ConverseBriefResponseSchema.parse({
-        nextQuestion: hired.nextQuestion,
-        complete: hired.complete ?? false,
-        briefDraft: hired.briefDraft,
-      });
-    }
   }
 
   // Problem-shaped openings: diagnostic questions, then an encoded branch.
