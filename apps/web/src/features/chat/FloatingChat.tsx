@@ -48,12 +48,28 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * Retries both shapes a rate limit can arrive in: a resolved
+ * `{ retryable: true }` body (the AI provider's own 429, handled server-side
+ * with a notice) and a thrown ApiError with status 429 (our own
+ * aiRateLimit/aiDailyCap middleware, which rejects before the request ever
+ * reaches the provider-fallback logic). Without catching the thrown form,
+ * hitting our own limiter skipped straight to the error notice with zero
+ * retries and no chance for the demo fallback to run.
+ */
 async function withClientRateLimitRetries<T extends { retryable?: boolean }>(
   run: () => Promise<T>,
 ): Promise<T> {
   let last: T | undefined;
   for (let attempt = 0; attempt < CLIENT_RATE_LIMIT_ATTEMPTS; attempt += 1) {
-    last = await run();
+    try {
+      last = await run();
+    } catch (err) {
+      const ownRateLimit = err instanceof ApiError && err.status === 429;
+      if (!ownRateLimit || attempt === CLIENT_RATE_LIMIT_ATTEMPTS - 1) throw err;
+      await sleep(CLIENT_RATE_LIMIT_BASE_MS * 2 ** attempt);
+      continue;
+    }
     if (!last.retryable) return last;
     if (attempt < CLIENT_RATE_LIMIT_ATTEMPTS - 1) {
       await sleep(CLIENT_RATE_LIMIT_BASE_MS * 2 ** attempt);

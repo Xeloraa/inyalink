@@ -170,7 +170,7 @@ const STOPWORDS = new Set([
   'at', 'for', 'and', 'or', 'is', 'it', 'am', 'are', 'be', 'do', 'have',
   'has', 'want', 'need', 'please', 'hi', 'hello', 'there', 'with', 'this',
   'that', 'can', 'could', 'would', 'about', 'some',
-  'လိုချင်ပါတယ်', 'လိုပါတယ်', 'ချင်ပါတယ်',
+  'လိုချင်ပါတယ်', 'လိုပါတယ်', 'ချင်ပါတယ်', 'အတွက်', 'နဲ့',
 ]);
 
 /** Significant words in a string, normalized, lowercased, filler removed. */
@@ -251,6 +251,25 @@ const roadmapIdf = buildIdf(roadmapFixtures, roadmapKeywords);
 
 /** One shared word is too weak a signal — require at least two, or all of a fixture's own keywords if it has fewer. Filler words never reach this count at all (tokenize strips them). */
 const MIN_KEYWORD_MATCHES = 2;
+/**
+ * An absolute match count alone lets a broad fixture (many keywords across
+ * several aliases) fire on a thin, incidental overlap — e.g. a cafe hire
+ * titled "brand and logo" sharing just those two generic words with a
+ * 6-keyword clothing-logo fixture (33% of it) was enough to clear
+ * MIN_KEYWORD_MATCHES and serve garment-business text in a cafe
+ * conversation. Requiring at least half the fixture's own keywords closes
+ * that gap while still allowing a short, focused fixture to match on its
+ * full keyword set.
+ *
+ * Converse-only: business-identity fixtures repeat the same 1-2 generic
+ * domain words (brand, logo) across every alias, so a thin overlap there is
+ * usually incidental, not intent. Roadmap fixtures like "I don't know where
+ * to start" instead spread genuinely distinct phrasings across aliases
+ * (where/begin/not sure/no idea) — a real match there is legitimately a
+ * smaller share of a larger, more varied keyword set, so the same floor
+ * would reject good matches rather than bad ones.
+ */
+const MIN_CONVERSE_COVERAGE_RATIO = 0.5;
 
 /**
  * Fuzzy fallback for when nothing matches exactly: score every fixture in
@@ -271,6 +290,7 @@ function findBestKeywordMatch<T>(
   pool: T[],
   keywordsByFixture: Map<T, Set<string>>,
   idf: Map<string, number>,
+  minCoverageRatio = 0,
 ): T | null {
   let best: T | null = null;
   let bestRank = 0;
@@ -292,6 +312,8 @@ function findBestKeywordMatch<T>(
     if (matchCount < required) continue;
 
     const ratio = matchCount / keywords.size;
+    if (ratio < minCoverageRatio) continue;
+
     const rank = score * ratio;
     if (rank > bestRank) {
       best = fixture;
@@ -321,6 +343,7 @@ function findConverseFixture(
     pool,
     converseKeywords,
     converseIdf,
+    MIN_CONVERSE_COVERAGE_RATIO,
   );
 }
 
