@@ -80,10 +80,18 @@ export function updateConversation(id: string, body: UpsertConversationInput) {
   );
 }
 
-export function generateRoadmap(goal: string, locale: 'my' | 'en' = 'my') {
+export function generateRoadmap(
+  goal: string,
+  locale: 'my' | 'en' = 'my',
+  customerSource?: 'online' | 'walkins' | 'regulars' | 'unsure',
+) {
   return apiFetch<GenerateRoadmapResponse>('/api/v1/ai/roadmap', {
     method: 'POST',
-    body: JSON.stringify({ goal, locale }),
+    body: JSON.stringify({
+      goal,
+      locale,
+      ...(customerSource ? { customerSource } : {}),
+    }),
     timeoutMs: 60_000,
   });
 }

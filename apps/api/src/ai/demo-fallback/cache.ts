@@ -16,12 +16,13 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalizeToUnicode } from '@inyalink/burmese';
+import { detectResponseLocale, normalizeToUnicode } from '@inyalink/burmese';
 import {
   ConverseBriefResponseSchema,
   GenerateRoadmapResponseSchema,
   type BriefDraft,
   type ConverseBriefResponse,
+  type CustomerSourceBranch,
   type GenerateRoadmapResponse,
   type UiLocale,
 } from '@inyalink/shared';
@@ -38,6 +39,8 @@ type RoadmapFixture = {
   matchInput: string;
   aliases?: string[];
   language: 'my' | 'en';
+  /** Encoded problem branch — omit for launch / generic goals. */
+  customerSource?: CustomerSourceBranch;
   disclaimer: string;
   steps: GenerateRoadmapResponse['steps'];
 };
@@ -303,9 +306,7 @@ function findConverseFixture(
   normalizedOpening: string,
   locale: UiLocale,
 ): LoadedConverse | null {
-  const localeMatches = converseFixtures.filter((f) => f.locale === locale);
-  const pool =
-    localeMatches.length > 0 ? localeMatches : converseFixtures.filter((f) => f.locale === 'my');
+  const pool = converseFixtures.filter((f) => f.locale === locale);
 
   for (const fixture of pool) {
     for (const alias of fixtureAliases(fixture)) {
@@ -313,49 +314,38 @@ function findConverseFixture(
     }
   }
 
-  // Cross-locale: same opening text may only exist in the other locale file.
-  for (const fixture of converseFixtures) {
-    for (const alias of fixtureAliases(fixture)) {
-      if (normalizedOpening === normalizeDemoInput(alias)) return fixture;
-    }
-  }
-
-  // Fuzzy fallback: keyword overlap when nothing matched exactly.
   const inputTokens = new Set(tokenize(normalizedOpening));
   if (inputTokens.size === 0) return null;
-  return (
-    findBestKeywordMatch(inputTokens, pool, converseKeywords, converseIdf) ??
-    findBestKeywordMatch(inputTokens, converseFixtures, converseKeywords, converseIdf)
+  return findBestKeywordMatch(
+    inputTokens,
+    pool,
+    converseKeywords,
+    converseIdf,
   );
 }
 
 function findRoadmapFixture(
   normalizedGoal: string,
   locale: UiLocale,
+  source?: CustomerSourceBranch,
 ): LoadedRoadmap | null {
-  const localeMatches = roadmapFixtures.filter((f) => f.language === locale);
-  const pool =
-    localeMatches.length > 0 ? localeMatches : roadmapFixtures.filter((f) => f.language === 'my');
+  const localePool = roadmapFixtures.filter((f) => f.language === locale);
+  const pool = source
+    ? localePool.filter((f) => f.customerSource === source)
+    : localePool.filter(
+        (f) => !f.customerSource || f.customerSource === 'unsure',
+      );
+  const search = pool.length > 0 ? pool : localePool;
 
-  for (const fixture of pool) {
+  for (const fixture of search) {
     for (const alias of fixtureAliases(fixture)) {
       if (normalizedGoal === normalizeDemoInput(alias)) return fixture;
     }
   }
 
-  for (const fixture of roadmapFixtures) {
-    for (const alias of fixtureAliases(fixture)) {
-      if (normalizedGoal === normalizeDemoInput(alias)) return fixture;
-    }
-  }
-
-  // Fuzzy fallback: keyword overlap when nothing matched exactly.
   const inputTokens = new Set(tokenize(normalizedGoal));
   if (inputTokens.size === 0) return null;
-  return (
-    findBestKeywordMatch(inputTokens, pool, roadmapKeywords, roadmapIdf) ??
-    findBestKeywordMatch(inputTokens, roadmapFixtures, roadmapKeywords, roadmapIdf)
-  );
+  return findBestKeywordMatch(inputTokens, search, roadmapKeywords, roadmapIdf);
 }
 
 /** Opening user message for converse matching (first user turn). */
@@ -376,19 +366,27 @@ export function assistantQuestionCount(
 export function lookupRoadmapDemoFallback(
   goal: string,
   locale: UiLocale,
+  customerSource?: CustomerSourceBranch,
 ): GenerateRoadmapResponse | null {
   const normalized = normalizeDemoInput(goal);
+  const responseLocale = detectResponseLocale(goal) || locale;
   logFallback('check', 'roadmap', {
     normalizedInput: normalized,
-    locale,
+    locale: responseLocale,
+    requestedLocale: locale,
+    customerSource: customerSource ?? null,
     fixtureCount: roadmapFixtures.length,
   });
 
-  const fixture = findRoadmapFixture(normalized, locale);
+  const fixture = findRoadmapFixture(
+    normalized,
+    responseLocale,
+    customerSource,
+  );
   if (!fixture) {
     logFallback('miss', 'roadmap', {
       normalizedInput: normalized,
-      locale,
+      locale: responseLocale,
       reason: 'input_not_in_aliases',
     });
     return null;
@@ -403,7 +401,8 @@ export function lookupRoadmapDemoFallback(
     matchInput: fixture.matchInput,
     file: fixture.file,
     normalizedInput: normalized,
-    locale,
+    locale: responseLocale,
+    customerSource: customerSource ?? fixture.customerSource ?? null,
     demoOnly: true,
   });
   return parsed;
@@ -425,13 +424,18 @@ export function lookupConverseDemoFallback(
   messages: Array<{ role: string; content: string }>,
   locale: UiLocale,
 ): ConverseBriefResponse | null {
-  const opening = openingUserMessage(messages);
+  const openingRaw = messages.find((m) => m.role === 'user')?.content ?? null;
+  const opening = openingRaw ? normalizeDemoInput(openingRaw) : null;
   const asked = assistantQuestionCount(messages);
   const userCount = messages.filter((m) => m.role === 'user').length;
+  const responseLocale = openingRaw
+    ? detectResponseLocale(openingRaw)
+    : locale;
 
   logFallback('check', 'structure_brief', {
     normalizedInput: opening,
-    locale,
+    locale: responseLocale,
+    requestedLocale: locale,
     assistantQuestionsAsked: asked,
     userMessageCount: userCount,
     fixtureCount: converseFixtures.length,
@@ -440,7 +444,7 @@ export function lookupConverseDemoFallback(
   if (!opening) {
     logFallback('miss', 'structure_brief', {
       normalizedInput: null,
-      locale,
+      locale: responseLocale,
       reason: 'no_user_opening',
     });
     return null;
@@ -449,7 +453,7 @@ export function lookupConverseDemoFallback(
   if (asked > 0) {
     logFallback('miss', 'structure_brief', {
       normalizedInput: opening,
-      locale,
+      locale: responseLocale,
       assistantQuestionsAsked: asked,
       userMessageCount: userCount,
       reason: 'past_opening_turn',
@@ -457,11 +461,11 @@ export function lookupConverseDemoFallback(
     return null;
   }
 
-  const fixture = findConverseFixture(opening, locale);
+  const fixture = findConverseFixture(opening, responseLocale);
   if (!fixture) {
     logFallback('miss', 'structure_brief', {
       normalizedInput: opening,
-      locale,
+      locale: responseLocale,
       assistantQuestionsAsked: asked,
       userMessageCount: userCount,
       reason: 'input_not_in_aliases',
@@ -473,7 +477,7 @@ export function lookupConverseDemoFallback(
   if (!Array.isArray(questions) || questions.length === 0) {
     logFallback('miss', 'structure_brief', {
       normalizedInput: opening,
-      locale,
+      locale: responseLocale,
       reason: 'empty_question_sequence',
     });
     return null;
@@ -497,7 +501,7 @@ export function lookupConverseDemoFallback(
     matchInput: fixture.matchInput,
     file: fixture.file,
     normalizedInput: opening,
-    locale,
+    locale: responseLocale,
     assistantQuestionsAsked: asked,
     userMessageCount: userCount,
     nextQuestionIndex: 0,
@@ -511,14 +515,16 @@ export function lookupConverseDemoFallback(
 export function isDemoConverseOpening(
   messages: Array<{ role: string; content: string }>,
 ): boolean {
-  const opening = openingUserMessage(messages);
-  if (!opening) return false;
-  return findConverseFixture(opening, 'my') !== null;
+  const openingRaw = messages.find((m) => m.role === 'user')?.content;
+  if (!openingRaw) return false;
+  const locale = detectResponseLocale(openingRaw);
+  return findConverseFixture(normalizeDemoInput(openingRaw), locale) !== null;
 }
 
 /** True when the goal matches a seeded demo roadmap prompt. */
 export function isDemoRoadmapGoal(goal: string): boolean {
-  return findRoadmapFixture(normalizeDemoInput(goal), 'my') !== null;
+  const locale = detectResponseLocale(goal);
+  return findRoadmapFixture(normalizeDemoInput(goal), locale) !== null;
 }
 
 /** Fixture inventory size (for tests / generator checks). */

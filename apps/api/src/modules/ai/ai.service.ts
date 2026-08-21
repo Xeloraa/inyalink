@@ -9,6 +9,7 @@ import {
   signalsDontKnow,
   type ConverseBriefInput,
   type ConverseBriefResponse,
+  type CustomerSourceBranch,
   type GenerateRoadmapInput,
   type GenerateRoadmapResponse,
   type UiLocale,
@@ -20,7 +21,9 @@ import {
   lookupRoadmapDemoFallback,
   openingUserMessage,
 } from '../../ai/demo-fallback/cache.js';
+import { problemDiagnosisTurn } from '../../ai/diagnosis.js';
 import { generateRoadmap } from '../../ai/features/generateRoadmap.js';
+import { encodedProblemRoadmap } from '../../ai/problemPlans.js';
 import { structureBrief } from '../../ai/features/structureBrief.js';
 import { aiApiKeyPresent, config } from '../../lib/config.js';
 import { AppError } from '../../middleware/errors.js';
@@ -200,11 +203,55 @@ async function serveConverseFallback(
   return cached;
 }
 
+async function persistRoadmap(
+  cached: GenerateRoadmapResponse,
+  goal: string,
+  locale: UiLocale,
+  userId: string | null,
+): Promise<GenerateRoadmapResponse> {
+  if (!userId) {
+    return GenerateRoadmapResponseSchema.parse(cached);
+  }
+  const { id } = await repo.insertRoadmap({
+    userId,
+    goalText: goal,
+    language: cached.language ?? locale,
+    steps: cached.steps ?? [],
+  });
+  return GenerateRoadmapResponseSchema.parse({
+    ...cached,
+    id,
+  });
+}
+
+async function serveEncodedProblemPlan(
+  goal: string,
+  source: Exclude<CustomerSourceBranch, 'regulars'>,
+  userId: string | null,
+): Promise<GenerateRoadmapResponse> {
+  const locale = detectResponseLocale(goal);
+  const plan = encodedProblemRoadmap(source, locale);
+  console.log('[classify] encoded problem roadmap', {
+    source,
+    locale,
+    firstTitle: plan.steps[0]?.title,
+  });
+  await logAiCall({
+    feature: 'roadmap',
+    provider: 'encoded-plan',
+    model: 'problem-branch',
+    succeeded: true,
+    errorKind: `problem_branch:${source}`,
+  });
+  return persistRoadmap(plan, goal, locale, userId);
+}
+
 async function serveRoadmapFallback(
   goal: string,
   locale: UiLocale,
   userId: string | null,
   providerErrorKind: string,
+  customerSource?: CustomerSourceBranch,
 ): Promise<GenerateRoadmapResponse | null> {
   if (!config.demoAiFallback) {
     console.log('[demo-only] AI fallback cache skipped (DEMO_AI_FALLBACK=false)', {
@@ -219,7 +266,7 @@ async function serveRoadmapFallback(
     providerErrorKind,
     locale,
   });
-  const cached = lookupRoadmapDemoFallback(goal, locale);
+  const cached = lookupRoadmapDemoFallback(goal, locale, customerSource);
   if (!cached) {
     console.log('[demo-only] AI fallback cache miss — serving generic retry notice', {
       feature: 'roadmap',
@@ -244,20 +291,7 @@ async function serveRoadmapFallback(
     errorKind: `demo_fallback:${providerErrorKind}`,
   });
 
-  if (!userId) {
-    return GenerateRoadmapResponseSchema.parse(cached);
-  }
-
-  const { id } = await repo.insertRoadmap({
-    userId,
-    goalText: goal,
-    language: cached.language ?? locale,
-    steps: cached.steps ?? [],
-  });
-  return GenerateRoadmapResponseSchema.parse({
-    ...cached,
-    id,
-  });
+  return persistRoadmap(cached, goal, locale, userId);
 }
 
 export async function converseBrief(
@@ -272,6 +306,7 @@ export async function converseBrief(
     (m) => m.role === 'assistant',
   ).length;
   const openingShape = opening ? classifyInputShape(opening) : 'ambiguous';
+  const seededHire = Boolean(normalized.briefDraft?.category);
 
   console.log('[classify]', {
     opening,
@@ -281,10 +316,17 @@ export async function converseBrief(
     userCount,
     assistantCount,
     responseLocale,
+    seededHire,
   });
 
   // Goal-shaped openings belong on the roadmap — never invent a service brief.
-  if (assistantCount === 0 && userCount === 1 && openingShape === 'goal') {
+  // Seeded step-hires already have a category and must stay in converse.
+  if (
+    !seededHire &&
+    assistantCount === 0 &&
+    userCount === 1 &&
+    openingShape === 'goal'
+  ) {
     console.log('[classify] redirect → roadmap (goal-shaped opening)');
     return ConverseBriefResponseSchema.parse({
       redirectTo: 'roadmap',
@@ -301,6 +343,30 @@ export async function converseBrief(
       briefDraft: normalized.briefDraft ?? {},
       complete: false,
     });
+  }
+
+  // Problem-shaped openings: diagnostic questions, then an encoded branch.
+  // Runs before the dont-know handoff so "I don't know" on a diagnostic
+  // question becomes the social-presence plan, not a generic launch plan.
+  if (!seededHire && openingShape === 'problem') {
+    const diagnosed = problemDiagnosisTurn(
+      normalized.messages,
+      responseLocale,
+    );
+    if (diagnosed) {
+      console.log('[classify] problem diagnosis', {
+        redirectTo: diagnosed.redirectTo ?? null,
+        customerSource: diagnosed.customerSource ?? null,
+        hasQuestion: Boolean(diagnosed.nextQuestion),
+      });
+      return ConverseBriefResponseSchema.parse({
+        nextQuestion: diagnosed.nextQuestion,
+        briefDraft: normalized.briefDraft ?? {},
+        complete: false,
+        redirectTo: diagnosed.redirectTo,
+        customerSource: diagnosed.customerSource,
+      });
+    }
   }
 
   // User declined / has no idea — stop probing and hand off to Guided Plan.
@@ -381,18 +447,40 @@ export async function createRoadmap(
     throw new AppError(400, 'VALIDATION_ERROR', 'goal is required');
   }
 
+  const responseLocale = detectResponseLocale(goal);
+  const source = input.customerSource;
   const seedGoal = isDemoRoadmapGoal(goal);
   logAiRequestStart('roadmap', {
     seedGoal,
-    locale: input.locale,
+    locale: responseLocale,
+    customerSource: source ?? null,
   });
+
+  if (source === 'regulars') {
+    return GenerateRoadmapResponseSchema.parse({
+      retryable: false,
+      notice:
+        responseLocale === 'my'
+          ? 'Regulars ပြန်မလာတာ ဘာကြောင့်လဲ ဆိုတာ ဒီမှာ မပြောနိုင်ပါဘူး။ visibility ကူညီပေးစေချင်ရင် ပြောပါ။'
+          : "I can't tell why regulars stopped coming. If you want help with visibility for new people, say so in the chat.",
+    });
+  }
+
+  if (source === 'online' || source === 'walkins' || source === 'unsure') {
+    return serveEncodedProblemPlan(goal, source, userId);
+  }
+
+  if (classifyInputShape(goal) === 'problem') {
+    return serveEncodedProblemPlan(goal, 'unsure', userId);
+  }
 
   if (!config.aiProvider) {
     const cached = await serveRoadmapFallback(
       goal,
-      input.locale,
+      responseLocale,
       userId,
       'AI_NOT_CONFIGURED',
+      source,
     );
     if (cached) return cached;
     throw new AppError(503, 'AI_NOT_CONFIGURED', 'AI provider is not configured');
@@ -403,7 +491,7 @@ export async function createRoadmap(
   const result = await generateRoadmap({
     goal,
     categorySlugs,
-    locale: input.locale,
+    locale: responseLocale,
     model: resolveModel(),
     log: logAiCall,
     retryRateLimit,
@@ -412,9 +500,10 @@ export async function createRoadmap(
   if (!result.ok) {
     const cached = await serveRoadmapFallback(
       goal,
-      input.locale,
+      responseLocale,
       userId,
       result.errorKind,
+      source,
     );
     if (cached) return cached;
 
@@ -433,29 +522,14 @@ export async function createRoadmap(
     );
   }
 
-  // Anonymous caller (no account yet): hand back the roadmap without
-  // persisting it. roadmaps.user_id is not-null, so there's no row to own —
-  // the client is expected to hold it locally, same as anonymous brief chat
-  // (see DATA_MAP.md's ai_conversations entry).
-  if (!userId) {
-    return GenerateRoadmapResponseSchema.parse({
+  return persistRoadmap(
+    {
       language: result.language,
       steps: result.steps,
       disclaimer: result.disclaimer,
-    });
-  }
-
-  const { id } = await repo.insertRoadmap({
+    },
+    goal,
+    result.language,
     userId,
-    goalText: goal,
-    language: result.language,
-    steps: result.steps,
-  });
-
-  return GenerateRoadmapResponseSchema.parse({
-    id,
-    language: result.language,
-    steps: result.steps,
-    disclaimer: result.disclaimer,
-  });
+  );
 }

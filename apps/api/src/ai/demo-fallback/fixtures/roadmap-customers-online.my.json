@@ -1,22 +1,20 @@
 {
   "demoOnly": true,
-  "note": "DEMO ONLY — encoded social-presence plan for an undiagnosed no-customers problem (unsure branch). Not live model output.",
+  "note": "DEMO ONLY — encoded Facebook/online branch after diagnosis, Burmese. Not live model output.",
   "kind": "roadmap",
   "matchInput": "ဆိုင်မှာ customer မရတော့ဘူး",
   "aliases": [
-    "ဆိုင်က ဖောက်သည် မရဘူး",
-    "ဆိုင်မှာ ဖောက်သည် မရတော့ဘူး",
-    "အရောင်း မကောင်းဘူး"
+    "ဆိုင်မှာ ဖောက်သည် မရတော့ဘူး"
   ],
   "locale": "my",
   "language": "my",
-  "customerSource": "unsure",
+  "customerSource": "online",
   "disclaimer": "ဤအစီအစဉ်သည် ငှားရမ်းရန် အကြံပြုချက်နှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ရလဒ် အာမခံချက် မဟုတ်ပါ။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ်လည်း မဟုတ်ပါ။",
   "steps": [
     {
       "order": 1,
       "title": "TikTok setup နဲ့ ပထမဆုံး content",
-      "why": "ဘယ်လမ်းကြောင်း ပိတ်သွားမှန်း မသိသေးရင် လူအသစ်တွေ အွန်လိုင်းမှာ တွေ့နိုင်သေးလား စမ်းရအလွယ်ဆုံးပါ။ ငှားရမှာက TikTok setup နဲ့ ပထမဆုံး clip လုပ်ပေးမယ့်သူပါ။",
+      "why": "Facebook ရဲ့ organic reach က စီးပွားရေးတွေ အားကိုးရခက်လာပါတယ်။ ပထမဆုံး ငှားရမှာက TikTok setup နဲ့ clip အသုတ် လုပ်ပေးမယ့်သူ — လူအသစ်တွေ ဆိုင်ကို တွေ့နိုင်သေးလား စမ်းဖို့ပါ။",
       "category_slug": "video-tiktok-content",
       "est_min_mmk": 80000,
       "est_max_mmk": 300000

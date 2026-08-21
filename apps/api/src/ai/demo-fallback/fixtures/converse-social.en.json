@@ -4,7 +4,10 @@
   "kind": "converse",
   "matchInput": "I need social media management",
   "aliases": [
-    "I want Facebook and Instagram management"
+    "I want Facebook and Instagram management",
+    "Move regulars to Telegram or Viber",
+    "Ongoing monthly content",
+    "Google Maps and local listing setup"
   ],
   "locale": "en",
   "questions": [

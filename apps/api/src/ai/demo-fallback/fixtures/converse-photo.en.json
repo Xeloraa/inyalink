@@ -4,7 +4,9 @@
   "kind": "converse",
   "matchInput": "I need photography for my shop",
   "aliases": [
-    "I want product photography"
+    "I want product photography",
+    "Photography refresh if existing photos are weak",
+    "Photography that shows what the place is actually like"
   ],
   "locale": "en",
   "questions": [

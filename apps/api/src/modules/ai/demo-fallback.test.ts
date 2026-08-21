@@ -53,6 +53,10 @@ describe('demo AI fallback cache', () => {
       lookupRoadmapDemoFallback("my shop isn't getting customers", 'en'),
     ).not.toBeNull();
     expect(
+      lookupRoadmapDemoFallback("my shop isn't getting customers", 'en')
+        ?.steps?.[0]?.title,
+    ).toMatch(/TikTok/i);
+    expect(
       lookupRoadmapDemoFallback("I don't know where to start", 'en'),
     ).not.toBeNull();
     log.mockRestore();
@@ -261,6 +265,32 @@ describe('demo AI fallback cache', () => {
       expect(
         lookupRoadmapDemoFallback('open a bakery in Mars', 'my'),
       ).toBeNull();
+      log.mockRestore();
+    });
+
+    it('does not serve a Burmese roadmap for English problem input even if UI locale is my', () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+      const result = lookupRoadmapDemoFallback(
+        "my shop isn't getting enough customers",
+        'my',
+      );
+      expect(result).not.toBeNull();
+      expect(result?.language).toBe('en');
+      expect(result?.steps?.[0]?.title).not.toMatch(/[\u1000-\u109F]/);
+      expect(
+        lookupRoadmapDemoFallback(
+          "my shop isn't getting enough customers",
+          'en',
+          'online',
+        )?.steps?.[0]?.title,
+      ).toMatch(/TikTok/i);
+      expect(
+        lookupRoadmapDemoFallback(
+          "my shop isn't getting enough customers",
+          'en',
+          'walkins',
+        )?.steps?.[0]?.title,
+      ).toMatch(/Signage/i);
       log.mockRestore();
     });
 

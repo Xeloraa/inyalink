@@ -166,7 +166,7 @@ export async function generateRoadmap(
     allowed,
     fallbackSlug,
   );
-  if (steps.length < 4) {
+  if (steps.length < 3) {
     return {
       ok: false,
       retryable: false,

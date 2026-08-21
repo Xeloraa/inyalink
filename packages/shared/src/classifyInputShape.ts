@@ -11,7 +11,7 @@
  * AMBIGUOUS: neither signal is clear, or both compete — ask one question.
  */
 
-export type InputShape = 'goal' | 'service' | 'unrelated' | 'ambiguous';
+export type InputShape = 'goal' | 'service' | 'problem' | 'unrelated' | 'ambiguous';
 
 function fold(text: string): string {
   return text
@@ -42,7 +42,8 @@ const SERVICE_PATTERNS: RegExp[] = [
   /\bcopywriters?\b/,
   /\bcopywriting\b/,
   /\bsocial\s*media\b/,
-  /\b(facebook|instagram|tiktok)\s+(posts?|page|management|ads?)\b/,
+  /\b(facebook|instagram|tiktok)\s+(posts?|management|ads?)\b/,
+  /\btiktoks?\b/,
   /\billustrat(?:ion|or|e)\b/,
   /\btranslators?\b/,
   /\btranslation\b/,
@@ -70,22 +71,19 @@ const SERVICE_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Outcomes and problems — launches, growth, sales issues.
+ * Launches / outcomes — starting or growing a business. Excludes decline
+ * problems (those are PROBLEM_PATTERNS below, which get diagnostic
+ * questions instead of a straight-to-roadmap classification).
  * Intentionally excludes bare "ဆိုင်" / "shop" so "cafe logo" stays service.
  */
 const GOAL_PATTERNS: RegExp[] = [
   /\bopen(?:ing)?\s+(a|an|my|our)?\s*\w*/,
   /\bstart(?:ing)?\s+(a|an|my|our)?\s*\w*/,
   /\blaunch(?:ing)?\s+(a|an|my|our)?\s*\w*/,
-  /\bset\s*up\s+(a|an|my|our)?\s*\w*/,
+  /\bset\s+up\s+(a|an|my|our)?\s*\w*/,
   /\brun\s+(a|an|my|our)\s+\w+/,
   /\bgrow(?:ing)?\s+(my|our|the)\b/,
   /\bexpand(?:ing)?\s+(my|our|the)\b/,
-  /\bisn'?t\s+getting\s+(customers|clients|sales|traffic)\b/,
-  /\baren'?t\s+getting\s+(customers|clients|sales|traffic)\b/,
-  /\bno\s+(customers|clients|sales|foot\s*traffic)\b/,
-  /\blow\s+(sales|traffic|footfall)\b/,
-  /\bstruggling\s+with\b/,
   /\bwhat\s+do\s+i\s+need\b/,
   /\bhow\s+do\s+i\s+(open|start|launch|set\s*up)\b/,
   /\bwhere\s+(should|do)\s+i\s+start\b/,
@@ -97,10 +95,34 @@ const GOAL_PATTERNS: RegExp[] = [
   /ဆိုင်ဖွင့်/,
   /စတင်ချင်|စပြီးလုပ်ချင်|လုပ်ချင်တယ်/,
   /ဘာတွေ\s*လိုအပ်/,
+  /လမ်းညွှန်|အစီအစဉ်/,
+];
+
+/**
+ * A decline or breakdown in an existing business — sales, foot traffic, or a
+ * channel that used to work. These get diagnostic questions (where did
+ * customers come from, when did it change) before any roadmap, never a
+ * straight-to-plan classification — the cause determines the hire, and
+ * guessing it produces a plan that doesn't follow from what they said.
+ */
+const PROBLEM_PATTERNS: RegExp[] = [
+  /\b(isn'?t|aren'?t|is\s+not|are\s+not|not)\s+getting\s+(?:enough\s+)?(customers|clients|sales|traffic)\b/,
+  /\bno\s+(customers|clients|sales|foot\s*traffic)\b/,
+  /\blow\s+(sales|traffic|footfall)\b/,
+  /\bstruggling\s+with\b/,
+  /\bsales?\s+(?:is|are|have)?\s*(?:gone|going)?\s*down\b/,
+  /\bsales?\s+(?:have\s+)?dropped\b/,
+  /\b(facebook|instagram|tiktok|page|social\s*media)\s+(?:isn'?t|is\s+not|stopped|not)\s+working\b/,
+  /\bwalk-?ins?\s+(?:have\s+)?(dropped|stopped|slowed|down|decreased)\b/,
+  /\bregulars?\s+(?:have\s+)?(stopped|aren'?t|are\s+not|not)\s+(coming|returning|come\s+back)\b/,
+  // Burmese
   /အရောင်း\s*(မကောင်း|မတက်|ကျ)/,
   /ဖောက်သည်\s*(မရ|မရှိ|နည်း)/,
   /customers?\s*(မရ|မရှိ)/i,
-  /လမ်းညွှန်|အစီအစဉ်/,
+  /ဆိုင်မှာ\s*(customer|ဖောက်သည်)/i,
+  // Burmese sentences keep English platform names in Latin script (register
+  // rule) — "Facebook အလုပ်မဖြစ်တော့ဘူး", "Facebook က မရတော့ဘူး".
+  /(facebook|instagram|tiktok|page)\s*(?:က|မှာ)?\s*(?:အလုပ်\s*)?(?:မဖြစ်|မရ)/i,
 ];
 
 /**
@@ -181,22 +203,102 @@ function matchesAny(text: string, patterns: RegExp[]): boolean {
 
 /**
  * Classify opening text. Prefer an explicit deliverable over a vague
- * business noun; when both goal and service signals fire, return ambiguous.
- * Unrelated (dating, homework, …) only when no hire/goal signal — so
- * "logo for my girlfriend's cafe" stays service.
+ * business noun; when both goal/problem and service signals fire, return
+ * ambiguous. A problem (decline in an existing business) takes priority
+ * over a goal signal when both fire, since it needs diagnostic questions
+ * first, not a straight-to-roadmap plan. Unrelated (dating, homework, …)
+ * only when no hire/goal/problem signal — so "logo for my girlfriend's
+ * cafe" stays service.
  */
 export function classifyInputShape(raw: string): InputShape {
   const text = fold(raw);
   if (!text) return 'ambiguous';
 
   const service = matchesAny(text, SERVICE_PATTERNS);
+  const problem = matchesAny(text, PROBLEM_PATTERNS);
   const goal = matchesAny(text, GOAL_PATTERNS);
 
-  if (service && goal) return 'ambiguous';
+  if (service && (problem || goal)) return 'ambiguous';
   if (service) return 'service';
+  if (problem) return 'problem';
   if (goal) return 'goal';
   if (matchesAny(text, UNRELATED_PATTERNS)) return 'unrelated';
   return 'ambiguous';
+}
+
+export type CustomerSourceBranch = 'online' | 'walkins' | 'regulars' | 'unsure';
+
+const ONLINE_SOURCE_PATTERNS: RegExp[] = [
+  /\b(facebook|instagram|tiktok|online|social\s*media|page)\b/,
+  /(facebook|instagram|tiktok|page)/i,
+];
+
+const WALKIN_SOURCE_PATTERNS: RegExp[] = [
+  /\bwalk-?ins?\b/,
+  /\bwalk(?:ing)?\s+in\b/,
+  /\b(foot\s*traffic|passers?-?by)\b/,
+  /\boff the street\b/,
+  /လမ်းသွား/,
+  /လမ်းကနေ/,
+  /လမ်းပေါ်/,
+  /ဆိုင်ကို\s*ဝင်/,
+  /ဝင်လာ/,
+  /ဝင်တာ/,
+];
+
+const REGULAR_SOURCE_PATTERNS: RegExp[] = [
+  /\bregulars?\b/,
+  /\b(repeat|returning|loyal)\s+customers?\b/,
+  /မှန်မှန်\s*လာ/,
+  /အမြဲ\s*လာ/,
+];
+
+const SKIP_OR_UNSURE_PATTERNS: RegExp[] = [
+  /\bskip this\b/,
+  /\bnot sure\b/,
+  /မသေချာ/,
+  /ကျော်မယ်|ကျော်မည်/,
+];
+
+const VISIBILITY_PATTERNS: RegExp[] = [
+  /\bvisib/,
+  /\b(facebook|tiktok|instagram|marketing|ads?)\b/,
+  /\bnew customers?\b/,
+  /\bonline\b/,
+  /\byes\b/,
+  /\bsure\b/,
+  /\bok(?:ay)?\b/,
+  /အသစ်/,
+  /ကြော်ငြာ/,
+  /ဟုတ်ကဲ့|ဟုတ်ပါတယ်|ဟုတ်ပါ/,
+];
+
+/**
+ * Classify the answer to "where did customers usually come from" into one
+ * of the four diagnostic branches. Checked in this order because an answer
+ * can mention more than one source ("mostly Facebook and some walk-ins") —
+ * online takes priority since it's the more specific, actionable signal;
+ * "don't know" is the catch-all only when nothing else matches.
+ */
+export function classifyCustomerSourceAnswer(raw: string): CustomerSourceBranch {
+  const text = fold(raw);
+  if (!text || signalsDontKnow(text) || matchesAny(text, SKIP_OR_UNSURE_PATTERNS)) {
+    return 'unsure';
+  }
+  if (matchesAny(text, ONLINE_SOURCE_PATTERNS)) return 'online';
+  if (matchesAny(text, WALKIN_SOURCE_PATTERNS)) return 'walkins';
+  if (matchesAny(text, REGULAR_SOURCE_PATTERNS)) return 'regulars';
+  return 'unsure';
+}
+
+/**
+ * After the regulars honesty turn: they asked for visibility / new
+ * customers instead of pretending the product is a marketing hire.
+ */
+export function signalsWantsVisibility(raw: string): boolean {
+  const text = fold(raw);
+  if (!text) return false;
+  return matchesAny(text, VISIBILITY_PATTERNS);
 }
 
 /** True when the user is declining / has no answer — switch to roadmap. */

@@ -12,6 +12,7 @@ import {
   type ChatMessage,
   type ConversationDetail,
   type ConversationPath,
+  type CustomerSourceBranch,
   type MatchCandidate,
   type RoadmapStep,
 } from '@inyalink/shared';
@@ -46,6 +47,8 @@ type DemoFlowState = {
   roadmapAnchorIndex: number | null;
   converseStarted: boolean;
   converseComplete: boolean;
+  /** Diagnosed problem branch — selects the encoded roadmap, not a generic plan. */
+  customerSource: CustomerSourceBranch | null;
   /** Inline match cards for the completed brief. null = not loaded yet. */
   matches: MatchCandidate[] | null;
 };
@@ -63,6 +66,7 @@ type DemoFlowValue = DemoFlowState & {
   setConversationId: (id: string | null) => void;
   markConverseStarted: () => void;
   markConverseComplete: () => void;
+  setCustomerSource: (source: CustomerSourceBranch | null) => void;
   setMatches: (matches: MatchCandidate[] | null) => void;
   setRoadmap: (args: {
     /** Absent for anonymous callers — the roadmap wasn't persisted server-side. */
@@ -104,6 +108,7 @@ const initial: DemoFlowState = {
   roadmapAnchorIndex: null,
   converseStarted: false,
   converseComplete: false,
+  customerSource: null,
   matches: null,
 };
 
@@ -172,6 +177,10 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
         startQuick(trimmed);
         return { destination: 'panel', path: 'quick', goal: trimmed, messages };
       }
+      if (shape === 'problem') {
+        startQuick(trimmed);
+        return { destination: 'panel', path: 'quick', goal: trimmed, messages };
+      }
       if (shape === 'unrelated') {
         startUnrelated(trimmed);
         return {
@@ -214,6 +223,10 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
 
   const markConverseComplete = useCallback(() => {
     setState((s) => ({ ...s, converseComplete: true }));
+  }, []);
+
+  const setCustomerSource = useCallback((customerSource: CustomerSourceBranch | null) => {
+    setState((s) => ({ ...s, customerSource }));
   }, []);
 
   const setMatches = useCallback((matches: MatchCandidate[] | null) => {
@@ -382,6 +395,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       setConversationId,
       markConverseStarted,
       markConverseComplete,
+      setCustomerSource,
       setMatches,
       setRoadmap,
       clearRoadmap,
@@ -408,6 +422,7 @@ export function DemoFlowProvider({ children }: { children: ReactNode }) {
       setConversationId,
       markConverseStarted,
       markConverseComplete,
+      setCustomerSource,
       setMatches,
       setRoadmap,
       clearRoadmap,

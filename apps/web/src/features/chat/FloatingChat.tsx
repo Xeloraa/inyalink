@@ -141,6 +141,7 @@ export function FloatingChat() {
     matches,
     converseStarted,
     converseComplete,
+    customerSource,
     startFromInput,
     setMessages,
     setBriefDraft,
@@ -148,6 +149,7 @@ export function FloatingChat() {
     setConversationId,
     markConverseStarted,
     markConverseComplete,
+    setCustomerSource,
     setMatches,
     setRoadmap,
     resolveClarifyToQuick,
@@ -303,14 +305,14 @@ export function FloatingChat() {
   }
 
   async function loadRoadmap(seedGoal: string) {
-    const key = `plan:${seedGoal}`;
+    const key = `plan:${seedGoal}:${customerSource ?? ''}`;
     if (roadmapBootRef.current === key) return;
     roadmapBootRef.current = key;
     setBusy(true);
     setNotice(null);
     try {
       const result = await withClientRateLimitRetries(() =>
-        generateRoadmap(seedGoal, locale),
+        generateRoadmap(seedGoal, contentLocale, customerSource ?? undefined),
       );
       if (result.retryable) {
         roadmapBootRef.current = null;
@@ -352,7 +354,18 @@ export function FloatingChat() {
         }),
       );
       if (result.redirectTo === 'roadmap') {
-        console.log('[classify] API redirect → roadmap');
+        console.log('[classify] API redirect → roadmap', {
+          customerSource: result.customerSource ?? null,
+        });
+        if (result.nextQuestion) {
+          setMessages([
+            ...nextMessages,
+            { role: 'assistant', content: result.nextQuestion },
+          ]);
+        }
+        if (result.customerSource) {
+          setCustomerSource(result.customerSource);
+        }
         goRoadmap();
         return;
       }
@@ -402,7 +415,7 @@ export function FloatingChat() {
     if (roadmapSteps.length > 0) return;
     void loadRoadmap(goal);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [planning, goal, roadmapSteps.length]);
+  }, [planning, goal, roadmapSteps.length, customerSource]);
 
   useEffect(() => {
     if (!clarifying || !goal) return;
@@ -517,6 +530,13 @@ export function FloatingChat() {
         return;
       }
       const shape = classifyInputShape(text);
+      if (shape === 'problem') {
+        const routed = startFromInput(text);
+        if (routed.path === 'quick') {
+          bootQuickTurn(routed.messages, routed.goal);
+        }
+        return;
+      }
       if (shape === 'goal') {
         continueAsPlan(text, text);
         return;
@@ -570,6 +590,13 @@ export function FloatingChat() {
         continueAsPlan(text, text);
         return;
       }
+      if (shape === 'problem') {
+        const routed = startFromInput(text);
+        if (routed.path === 'quick') {
+          bootQuickTurn(routed.messages, routed.goal);
+        }
+        return;
+      }
       if (shape === 'service') {
         continueAsQuick(text, text);
         return;
@@ -590,7 +617,7 @@ export function FloatingChat() {
       return;
     }
 
-    if (signalsDontKnow(text)) {
+    if (signalsDontKnow(text) && classifyInputShape(goal) !== 'problem') {
       console.log('[classify] dont-know → roadmap', { text });
       const next = [...messages, { role: 'user' as const, content: text }];
       setMessages(next);

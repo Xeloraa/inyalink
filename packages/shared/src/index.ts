@@ -2,9 +2,12 @@ export { HealthResponseSchema, type HealthResponse } from './schemas/health.js';
 export { formatMmk } from './money.js';
 export {
   classifyClarifyReply,
+  classifyCustomerSourceAnswer,
   classifyInputShape,
   matchRoadmapStep,
   signalsDontKnow,
+  signalsWantsVisibility,
+  type CustomerSourceBranch,
   type InputShape,
 } from './classifyInputShape.js';
 export {
@@ -36,6 +39,7 @@ export {
   ChatMessageSchema,
   ConverseBriefInputSchema,
   ConverseBriefResponseSchema,
+  CustomerSourceBranchSchema,
   GenerateRoadmapInputSchema,
   GenerateRoadmapResponseSchema,
   RoadmapStepSchema,

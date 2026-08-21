@@ -1,17 +1,33 @@
 import { describe, expect, it } from 'vitest';
 import {
   classifyClarifyReply,
+  classifyCustomerSourceAnswer,
   classifyInputShape,
   matchRoadmapStep,
   signalsDontKnow,
+  signalsWantsVisibility,
 } from './classifyInputShape.js';
 
 describe('classifyInputShape', () => {
   it('routes outcome-shaped English to goal', () => {
     expect(classifyInputShape('I want to open a shop')).toBe('goal');
     expect(classifyInputShape('I want to start a clothing brand')).toBe('goal');
-    expect(classifyInputShape("my shop isn't getting customers")).toBe('goal');
     expect(classifyInputShape('I want to open a cafe')).toBe('goal');
+  });
+
+  it('routes decline problems to problem, not a straight-to-plan goal', () => {
+    expect(classifyInputShape("my shop isn't getting customers")).toBe(
+      'problem',
+    );
+    expect(
+      classifyInputShape("my shop isn't getting enough customers"),
+    ).toBe('problem');
+    expect(classifyInputShape('sales are down')).toBe('problem');
+    expect(classifyInputShape("my Facebook page isn't working")).toBe(
+      'problem',
+    );
+    expect(classifyInputShape('ဆိုင်မှာ customer မရတော့ဘူး')).toBe('problem');
+    expect(classifyInputShape('ဆိုင်မှာ ဖောက်သည် မရတော့ဘူး')).toBe('problem');
   });
 
   it('routes outcome-shaped Burmese to goal', () => {
@@ -89,6 +105,54 @@ describe('classifyClarifyReply', () => {
     expect(classifyClarifyReply("I haven't thought of it yet")).toBe('goal');
     expect(classifyClarifyReply('no idea where should I start')).toBe('goal');
     expect(classifyClarifyReply('like I said I have no idea')).toBe('goal');
+  });
+});
+
+describe('classifyCustomerSourceAnswer', () => {
+  it('routes Facebook / online answers to online', () => {
+    expect(classifyCustomerSourceAnswer('Facebook')).toBe('online');
+    expect(classifyCustomerSourceAnswer('mostly from Facebook')).toBe(
+      'online',
+    );
+    expect(classifyCustomerSourceAnswer('Facebook ကနေ များပါတယ်')).toBe(
+      'online',
+    );
+  });
+
+  it('routes walk-in answers to walkins', () => {
+    expect(classifyCustomerSourceAnswer('walk-ins')).toBe('walkins');
+    expect(classifyCustomerSourceAnswer('people walking in off the street')).toBe(
+      'walkins',
+    );
+    expect(classifyCustomerSourceAnswer('လမ်းကနေ ဝင်တာများပါတယ်')).toBe(
+      'walkins',
+    );
+  });
+
+  it('routes regulars answers to regulars', () => {
+    expect(classifyCustomerSourceAnswer('regulars')).toBe('regulars');
+    expect(classifyCustomerSourceAnswer('returning customers')).toBe(
+      'regulars',
+    );
+    expect(classifyCustomerSourceAnswer('မှန်မှန် လာတဲ့သူတွေပါ')).toBe(
+      'regulars',
+    );
+  });
+
+  it('treats skip / don’t-know as unsure', () => {
+    expect(classifyCustomerSourceAnswer("I don't know")).toBe('unsure');
+    expect(classifyCustomerSourceAnswer('Not sure — skip this one.')).toBe(
+      'unsure',
+    );
+    expect(classifyCustomerSourceAnswer('မသိပါ')).toBe('unsure');
+  });
+});
+
+describe('signalsWantsVisibility', () => {
+  it('detects a request for visibility after the regulars honesty turn', () => {
+    expect(signalsWantsVisibility('yes, help with visibility')).toBe(true);
+    expect(signalsWantsVisibility('Facebook ဘက် ကူညီပေးပါ')).toBe(true);
+    expect(signalsWantsVisibility('no thanks')).toBe(false);
   });
 });
 

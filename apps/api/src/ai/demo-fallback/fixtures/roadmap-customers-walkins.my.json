@@ -1,0 +1,39 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — encoded walk-ins branch after diagnosis, Burmese. Not live model output.",
+  "kind": "roadmap",
+  "matchInput": "ဆိုင်မှာ customer မရတော့ဘူး",
+  "aliases": [
+    "ဆိုင်မှာ ဖောက်သည် မရတော့ဘူး"
+  ],
+  "locale": "my",
+  "language": "my",
+  "customerSource": "walkins",
+  "disclaimer": "ဤအစီအစဉ်သည် ငှားရမ်းရန် အကြံပြုချက်နှင့် ကုန်ကျစရိတ် ခန့်မှန်းချက်သာ ဖြစ်ပါသည်။ ရလဒ် အာမခံချက် မဟုတ်ပါ။ ဥပဒေ၊ အခွန် သို့မဟုတ် စည်းမျဉ်းဆိုင်ရာ အကြံဉာဏ်လည်း မဟုတ်ပါ။",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Signage နဲ့ လမ်းပေါ်က မြင်သာမှု",
+      "why": "လမ်းကနေ ဝင်တဲ့သူတွေက ဆိုင်ကို လမ်းပေါ်က အရင် မြင်ရပါမယ်။ ပထမဆုံး ငှားရမှာက signage လုပ်ပေးမယ့် designer ပါ — page မဟုတ်ပါဘူး။",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 300000
+    },
+    {
+      "order": 2,
+      "title": "Google Maps နဲ့ local listing တည်ဆောက်ရန်",
+      "why": "နောက်တစ်ယောက်က Google Maps နဲ့ local listing တည်ဆောက်ပေးမယ့်သူ — ဖွင့်ချိန်နဲ့ တည်နေရာ မှန်အောင် လုပ်ပေးဖို့ပါ။",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 60000,
+      "est_max_mmk": 150000
+    },
+    {
+      "order": 3,
+      "title": "ဆိုင်အနေအထားကို ပြတဲ့ ဓာတ်ပုံ",
+      "why": "အခုပုံတွေက ဆိုင်အနေအထားကို မပြနိုင်မှ ဓာတ်ပုံဆရာ ငှားပါ။ အခန်း၊ ကောင်တာ၊ ရောင်းတဲ့ ပစ္စည်းကို ပြတဲ့ ပုံအသုတ်လေး ဆိုရင် လုံလောက်ပါတယ်။",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    }
+  ]
+}

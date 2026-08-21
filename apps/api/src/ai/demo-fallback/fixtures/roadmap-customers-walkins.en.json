@@ -1,0 +1,39 @@
+{
+  "demoOnly": true,
+  "note": "DEMO ONLY — encoded walk-ins branch after diagnosis. Not live model output.",
+  "kind": "roadmap",
+  "matchInput": "my shop isn't getting enough customers",
+  "aliases": [
+    "my shop isn't getting customers"
+  ],
+  "locale": "en",
+  "language": "en",
+  "customerSource": "walkins",
+  "disclaimer": "This is a hiring plan and cost estimate only, not a guarantee of results. It is not legal, tax, or regulatory advice.",
+  "steps": [
+    {
+      "order": 1,
+      "title": "Signage and street visibility",
+      "why": "If people used to walk in, they have to see the place from the street first. Hire a designer for signage and street visibility — not a Facebook page.",
+      "category_slug": "graphic-design",
+      "est_min_mmk": 80000,
+      "est_max_mmk": 300000
+    },
+    {
+      "order": 2,
+      "title": "Google Maps and local listing setup",
+      "why": "Then hire someone who can set up Google Maps and a local listing with the right hours and pin, so people searching nearby can actually find you.",
+      "category_slug": "social-media-marketing",
+      "est_min_mmk": 60000,
+      "est_max_mmk": 150000
+    },
+    {
+      "order": 3,
+      "title": "Photography that shows what the place is actually like",
+      "why": "Hire a photographer for a small shoot of the room, the counter, and what you sell — only if the current photos don't show the place as it is.",
+      "category_slug": "photography",
+      "est_min_mmk": 100000,
+      "est_max_mmk": 250000
+    }
+  ]
+}

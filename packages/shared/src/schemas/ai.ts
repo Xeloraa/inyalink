@@ -17,6 +17,13 @@ export const ConverseBriefInputSchema = z.object({
 
 export type ConverseBriefInput = z.infer<typeof ConverseBriefInputSchema>;
 
+export const CustomerSourceBranchSchema = z.enum([
+  'online',
+  'walkins',
+  'regulars',
+  'unsure',
+]);
+
 export const ConverseBriefResponseSchema = z.object({
   nextQuestion: z.string().min(1).max(1000).optional(),
   briefDraft: BriefDraftSchema,
@@ -26,6 +33,12 @@ export const ConverseBriefResponseSchema = z.object({
    * Used when the opening is goal-shaped or the user signals "I don't know".
    */
   redirectTo: z.literal('roadmap').optional(),
+  /**
+   * Diagnosed customer-source branch when redirecting a problem-shaped
+   * conversation to a roadmap. The plan must follow this, not the opening
+   * text alone.
+   */
+  customerSource: CustomerSourceBranchSchema.optional(),
   /** Soft transient failure (e.g. rate limit). Client keeps state and retries. */
   retryable: z.boolean().optional(),
   /** Short user-facing notice when retryable is true. */
@@ -51,8 +64,16 @@ export type RoadmapStep = z.infer<typeof RoadmapStepSchema>;
 
 export const GenerateRoadmapInputSchema = z.object({
   goal: z.string().min(1).max(4000),
-  /** UI language toggle — roadmap text in this language regardless of goal language. */
+  /**
+   * UI language toggle — kept for compatibility. Roadmap copy follows the
+   * goal message language, not this field.
+   */
   locale: UiLocaleSchema.default('my'),
+  /**
+   * Encoded problem branch from diagnosis. When set, the API returns that
+   * branch's hiring sequence instead of asking the model to invent a plan.
+   */
+  customerSource: CustomerSourceBranchSchema.optional(),
 });
 
 export type GenerateRoadmapInput = z.infer<typeof GenerateRoadmapInputSchema>;
@@ -60,7 +81,7 @@ export type GenerateRoadmapInput = z.infer<typeof GenerateRoadmapInputSchema>;
 export const GenerateRoadmapResponseSchema = z.object({
   id: z.string().uuid().optional(),
   language: TextLanguageSchema.optional(),
-  steps: z.array(RoadmapStepSchema).min(4).max(6).optional(),
+  steps: z.array(RoadmapStepSchema).min(3).max(6).optional(),
   disclaimer: z.string().min(1).max(2000).optional(),
   retryable: z.boolean().optional(),
   notice: z.string().min(1).max(300).optional(),

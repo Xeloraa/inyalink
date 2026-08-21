@@ -1,21 +1,20 @@
 {
   "demoOnly": true,
-  "note": "DEMO ONLY — encoded social-presence plan for an undiagnosed no-customers problem (unsure branch). Not live model output.",
+  "note": "DEMO ONLY — encoded Facebook/online branch after diagnosis. Not live model output.",
   "kind": "roadmap",
-  "matchInput": "my shop isn't getting customers",
+  "matchInput": "my shop isn't getting enough customers",
   "aliases": [
-    "my shop isn't getting enough customers",
-    "not getting customers"
+    "my shop isn't getting customers"
   ],
   "locale": "en",
   "language": "en",
-  "customerSource": "unsure",
+  "customerSource": "online",
   "disclaimer": "This is a hiring plan and cost estimate only, not a guarantee of results. It is not legal, tax, or regulatory advice.",
   "steps": [
     {
       "order": 1,
       "title": "TikTok setup and first content",
-      "why": "When it isn't clear which door closed, a first batch of short-form clips is a cheap way to test whether new people can still find the shop. Hire someone who can set up TikTok and produce that first content.",
+      "why": "Facebook's organic reach has become much harder for businesses to rely on. Hire someone who can set up TikTok and produce a first batch of clips — that's how you test whether new people still find the shop.",
       "category_slug": "video-tiktok-content",
       "est_min_mmk": 80000,
       "est_max_mmk": 300000
