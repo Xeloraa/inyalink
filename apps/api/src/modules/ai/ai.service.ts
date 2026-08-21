@@ -25,6 +25,7 @@ import { problemDiagnosisTurn } from '../../ai/diagnosis.js';
 import { generateRoadmap } from '../../ai/features/generateRoadmap.js';
 import { encodedProblemRoadmap } from '../../ai/problemPlans.js';
 import { structureBrief } from '../../ai/features/structureBrief.js';
+import { stepHireTurn } from '../../ai/stepHire.js';
 import { aiApiKeyPresent, config } from '../../lib/config.js';
 import { AppError } from '../../middleware/errors.js';
 import * as repo from './ai.repo.js';
@@ -343,6 +344,32 @@ export async function converseBrief(
       briefDraft: normalized.briefDraft ?? {},
       complete: false,
     });
+  }
+
+  // Seeded step-hires this deterministic script covers: name → style →
+  // budget/deadline, same "never leave it to the model" approach as the
+  // problem diagnosis below, and for the same reason — a scripted reply
+  // that confirms what the user gave must never invent a figure. Runs
+  // unconditionally (not just as a provider-failure fallback), so this
+  // specific flow has no dependency on the AI provider at all. Other
+  // seeded hires (not one of the handled opening titles) fall through.
+  if (seededHire) {
+    const hired = stepHireTurn(
+      normalized.messages,
+      responseLocale,
+      normalized.briefDraft ?? {},
+    );
+    if (hired) {
+      console.log('[classify] deterministic step-hire turn', {
+        hasQuestion: Boolean(hired.nextQuestion),
+        complete: Boolean(hired.complete),
+      });
+      return ConverseBriefResponseSchema.parse({
+        nextQuestion: hired.nextQuestion,
+        complete: hired.complete ?? false,
+        briefDraft: hired.briefDraft,
+      });
+    }
   }
 
   // Problem-shaped openings: diagnostic questions, then an encoded branch.
